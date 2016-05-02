@@ -10,12 +10,12 @@ public abstract class AbstractUserLocalisation
     /// <summary>
     ///   Position coordinates.
     /// </summary>
-    private IRVector3 location;
+    private IRVector3 position;
 
     /// <summary>
-    ///   Location coordinates.
+    ///   Rotation coordinates.
     /// </summary>
-    private IRVector3 position;
+    private IRVector3 rotation;
 
     /// <summary>
     ///   Calculate the new location of the user based on the visible markers and accelerometer data.
@@ -38,6 +38,6 @@ public abstract class AbstractUserLocalisation
     /// <returns> Vector 3 </returns>
     public IRVector3 GetRotation()
     {
-        return this.location;
+        return this.rotation;
     }
 }
