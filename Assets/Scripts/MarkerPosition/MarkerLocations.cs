@@ -1,11 +1,21 @@
-﻿/// <summary>
+﻿// <copyright file="MarkerLocations.cs" company="Delft Universite of Technology">
+// Copyright (c) Delft Universite of Technology. All rights reserved.
+// </copyright>
+
+/// <summary>
 ///   Class that knows the location of every marker and can give their attributes.
 /// </summary>
-public class MarkerPosition {
-    // Array of the markers in the Scene.
+public class MarkerLocations
+{
+    /// <summary>
+    ///   Array of the markers in the Scene.
+    /// </summary>
     private Marker[] markers;
 
-    public MarkerPosition()
+    /// <summary>
+    ///   Initializes a new instance of the MarkerLocations class.
+    /// </summary>
+    public MarkerLocations()
     {
         // TODO intialise the markers array.
     }
@@ -18,6 +28,6 @@ public class MarkerPosition {
     public Marker GetMarker(int id)
     {
         // TODO check if key exists.
-        return markers[id];
+        return this.markers[id];
     }
 }
