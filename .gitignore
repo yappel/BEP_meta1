@@ -27,6 +27,7 @@
 # ============ #
 *.DS_Store
 *._*
+*.cache
 *.Spotlight-V100
 *.Trashes
 */Icon?
