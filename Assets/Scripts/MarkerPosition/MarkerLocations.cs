@@ -1,5 +1,5 @@
 ﻿// <copyright file="MarkerLocations.cs" company="Delft Universite of Technology">
-// Copyright (c) Delft Universite of Technology. All rights reserved.
+// Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 /// <summary>
