@@ -10,13 +10,6 @@ using System;
 public class UnallocatedMarkerException : Exception
 {
     /// <summary>
-    ///   Initializes a new instance of the UnallocatedMarkerException class.
-    /// </summary>
-    public UnallocatedMarkerException()
-    {
-    }
-
-    /// <summary>
     ///   Initializes a new instance of the UnallocatedMarkerException class with a message.
     /// </summary>
     /// <param name="message">Custom message for the Exception.</param>

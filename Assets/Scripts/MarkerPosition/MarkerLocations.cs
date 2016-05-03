@@ -2,9 +2,9 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Xml;
-using UnityEngine;
 
 /// <summary>
 ///   Class that knows the location of every marker and can give their attributes.
@@ -35,6 +35,15 @@ public class MarkerLocations
     }
 
     /// <summary>
+    ///   Adds a Marker to the list.
+    /// </summary>
+    /// <param name="marker">The new marker</param>
+    public void AddMarker(Marker marker)
+    {
+        this.markers.Add(marker.GetId(), marker);
+    }
+
+    /// <summary>
     ///   Return the Marker that has the given id.
     /// </summary>
     /// <param name="id">id of the required marker</param>
@@ -57,23 +66,30 @@ public class MarkerLocations
     /// <param name="path">Path to the xml file</param>
     private void LoadMarkers(string path)
     {
-        XmlDocument xml = new XmlDocument();
-        xml.Load(path);
-        XmlNodeList nodeList = xml.SelectNodes("/markers/marker");
-        foreach (XmlNode node in nodeList)
+        try
         {
-            int id = XmlConvert.ToInt32(node["id"].InnerText);
-            XmlNode xmlPosition = node.SelectSingleNode("position");
-            XmlNode xmlRotation = node.SelectSingleNode("rotation");
-            IRVector3 position = new IRVector3(
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText), 
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
-            IRVector3 rotation = new IRVector3(
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
-            this.markers.Add(id, new Marker(id, position, rotation));
+            XmlDocument xml = new XmlDocument();
+            xml.Load(path);
+            XmlNodeList nodeList = xml.SelectNodes("/markers/marker");
+            foreach (XmlNode node in nodeList)
+            {
+                int id = XmlConvert.ToInt32(node["id"].InnerText);
+                XmlNode xmlPosition = node.SelectSingleNode("position");
+                XmlNode xmlRotation = node.SelectSingleNode("rotation");
+                IRVector3 position = new IRVector3(
+                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
+                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText),
+                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
+                IRVector3 rotation = new IRVector3(
+                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
+                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
+                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
+                this.markers.Add(id, new Marker(id, position, rotation));
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("ERROR: ", e);
         }
     }
 }
