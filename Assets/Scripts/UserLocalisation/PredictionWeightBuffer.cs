@@ -43,6 +43,7 @@ public class PredictionWeightBuffer
     {
         List<IRVectorWeight> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
         //// Call to abstractuserlocalisation with predictedLocations.
+        //// TODO add accelerometer prediction.
         return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
     }
 
