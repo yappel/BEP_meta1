@@ -35,12 +35,25 @@ public class PredictionWeightBuffer
     }
 
     /// <summary>
-    ///   Initializes a new instance of the PredictionWeightBuffer class.
+    ///   Calculate possible locations based on the visible markers.
     /// </summary>
     /// <returns>IRVectorTransform the predicted location and rotation</returns>
     /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
     public IRVectorTransform PredictLocation(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
+        List <IRVectorWeight> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
+        //// Call to abstractuserlocalisation with predictedLocations.
+        return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
+    }
+
+    /// <summary>
+    ///   Get the locations based on the markers.
+    /// </summary>
+    /// <returns>Predicted locations and their weights</returns>
+    /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
+    private List<IRVectorWeight> GetMarkerBasedLocations(Dictionary<int, IRVectorTransform> visibleMarkerIds)
+    {
+        List<IRVectorWeight> predictions = new List<IRVectorWeight>(visibleMarkerIds.Count);
         foreach (KeyValuePair<int, IRVectorTransform> pair in visibleMarkerIds)
         {
             try
@@ -53,8 +66,8 @@ public class PredictionWeightBuffer
                 Console.WriteLine("ERROR: ", e);
             }
         }
-        //// Call to abstractuserlocalisation
-        return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
+
+        return predictions;
     }
 
     /// <summary>
@@ -71,6 +84,6 @@ public class PredictionWeightBuffer
         IRVector3 distanceRotation = detectedMarker.GetRotation();
 
         // TODO return the location based on this data with the declared weight.
-        return null;
+        return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
     }
 }

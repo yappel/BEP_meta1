@@ -1,11 +1,11 @@
-﻿// <copyright file="IRVector4.cs" company="Delft University of Technology">
+﻿// <copyright file="IRVectorWeight.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 /// <summary>
-///   Struct to create a independent 3D-Vector.
+///   IRVectorWeight contains the position, rotation and weight of a location.
 /// </summary>
-public class IRVector4 : IRVector3
+public class IRVectorWeight : IRVectorTransform
 {
     /// <summary>
     ///   The weight of a location.
@@ -13,13 +13,12 @@ public class IRVector4 : IRVector3
     private float weight;
 
     /// <summary>
-    ///   Initializes a new instance of the IRVector4 class.
+    ///   Initializes a new instance of the IRVectorWeight class.
     /// </summary>
-    /// <param name="x">x coordinate</param>
-    /// <param name="y">y coordinate</param>
-    /// <param name="z">z coordinate</param>
+    /// <param name="position">Vector of the position</param>
+    /// <param name="rotation">Vector of the rotation</param>
     /// <param name="weight">z value</param>
-    public IRVector4(float x, float y, float z, float weight) : base(x, y, z)
+    public IRVectorWeight(IRVector3 position, IRVector3 rotation, float weight) : base(position, rotation)
     {
         this.weight = weight;
     }

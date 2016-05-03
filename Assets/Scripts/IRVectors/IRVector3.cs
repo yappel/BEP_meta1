@@ -5,7 +5,7 @@
 /// <summary>
 ///   Struct to create a independent 3D-Vector.
 /// </summary>
-public class IRVector3
+public struct IRVector3
 {
     /// <summary>
     ///   x,y,z of the Vector
@@ -13,7 +13,7 @@ public class IRVector3
     private float x, y, z;
 
     /// <summary>
-    ///   Initializes a new instance of the IRVector3 class.
+    ///   Initializes a new instance of the IRVector3 struct.
     /// </summary>
     /// <param name="x">x value</param>
     /// <param name="y">y value</param>
