@@ -1,24 +1,20 @@
-﻿// <copyright file="PredictionWeightBuffer.cs" company="Delft University of Technology">
+﻿// <copyright file="MarkerSensor.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using Assets.Scripts.Inputsensors;
 using System;
 using System.Collections.Generic;
 
 /// <summary>
 ///  This class prepares an array of Vector 4 for user localization.
 /// </summary>
-public class PredictionWeightBuffer
+public class MarkerSensor: ILocationSource
 {
     /// <summary>
     ///   Weight of the marker locations.
     /// </summary>
     private const float WEIGHTMARKER = 1;
-
-    /// <summary>
-    ///   The used user localization technique.
-    /// </summary>
-    private AbstractUserLocalisation userLocalisation;
 
     /// <summary>
     ///   All mapped Markers.
@@ -28,10 +24,14 @@ public class PredictionWeightBuffer
     /// <summary>
     ///   Initializes a new instance of the PredictionWeightBuffer class.
     /// </summary>
-    public PredictionWeightBuffer()
+    public MarkerSensor()
     {
-        // TODO userLocalisation = new ...
         this.markerLocations = new MarkerLocations("./Assets/Maps/MarkerMap01.xml");
+    }
+
+    public List<SensorVector3> GetLocations()
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
