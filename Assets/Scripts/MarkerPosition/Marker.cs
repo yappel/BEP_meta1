@@ -54,11 +54,29 @@ public class Marker
     }
 
     /// <summary>
+    ///   Set the rotation of the Marker.
+    /// </summary>
+    /// <param name="position">Position of the marker</param>
+    public void SetPosition(IRVector3 position)
+    {
+        this.position = position;
+    }
+
+    /// <summary>
     ///   Return the rotation of the Marker.
     /// </summary>
     /// <returns>Vector3 the rotation</returns>
     public IRVector3 GetRotation()
     {
         return this.rotation;
+    }
+
+    /// <summary>
+    ///   Set the rotation of the Marker.
+    /// </summary>
+    /// <param name="rotation">Rotation of the marker</param>
+    public void SetRotation(IRVector3 rotation)
+    {
+        this.rotation = rotation;
     }
 }

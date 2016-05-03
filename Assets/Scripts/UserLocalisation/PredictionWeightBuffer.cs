@@ -31,7 +31,7 @@ public class PredictionWeightBuffer
     public PredictionWeightBuffer()
     {
         // TODO userLocalisation = new ...
-        this.markerLocations = new MarkerLocations();
+        this.markerLocations = new MarkerLocations("./Assets/Maps/MarkerMap01.xml");
     }
 
     /// <summary>

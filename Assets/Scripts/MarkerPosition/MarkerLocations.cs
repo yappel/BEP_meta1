@@ -17,13 +17,21 @@ public class MarkerLocations
     private Dictionary<int, Marker> markers;
 
     /// <summary>
-    ///   Initializes a new instance of the MarkerLocations class.
+    ///   Initializes a new instance of the MarkerLocations class with the markers from a defines file.
+    /// </summary>
+    /// <param name="path">Path to the xml file</param>
+    public MarkerLocations(string path)
+    {
+        this.markers = new Dictionary<int, Marker>();
+        this.LoadMarkers(path);
+    }
+
+    /// <summary>
+    ///   Initializes a new instance of the MarkerLocations class without any predefined markers.
     /// </summary>
     public MarkerLocations()
     {
-        // TODO path from config file
         this.markers = new Dictionary<int, Marker>();
-        this.LoadMarkers("./Assets/Maps/MarkerMap01.xml");
     }
 
     /// <summary>
@@ -46,7 +54,7 @@ public class MarkerLocations
     /// <summary>
     ///   Loads the given XML file and parses it to Markers.
     /// </summary>
-    /// /// <param name="path">Path to the xml file</param>
+    /// <param name="path">Path to the xml file</param>
     private void LoadMarkers(string path)
     {
         XmlDocument xml = new XmlDocument();
