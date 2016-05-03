@@ -1,0 +1,38 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<!-- General application parameters -->
+		<AppName>IRCS</AppName>
+		<Version>0.0.1</Version>
+		<!-- The directory where the build and documentation are deployed -->
+		<BuildDir>BuildTarget\</BuildDir>
+		<OutputDir>$(BuildDir)v$(Version)\</OutputDir>
+	</PropertyGroup>
+
+	<Target Name="Clean">
+		<Message Text="Started Clean." />
+		<RemoveDir Directories="$(OutputDir)" />
+		<Message Text="Finished Clean." />
+	</Target>
+
+	<Target Name="Test">
+		<Message Text="Started Test." />
+		<MakeDir Directories="$(OutputDir)TestResults\" />
+		<Message Text="Finished Test." />
+	</Target>
+
+	<Target Name="Report" DependsOnTargets="Clean;Test">
+		<Message Text="Started Report." />
+		<Message Text="Started docs generation." />
+		<MakeDir Directories="$(OutputDir)Docs\" />
+		<Exec Command="(type Doxyfile &amp; echo PROJECT_NAME=$(AppName) &amp; echo PROJECT_NUMBER=$(Version) &amp; echo OUTPUT_DIRECTORY=$(OutputDir)Docs\) | BuildTools\doxygen\doxygen.exe -" />
+		<Message Text="Finished docs generation." />
+		<Message Text="Finished Report." />
+	</Target>
+
+	<Target Name="Build" DependsOnTargets="Clean;Test;Report">
+		<Message Text="Started Build." />
+		<MakeDir Directories="$(OutputDir)" />
+		<Exec Command="C:\&quot;Program Files&quot;\Unity\Editor\Unity.exe -quit -batchmode -projectpath %25CD%25 -buildWindows64player %25CD%25\$(OutputDir)$(AppName)-v$(Version).exe -logFile %25CD%25\$(OutputDir)$(AppName)-v$(Version)-build.log" />
+		<Message Text="Finished Build." />
+	</Target>
+</Project>

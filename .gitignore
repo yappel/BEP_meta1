@@ -1,3 +1,9 @@
+# ============================= #
+# Build generated / Build tools #
+# ============================= #
+BuildTarget/
+BuildTools/
+
 # =============== #
 # Unity generated #
 # =============== #
