@@ -1,4 +1,4 @@
-﻿// <copyright file="AbstractUserLocalisation.cs" company="Delft University of Technology">
+﻿// <copyright file="AbstractUserLocalizer.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 /// <summary>
 ///   Abstract class for user localization. Every child will implement their own filter.
 /// </summary>
-public abstract class AbstractUserLocalisation
+public abstract class AbstractUserLocalizer
 {
     /// <summary>
     ///   Position coordinates.

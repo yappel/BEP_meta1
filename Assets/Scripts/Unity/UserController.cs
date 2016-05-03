@@ -17,7 +17,7 @@ public class UserController : MonoBehaviour
     /// <summary>
     ///   Keeps track of the user location and calculates the new one on update.
     /// </summary>
-    private PredictionWeightBuffer predictionWeightBuffer;
+    private MarkerSensor markerSensor;
 
     /// <summary>
     ///   The Singleton instance of MarkerDetector.
@@ -34,7 +34,7 @@ public class UserController : MonoBehaviour
     /// </summary>
     void Start()
     {
-        this.predictionWeightBuffer = new PredictionWeightBuffer();
+        this.markerSensor = new MarkerSensor();
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }
@@ -44,7 +44,7 @@ public class UserController : MonoBehaviour
     /// </summary>
     void Update()
     {
-        IRVectorTransform newLocation = this.predictionWeightBuffer.PredictLocation(this.GetVisibleMarkers());
+        IRVectorTransform newLocation = this.markerSensor.PredictLocation(this.GetVisibleMarkers());
         transform.position = new Vector3(newLocation.GetPosition().GetX(), newLocation.GetPosition().GetY(), newLocation.GetPosition().GetZ());
         transform.rotation = new Quaternion(newLocation.GetRotation().GetX(), newLocation.GetRotation().GetY(), newLocation.GetRotation().GetZ(), 1);
     }
