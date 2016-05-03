@@ -3,7 +3,7 @@
     /// <summary>
     ///   A MotionSource provides information about the motion of the user.
     /// </summary>
-    public interface MotionSource
+    public interface IMotionSource
     {
         /// <summary>
         /// Gets the motion vector.

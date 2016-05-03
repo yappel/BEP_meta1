@@ -3,7 +3,7 @@
     /// <summary>
     ///   A LocationSource provides information about the location of the user.
     /// </summary>
-    public interface LocationSource
+    public interface ILocationSource
     {
         /// <summary>
         /// Gets the location vector.
