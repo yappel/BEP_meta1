@@ -3,7 +3,7 @@
 // </copyright>
 
 /// <summary>
-///   Struct to create a independent 3D-Vector.
+///   Struct to create an independent 3D-Vector.
 /// </summary>
 public struct IRVector3
 {
