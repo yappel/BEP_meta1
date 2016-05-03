@@ -41,7 +41,7 @@ public class PredictionWeightBuffer
     /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
     public IRVectorTransform PredictLocation(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
-        List <IRVectorWeight> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
+        List<IRVectorWeight> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
         //// Call to abstractuserlocalisation with predictedLocations.
         return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
     }
@@ -59,7 +59,7 @@ public class PredictionWeightBuffer
             try
             {
                 Marker currentMarker = this.markerLocations.GetMarker(pair.Key);
-                IRVectorTransform predictedLocation = this.GetUserToMarkerPosition(currentMarker, pair.Value);
+                predictions.Add(this.GetUserToMarkerPosition(currentMarker, pair.Value));
             }
             catch (UnallocatedMarkerException e)
             {
@@ -76,7 +76,7 @@ public class PredictionWeightBuffer
     /// <returns>IRVectorTransform the predicted location and rotation</returns>
     /// <param name="storedMarker">The stored Marker of which the absolute location is known.</param>
     /// <param name="detectedMarker">The detected Marker.</param>
-    private IRVectorTransform GetUserToMarkerPosition(Marker storedMarker, IRVectorTransform detectedMarker)
+    private IRVectorWeight GetUserToMarkerPosition(Marker storedMarker, IRVectorTransform detectedMarker)
     {
         IRVector3 absolutePosition = storedMarker.GetPosition();
         IRVector3 absoluteRotation = storedMarker.GetRotation();
@@ -84,6 +84,6 @@ public class PredictionWeightBuffer
         IRVector3 distanceRotation = detectedMarker.GetRotation();
 
         // TODO return the location based on this data with the declared weight.
-        return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
+        return new IRVectorWeight(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0), WEIGHTMARKER);
     }
 }
