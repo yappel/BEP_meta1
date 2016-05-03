@@ -2,6 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -42,14 +43,34 @@ public class PredictionWeightBuffer
     {
         foreach (KeyValuePair<int, IRVectorTransform> pair in visibleMarkerIds)
         {
-            Marker currentMarker = this.markerLocations.GetMarker(pair.Key);
-            IRVector3 absolutePosition = currentMarker.GetPosition();
-            IRVector3 absoluteRotation = currentMarker.GetRotation();
-            IRVector3 distancePosition = pair.Value.GetPosition();
-            IRVector3 distanceRotation = pair.Value.GetRotation();
-            //// TODO Calculate location and add to List.
+            try
+            {
+                Marker currentMarker = this.markerLocations.GetMarker(pair.Key);
+                IRVectorTransform predictedLocation = this.GetUserToMarkerPosition(currentMarker, pair.Value);
+            }
+            catch (UnallocatedMarkerException e)
+            {
+                Console.WriteLine("ERROR: ", e);
+            }
         }
         //// Call to abstractuserlocalisation
         return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
+    }
+
+    /// <summary>
+    ///   Calculate the position based on the knows location and the relative distance to the detected marker.
+    /// </summary>
+    /// <returns>IRVectorTransform the predicted location and rotation</returns>
+    /// <param name="storedMarker">The stored Marker of which the absolute location is known.</param>
+    /// <param name="detectedMarker">The detected Marker.</param>
+    private IRVectorTransform GetUserToMarkerPosition(Marker storedMarker, IRVectorTransform detectedMarker)
+    {
+        IRVector3 absolutePosition = storedMarker.GetPosition();
+        IRVector3 absoluteRotation = storedMarker.GetRotation();
+        IRVector3 distancePosition = detectedMarker.GetPosition();
+        IRVector3 distanceRotation = detectedMarker.GetRotation();
+
+        // TODO return the location based on this data with the declared weight.
+        return null;
     }
 }
