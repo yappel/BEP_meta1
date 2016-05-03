@@ -1,14 +1,20 @@
-﻿namespace Assets.Scripts.Inputsensors
+﻿// <copyright file="ILocationSource.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
+
+namespace Assets.Scripts.Inputsensors
 {
+    using System.Collections.Generic;
+  
     /// <summary>
     ///   A LocationSource provides information about the location of the user.
     /// </summary>
     public interface ILocationSource
     {
         /// <summary>
-        /// Gets the location vector.
+        /// Gets the location vectors.
         /// </summary>
         /// <returns>A SensorVector3 containing the location in the xyz dimensions in meters and a deviation to specify the certainty of this data</returns>
-        SensorVector3 GetLocation();
+        List<SensorVector3> GetLocations();
     }
 }
