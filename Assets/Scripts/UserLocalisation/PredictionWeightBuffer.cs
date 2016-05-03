@@ -41,7 +41,7 @@ public class PredictionWeightBuffer
     /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
     public IRVectorTransform PredictLocation(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
-        List<IRVectorWeight> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
+        List<IRVectorDeviation> predictedLocations = this.GetMarkerBasedLocations(visibleMarkerIds);
         //// Call to abstractuserlocalisation with predictedLocations.
         //// TODO add accelerometer prediction.
         return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
@@ -50,11 +50,11 @@ public class PredictionWeightBuffer
     /// <summary>
     ///   Get the locations based on the markers.
     /// </summary>
-    /// <returns>Predicted locations and their weights</returns>
+    /// <returns>Predicted locations and their standard deviations</returns>
     /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
-    private List<IRVectorWeight> GetMarkerBasedLocations(Dictionary<int, IRVectorTransform> visibleMarkerIds)
+    private List<IRVectorDeviation> GetMarkerBasedLocations(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
-        List<IRVectorWeight> predictions = new List<IRVectorWeight>(visibleMarkerIds.Count);
+        List<IRVectorDeviation> predictions = new List<IRVectorDeviation>(visibleMarkerIds.Count);
         foreach (KeyValuePair<int, IRVectorTransform> pair in visibleMarkerIds)
         {
             try
@@ -77,7 +77,7 @@ public class PredictionWeightBuffer
     /// <returns>IRVectorTransform the predicted location and rotation</returns>
     /// <param name="storedMarker">The stored Marker of which the absolute location is known.</param>
     /// <param name="detectedMarker">The detected Marker.</param>
-    private IRVectorWeight GetUserToMarkerPosition(Marker storedMarker, IRVectorTransform detectedMarker)
+    private IRVectorDeviation GetUserToMarkerPosition(Marker storedMarker, IRVectorTransform detectedMarker)
     {
         IRVector3 absolutePosition = storedMarker.GetPosition();
         IRVector3 absoluteRotation = storedMarker.GetRotation();
@@ -85,6 +85,6 @@ public class PredictionWeightBuffer
         IRVector3 distanceRotation = detectedMarker.GetRotation();
 
         // TODO return the location based on this data with the declared weight.
-        return new IRVectorWeight(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0), WEIGHTMARKER);
+        return new IRVectorDeviation(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0), WEIGHTMARKER);
     }
 }

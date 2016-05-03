@@ -22,8 +22,8 @@ public abstract class AbstractUserLocalisation
     /// <summary>
     ///   Calculate the new location of the user based on the visible markers and accelerometer data.
     /// </summary>
-    /// <param name="predictions">Predicted locations based on IMU data and visible markers.</param>
-    public abstract void ProcessLocation(List<IRVectorWeight> predictions);
+    /// <param name="locations">Predicted locations based on data like visible markers and GPS.</param>
+    public abstract void ProcessLocation(List<IRVectorDeviation> locations);
 
     /// <summary>
     ///  Return a Vector3 with the calculated position.
