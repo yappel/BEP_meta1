@@ -1,4 +1,4 @@
-﻿// <copyright file="IRVectorTransform.cs" company="Delft Universite of Technology">
+﻿// <copyright file="IRVectorTransform.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 

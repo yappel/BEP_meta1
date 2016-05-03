@@ -1,4 +1,4 @@
-﻿// <copyright file="Marker.cs" company="Delft Universite of Technology">
+﻿// <copyright file="Marker.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
@@ -13,21 +13,26 @@ public class Marker
     private int id;
 
     /// <summary>
-    ///   Location of the Marker in the real world.
+    ///   Position of the Marker in the real world.
     /// </summary>
-    private IRVector3 location;
+    private IRVector3 position;
+
+    /// <summary>
+    ///   Rotation of the Marker in the real world.
+    /// </summary>
+    private IRVector3 rotation;
 
     /// <summary>
     ///  Initializes a new instance of the Marker class.
     /// </summary>
     /// <param name="id">id of the Marker</param>
-    /// <param name="x">x value</param>
-    /// <param name="y">y value</param>
-    /// <param name="z">z value</param>
-    public Marker(int id, int x, int y, int z)
+    /// <param name="position">Position of the Marker</param>
+    /// <param name="rotation">Rotation of the marker</param>
+    public Marker(int id, IRVector3 position, IRVector3 rotation)
     {
         this.id = id;
-        this.location = new IRVector3(x, y, z);
+        this.position = position;
+        this.rotation = rotation;
     }
 
     /// <summary>
@@ -40,11 +45,20 @@ public class Marker
     }
 
     /// <summary>
-    ///   Return the location of the Marker.
+    ///   Return the position of the Marker.
     /// </summary>
-    /// <returns>Vector3 the location</returns>
-    public IRVector3 GetLocation()
+    /// <returns>Vector3 the position</returns>
+    public IRVector3 GetPosition()
     {
-        return this.location;
+        return this.position;
+    }
+
+    /// <summary>
+    ///   Return the rotation of the Marker.
+    /// </summary>
+    /// <returns>Vector3 the rotation</returns>
+    public IRVector3 GetRotation()
+    {
+        return this.rotation;
     }
 }

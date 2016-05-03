@@ -1,6 +1,8 @@
-﻿// <copyright file="MarkerLocations.cs" company="Delft Universite of Technology">
+﻿// <copyright file="MarkerLocations.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
+
+using System.Collections.Generic;
 
 /// <summary>
 ///   Class that knows the location of every marker and can give their attributes.
@@ -8,16 +10,17 @@
 public class MarkerLocations
 {
     /// <summary>
-    ///   Array of the markers in the Scene.
+    ///   Hash table of the markers in the Scene.
     /// </summary>
-    private Marker[] markers;
+    private Dictionary<int, Marker> markers;
 
     /// <summary>
     ///   Initializes a new instance of the MarkerLocations class.
     /// </summary>
     public MarkerLocations()
     {
-        // TODO intialise the markers array.
+        // TODO fill the Dictionary.
+        this.markers = new Dictionary<int, Marker>();
     }
 
     /// <summary>
@@ -27,7 +30,13 @@ public class MarkerLocations
     /// <returns>Marker with the id</returns>
     public Marker GetMarker(int id)
     {
-        // TODO check if key exists.
-        return this.markers[id];
+        if (this.markers.ContainsKey(id))
+        {
+            return this.markers[id];
+        }
+        else 
+        {
+            throw new UnallocatedMarkerException("Marker with id=" + id + " was tracked but not initialized in the XML");
+        }
     }
 }

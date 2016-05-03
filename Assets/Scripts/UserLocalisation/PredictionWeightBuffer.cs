@@ -1,6 +1,8 @@
-﻿// <copyright file="PredictionWeightBuffer.cs" company="Delft Universite of Technology">
+﻿// <copyright file="PredictionWeightBuffer.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
+
+using System.Collections.Generic;
 
 /// <summary>
 ///  This class prepares an array of Vector 4 for user localization.
@@ -35,12 +37,19 @@ public class PredictionWeightBuffer
     ///   Initializes a new instance of the PredictionWeightBuffer class.
     /// </summary>
     /// <returns>IRVectorTransform the predicted location and rotation</returns>
-    /// <param name="visibleMarkerIds">Array of the ids of the visible Markers.</param>
-    public IRVectorTransform PredictLocation(int[] visibleMarkerIds)
+    /// <param name="visibleMarkerIds">Hash table of the ids and transforms of the visible Markers.</param>
+    public IRVectorTransform PredictLocation(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
-        // Call to abstractuserlocalisation
-        // Each visibleMarkerId gets loaded from markerLocations
-        // We need a way to also give the position + rotation from Unity (IRVectorTransform class can be used)
+        foreach (KeyValuePair<int, IRVectorTransform> pair in visibleMarkerIds)
+        {
+            Marker currentMarker = this.markerLocations.GetMarker(pair.Key);
+            IRVector3 absolutePosition = currentMarker.GetPosition();
+            IRVector3 absoluteRotation = currentMarker.GetRotation();
+            IRVector3 distancePosition = pair.Value.GetPosition();
+            IRVector3 distanceRotation = pair.Value.GetRotation();
+            //// TODO Calculate location and add to List.
+        }
+        //// Call to abstractuserlocalisation
         return new IRVectorTransform(new IRVector3(0, 0, 0), new IRVector3(0, 0, 0));
     }
 }
