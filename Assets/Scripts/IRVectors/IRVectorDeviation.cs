@@ -3,12 +3,12 @@
 // </copyright>
 
 /// <summary>
-///   IRVectorWeight contains the position, rotation and standard deviation of a location.
+///   StandardDeviation contains the position, rotation and standard deviation of a location.
 /// </summary>
 public class IRVectorDeviation : IRVectorTransform
 {
     /// <summary>
-    ///   The weight of a location.
+    ///   The standard deviation of a prediction of a location.
     /// </summary>
     private float standardDeviation;
 
@@ -36,7 +36,7 @@ public class IRVectorDeviation : IRVectorTransform
     ///   Set the standard deviation value.
     /// </summary>
     /// <param name="standardDeviation">new standard deviation</param>
-    public void SetWeigth(float standardDeviation)
+    public void SetStandardDeviation(float standardDeviation)
     {
         this.standardDeviation = standardDeviation;
     }
