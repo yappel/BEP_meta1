@@ -44,9 +44,7 @@ public class UserController : MonoBehaviour
     /// </summary>
     void Update()
     {
-        IRVectorTransform newLocation = this.markerSensor.PredictLocation(this.GetVisibleMarkers());
-        transform.position = new Vector3(newLocation.GetPosition().GetX(), newLocation.GetPosition().GetY(), newLocation.GetPosition().GetZ());
-        transform.rotation = new Quaternion(newLocation.GetRotation().GetX(), newLocation.GetRotation().GetY(), newLocation.GetRotation().GetZ(), 1);
+        this.markerSensor.UpdateLocations(this.GetVisibleMarkers());
     }
 
     /// <summary>

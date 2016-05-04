@@ -1,4 +1,8 @@
-﻿namespace Assets.Scripts.Inputsensors
+﻿// <copyright file="IMotionSource.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
+
+namespace Assets.Scripts.Inputsensors
 {
     /// <summary>
     ///   A MotionSource provides information about the motion of the user.
