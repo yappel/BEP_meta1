@@ -65,7 +65,7 @@ public class MarkerSensor : ILocationSource, IRotationSource
             try
             {
                 Marker currentMarker = this.MarkerLocations.GetMarker(pair.Key);
-                IRVectorTransform location = Positioning.GetPosition(currentMarker, pair.Value);
+                IRVectorTransform location = Positioning.GetLocation(currentMarker, pair.Value);
                 this.locations.Add(new SensorVector3(location.GetPosition().GetX(), location.GetPosition().GetY(), location.GetPosition().GetZ(), 1));
                 this.rotations.Add(new SensorVector3(location.GetRotation().GetX(), location.GetRotation().GetY(), location.GetRotation().GetZ(), 1));
             }

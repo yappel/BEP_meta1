@@ -16,18 +16,18 @@ public static class Positioning
     private static double toRadian = Math.PI / 180;
 
     /// <summary>
-    ///   Calculates the absolute position of relatePosition.
+    ///   Calculates the absolute location of relatePosition with an absolute maker location and the relative location to it.
     /// </summary>
     /// <param name="absoluteLocation">The known absolute position.</param>
     /// <param name="relativeLocation">The position relative to the absolute location.</param>
     /// <returns>The location of the calculated absolute position.</returns>
-    public static IRVectorTransform GetPosition(Marker absoluteLocation, IRVectorTransform relativeLocation)
+    public static IRVectorTransform GetLocation(Marker absoluteLocation, IRVectorTransform relativeLocation)
     {
         IRVector3 absolutePosition = absoluteLocation.GetPosition();
         IRVector3 absoluteRotation = absoluteLocation.GetRotation();
         IRVector3 relativeRotation = relativeLocation.GetRotation();
         float distance = CalculateDistance(absolutePosition, relativeLocation.GetPosition());
-        IRVectorTransform newLocation = CalculatePosition(absolutePosition, absoluteRotation, relativeRotation, distance);
+        IRVectorTransform newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
 
         Debug.Log("ROTATION--- X:" + newLocation.GetRotation().GetX() + ", Y:" + newLocation.GetRotation().GetY() + ", Z:" + newLocation.GetRotation().GetZ());
         Debug.Log("POSITION--- X:" + newLocation.GetPosition().GetX() + ", Y:" + newLocation.GetPosition().GetY() + ", Z:" + newLocation.GetPosition().GetZ());
@@ -58,7 +58,7 @@ public static class Positioning
     /// <param name="relativeRotation">Rotation of the relative point</param>
     /// <param name="distance">Distance to the absolute point as seen from the relative point</param>
     /// <returns>Location and rotation of the relatively given location</returns>
-    private static IRVectorTransform CalculatePosition(
+    private static IRVectorTransform CalculateLocation(
         IRVector3 absolutePosition, IRVector3 absoluteRotation, IRVector3 relativeRotation, float distance)
     {
         IRVector3 rotation = new IRVector3(
