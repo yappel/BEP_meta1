@@ -12,21 +12,21 @@ using Assets.Scripts.Inputsensors;
 public class MarkerSensor : ILocationSource
 {
     /// <summary>
-    ///   All mapped Markers.
-    /// </summary>
-    private MarkerLocations markerLocations;
-
-    /// <summary>
     ///   The predicted locations.
     /// </summary>
     private List<SensorVector3> locations;
+
+    /// <summary>
+    ///   Gets or sets the MarkerLocations.
+    /// </summary>
+    public MarkerLocations MarkerLocations { get; set; }
 
     /// <summary>
     ///   Initializes a new instance of the MarkerSensor class.
     /// </summary>
     public MarkerSensor()
     {
-        this.markerLocations = new MarkerLocations("./Assets/Maps/MarkerMap01.xml");
+        this.MarkerLocations = new MarkerLocations("./Assets/Maps/MarkerMap01.xml");
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class MarkerSensor : ILocationSource
     /// <summary>
     ///   Update the locations derived from Markers.
     /// </summary>
-    /// <param name="visibleMarkerIds">Dictionary of the ids and transforms of the visible Markers.</param>
+    /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
     public void UpdateLocations(Dictionary<int, IRVectorTransform> visibleMarkerIds)
     {
         this.locations = new List<SensorVector3>(visibleMarkerIds.Count);
@@ -49,8 +49,9 @@ public class MarkerSensor : ILocationSource
         {
             try
             {
-                Marker currentMarker = this.markerLocations.GetMarker(pair.Key);
-                this.locations.Add(PseudoPositioning.GetPosition(currentMarker, pair.Value));
+                Marker currentMarker = this.MarkerLocations.GetMarker(pair.Key);
+                IRVector3 location = Positioning.GetPosition(currentMarker, pair.Value);
+                this.locations.Add(new SensorVector3(location.GetX(), location.GetY(), location.GetZ(), 1));
             }
             catch (UnallocatedMarkerException e)
             {
