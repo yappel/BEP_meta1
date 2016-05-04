@@ -65,6 +65,10 @@ public class UserController : MonoBehaviour
             IRVector3 position = new IRVector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
             IRVector3 rotation = new IRVector3(this.markerTransform.rotation.x, this.markerTransform.rotation.y, this.markerTransform.rotation.z);
             visibleMarkerTransforms.Add(markerId, new IRVectorTransform(position, rotation));
+
+            //// Debug.Log("Marker " + markerId + " visible with date position = (" 
+            ////   + markerTransform.position.x + "," + markerTransform.position.y + "," + markerTransform.position.z + "), rotation = ("
+            //// + markerTransform.rotation.x + "," + markerTransform.rotation.y + "," + markerTransform.rotation.z + ")");
         }
 
         return visibleMarkerTransforms;
