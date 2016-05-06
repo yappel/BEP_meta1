@@ -64,9 +64,20 @@ public class InitScript : MonoBehaviour
         for (int i = 0; i < controllers.Length; i++)
         {
             controllers[i].Init();
-            this.RegisterLocationReceiver(localizer, controllers[i].GetLocationSource());
-            this.RegisterMotionReceiver(localizer, controllers[i].GetMotionSource());
+            this.RegisterSources(localizer, controllers[i]);
         }
+    }
+
+    /// <summary>
+    /// Register the sensor sources to a localizer.
+    /// </summary>
+    /// <param name="localizer">the localizer class used</param>
+    /// <param name="sensor">the sensor controller</param>
+    private void RegisterSources(AbstractUserLocalizer localizer, AbstractSensorController sensor)
+    {
+        this.RegisterLocationReceiver(localizer, sensor.GetLocationSource());
+        this.RegisterMotionReceiver(localizer, sensor.GetMotionSource());
+        this.RegisterRotationReceiver(localizer, sensor.GetRotationSource());
     }
 
     /// <summary>
