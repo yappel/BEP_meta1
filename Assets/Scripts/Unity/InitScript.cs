@@ -11,7 +11,7 @@ using Assets.Scripts.Unity.SensorControllers;
 using Assets.Scripts.UserLocalisation;
 using UnityEngine;
 
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Reviewed.")]
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Start gets called because of MonoBehaviour")]
 
 /// <summary>
 ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
@@ -55,7 +55,8 @@ public class InitScript : MonoBehaviour
     }
 
     /// <summary>
-    ///  Initialize the controllers and register them to a localizer.
+    ///  Initialize the controllers and register them to a localizer. 
+    ///  Disable the controller if its source is not required by the current localizer method.
     /// </summary>
     /// <param name="localizer">The Localizer filter</param>
     private void InitControllers(AbstractUserLocalizer localizer)
@@ -64,7 +65,7 @@ public class InitScript : MonoBehaviour
         for (int i = 0; i < controllers.Length; i++)
         {
             controllers[i].Init();
-            this.RegisterSources(localizer, controllers[i]);
+            controllers[i].enabled = this.RegisterSources(localizer, controllers[i]);
         }
     }
 
@@ -73,11 +74,12 @@ public class InitScript : MonoBehaviour
     /// </summary>
     /// <param name="localizer">the localizer class used</param>
     /// <param name="sensor">the sensor controller</param>
-    private void RegisterSources(AbstractUserLocalizer localizer, AbstractSensorController sensor)
+    /// <returns>if the controller was registered once or more</returns>
+    private bool RegisterSources(AbstractUserLocalizer localizer, AbstractSensorController sensor)
     {
-        this.RegisterLocationReceiver(localizer, sensor.GetLocationSource());
-        this.RegisterMotionReceiver(localizer, sensor.GetMotionSource());
-        this.RegisterRotationReceiver(localizer, sensor.GetRotationSource());
+        return this.RegisterLocationReceiver(localizer, sensor.GetLocationSource()) ||
+            this.RegisterMotionReceiver(localizer, sensor.GetMotionSource()) ||
+            this.RegisterRotationReceiver(localizer, sensor.GetRotationSource());
     }
 
     /// <summary>
@@ -85,12 +87,16 @@ public class InitScript : MonoBehaviour
     /// </summary>
     /// <param name="localizer">The AbstractUserLocalizer</param>
     /// <param name="source">The location source to register</param>
-    private void RegisterLocationReceiver(AbstractUserLocalizer localizer, ILocationSource source)
+    /// <returns>if the controller was registered</returns>
+    private bool RegisterLocationReceiver(AbstractUserLocalizer localizer, ILocationSource source)
     {
         if (localizer is ILocationReceiver && source != null)
         {
             (localizer as ILocationReceiver).RegisterLocationReceiver(source);
+            return true;
         }
+
+        return false;
     }
 
     /// <summary>
@@ -98,12 +104,16 @@ public class InitScript : MonoBehaviour
     /// </summary>
     /// <param name="localizer">The AbstractUserLocalizer</param>
     /// <param name="source">The motion source to register</param>
-    private void RegisterMotionReceiver(AbstractUserLocalizer localizer, IMotionSource source)
+    /// <returns>if the controller was registered</returns>
+    private bool RegisterMotionReceiver(AbstractUserLocalizer localizer, IMotionSource source)
     {
         if (localizer is IMotionReceiver && source != null)
         {
             (localizer as IMotionReceiver).RegisterMotionSource(source);
+            return true;
         }
+
+        return false;
     }
 
     /// <summary>
@@ -111,11 +121,15 @@ public class InitScript : MonoBehaviour
     /// </summary>
     /// <param name="localizer">The AbstractUserLocalizer</param>
     /// <param name="source">The rotation source to register</param>
-    private void RegisterRotationReceiver(AbstractUserLocalizer localizer, IRotationSource source)
+    /// <returns>if the controller was registered</returns>
+    private bool RegisterRotationReceiver(AbstractUserLocalizer localizer, IRotationSource source)
     {
         if (localizer is IRotationReceiver && source != null)
         {
             (localizer as IRotationReceiver).RegisterRotationSource(source);
+            return true;
         }
+
+        return false;
     }
 }
