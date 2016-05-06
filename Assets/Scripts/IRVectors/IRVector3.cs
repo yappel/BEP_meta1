@@ -78,4 +78,59 @@ public struct IRVector3
     {
         this.z = z;
     }
+
+    /// <summary>
+    /// Adds another vector to this vector.
+    /// </summary>
+    /// <param name="toadd">The vector3 that will be added to this vector</param>
+    public void Add(IRVector3 toadd)
+    {
+        this.SetX(this.GetX() + toadd.GetX());
+        this.SetY(this.GetY() + toadd.GetY());
+        this.SetZ(this.GetZ() + toadd.GetX());
+    }
+
+    /// <summary>
+    /// Multiply all the x y and z with a certain number.
+    /// </summary>
+    /// <param name="number">The number to multiply with</param>
+    /// <returns>The resutling vector</returns>
+    public IRVector3 Multiply(float number)
+    {
+        this.SetX(this.x * number);
+        this.SetY(this.y * number);
+        this.SetZ(this.z * number);
+        return this;
+    }
+
+    /// <summary>
+    /// Check if an object is equals to this object.
+    /// </summary>
+    /// <param name="obj">The object to compare.</param>
+    /// <returns>Boolean stating if the 2 objects are equal</returns>
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        IRVector3 vec = (IRVector3)obj;
+        return (this.x == vec.GetX()) && (this.y == vec.GetY()) && (this.z == vec.GetZ());
+    }
+
+    /// <summary>
+    /// Gets the hash code of this object.
+    /// </summary>
+    /// <returns>The hash code</returns>
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    /// <inheritDoc/>
+    public override string ToString()
+    {
+        return "[" + this.GetX() + " "+ this.GetY() + " " + this.GetZ() + "]";
+    }
 }

@@ -12,18 +12,17 @@ public abstract class AbstractUserLocalizer
     /// <summary>
     ///   Position coordinates.
     /// </summary>
-    private IRVector3 position;
+    protected IRVector3 position;
 
     /// <summary>
     ///   Rotation coordinates.
     /// </summary>
-    private IRVector3 rotation;
+    protected IRVector3 rotation;
 
     /// <summary>
-    ///   Calculate the new location of the user based on the visible markers and accelerometer data.
+    ///   Calculate the current location of the user.
     /// </summary>
-    /// <param name="locations">Predicted locations based on data like visible markers and GPS.</param>
-    public abstract void ProcessLocation(List<IRVectorDeviation> locations);
+    public abstract void CalculateLocation();
 
     /// <summary>
     ///  Return a Vector3 with the calculated position.
