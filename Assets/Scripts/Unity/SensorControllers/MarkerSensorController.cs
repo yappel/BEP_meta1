@@ -32,11 +32,16 @@ public class MarkerSensorController : AbstractSensorController
     private Transform markerTransform;
 
     /// <summary>
+    ///   The standard deviation of the meta sensor for markers.
+    /// </summary>
+    private float markerStandardDeviation = 0.0f;
+
+    /// <summary>
     ///   Method called when creating a UserController.
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor();
+        this.markerSensor = new MarkerSensor(this.markerStandardDeviation);
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }

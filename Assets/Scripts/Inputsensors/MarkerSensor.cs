@@ -14,7 +14,7 @@ public class MarkerSensor : ILocationSource, IRotationSource
     /// <summary>
     ///   Standard deviation of marker tracking.
     /// </summary>
-    private readonly float standardDeviation = 0.0f;
+    private readonly float standardDeviation;
 
     /// <summary>
     ///   Path to the saved markers.
@@ -39,8 +39,9 @@ public class MarkerSensor : ILocationSource, IRotationSource
     /// <summary>
     ///   Initializes a new instance of the MarkerSensor class.
     /// </summary>
-    public MarkerSensor()
+    public MarkerSensor(float standardDeviation)
     {
+        this.standardDeviation = standardDeviation;
         this.MarkerLocations = new MarkerLocations(this.savePath);
     }
 
