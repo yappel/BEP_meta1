@@ -22,13 +22,13 @@ public static class Positioning
     /// <param name="absoluteLocation">The known absolute position.</param>
     /// <param name="relativeLocation">The position relative to the absolute location.</param>
     /// <returns>The location of the calculated absolute position.</returns>
-    public static IRVectorTransform GetLocation(Marker absoluteLocation, IRVectorTransform relativeLocation)
+    public static IRDoubleVector GetLocation(Marker absoluteLocation, IRDoubleVector relativeLocation)
     {
         IRVector3 absolutePosition = absoluteLocation.GetPosition();
         IRVector3 absoluteRotation = absoluteLocation.GetRotation();
         IRVector3 relativeRotation = relativeLocation.GetRotation();
         float distance = CalculateDistance(absolutePosition, relativeLocation.GetPosition());
-        IRVectorTransform newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
+        IRDoubleVector newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
 
         return newLocation;
     }
@@ -56,7 +56,7 @@ public static class Positioning
     /// <param name="relativeRotation">Rotation of the relative point</param>
     /// <param name="distance">Distance to the absolute point as seen from the relative point</param>
     /// <returns>Location and rotation of the relatively given location</returns>
-    private static IRVectorTransform CalculateLocation(
+    private static IRDoubleVector CalculateLocation(
         IRVector3 absolutePosition, IRVector3 absoluteRotation, IRVector3 relativeRotation, float distance)
     {
         IRVector3 rotation = new IRVector3(
@@ -68,6 +68,6 @@ public static class Positioning
             absolutePosition.GetY() + (float)(distance * Math.Sin(rotation.GetZ() * toRadian)), 
             absolutePosition.GetZ() + (float)(distance * Math.Cos(rotation.GetZ() * toRadian) * Math.Cos(rotation.GetY() * toRadian)));
 
-        return new IRVectorTransform(position, rotation);
+        return new IRDoubleVector(position, rotation);
     }
 }

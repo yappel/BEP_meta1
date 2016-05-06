@@ -76,10 +76,10 @@ public class MarkerSensorController : AbstractSensorController
     ///   Get all the transforms of the visible markers.
     /// </summary>
     /// <returns>Hash table with the marker id as the key and an IRVectorTransform as the value.</returns>
-    private Dictionary<int, IRVectorTransform> GetVisibleMarkers()
+    private Dictionary<int, IRDoubleVector> GetVisibleMarkers()
     {
         List<int> visibleMarkers = this.markerDetector.updatedMarkerTransforms;
-        Dictionary<int, IRVectorTransform> visibleMarkerTransforms = new Dictionary<int, IRVectorTransform>();
+        Dictionary<int, IRDoubleVector> visibleMarkerTransforms = new Dictionary<int, IRDoubleVector>();
 
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
@@ -90,7 +90,7 @@ public class MarkerSensorController : AbstractSensorController
                 var marker = GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId).transform.eulerAngles;
                 IRVector3 position = new IRVector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
                 IRVector3 rotation = new IRVector3(marker.x, marker.y, marker.z);
-                visibleMarkerTransforms.Add(markerId, new IRVectorTransform(position, rotation));
+                visibleMarkerTransforms.Add(markerId, new IRDoubleVector(position, rotation));
             }
         }
 

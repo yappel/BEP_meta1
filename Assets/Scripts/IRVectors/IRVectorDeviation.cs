@@ -5,7 +5,7 @@
 /// <summary>
 ///   StandardDeviation contains the position, rotation and standard deviation of a location.
 /// </summary>
-public class IRVectorDeviation : IRVectorTransform
+public class IRVectorDeviation : IRDoubleVector
 {
     /// <summary>
     ///   The standard deviation of a prediction of a location.

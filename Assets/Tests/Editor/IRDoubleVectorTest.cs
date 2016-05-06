@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 
-public class IRVectorTransformTest
+public class IRDoubleVectorTest
 {
     private IRVector3 position;
     private IRVector3 rotation;
-    private IRVectorTransform transform;
+    private IRDoubleVector transform;
 
     [SetUp]
     public void Init()
@@ -17,7 +17,7 @@ public class IRVectorTransformTest
     [Test]
     public void TestConstructor()
     {
-        transform = new IRVectorTransform(position, rotation);
+        transform = new IRDoubleVector(position, rotation);
         Assert.AreEqual(transform.GetPosition(), position);
         Assert.AreEqual(transform.GetRotation(), rotation);
     }
@@ -26,7 +26,7 @@ public class IRVectorTransformTest
     [Test]
     public void TestSetPosition()
     {
-        transform = new IRVectorTransform(position, rotation);
+        transform = new IRDoubleVector(position, rotation);
         transform.SetPosition(new IRVector3(7, 8, 9));
         Assert.AreEqual(transform.GetPosition().GetX(), 7);
         Assert.AreEqual(transform.GetPosition().GetY(), 8);
@@ -37,7 +37,7 @@ public class IRVectorTransformTest
     [Test]
     public void TestSetRotation()
     {
-        transform = new IRVectorTransform(position, rotation);
+        transform = new IRDoubleVector(position, rotation);
         transform.SetRotation(new IRVector3(10, 11, 12));
         Assert.AreEqual(transform.GetRotation().GetX(), 10);
         Assert.AreEqual(transform.GetRotation().GetY(), 11);

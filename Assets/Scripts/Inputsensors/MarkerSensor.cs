@@ -39,6 +39,7 @@ public class MarkerSensor : ILocationSource, IRotationSource
     /// <summary>
     ///   Initializes a new instance of the MarkerSensor class.
     /// </summary>
+    /// <param name="standardDeviation">The standard deviation of the sensor</param>
     public MarkerSensor(float standardDeviation)
     {
         this.standardDeviation = standardDeviation;
@@ -67,16 +68,16 @@ public class MarkerSensor : ILocationSource, IRotationSource
     ///   Update the locations derived from Markers.
     /// </summary>
     /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-    public void UpdateLocations(Dictionary<int, IRVectorTransform> visibleMarkerIds)
+    public void UpdateLocations(Dictionary<int, IRDoubleVector> visibleMarkerIds)
     {
         this.locations = new List<SensorVector3>(visibleMarkerIds.Count);
         this.rotations = new List<SensorVector3>(visibleMarkerIds.Count);
-        foreach (KeyValuePair<int, IRVectorTransform> pair in visibleMarkerIds)
+        foreach (KeyValuePair<int, IRDoubleVector> pair in visibleMarkerIds)
         {
             try
             {
                 Marker currentMarker = this.MarkerLocations.GetMarker(pair.Key);
-                IRVectorTransform location = Positioning.GetLocation(currentMarker, pair.Value);
+                IRDoubleVector location = Positioning.GetLocation(currentMarker, pair.Value);
                 this.locations.Add(new SensorVector3(location.GetPosition().GetX(), location.GetPosition().GetY(), location.GetPosition().GetZ(), this.standardDeviation));
                 this.rotations.Add(new SensorVector3(location.GetRotation().GetX(), location.GetRotation().GetY(), location.GetRotation().GetZ(), this.standardDeviation));
             }

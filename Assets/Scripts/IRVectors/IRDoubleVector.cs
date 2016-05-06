@@ -1,11 +1,11 @@
-﻿// <copyright file="IRVectorTransform.cs" company="Delft University of Technology">
+﻿// <copyright file="IRDoubleVector.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 /// <summary>
-///   Struct to create a independent 3D-Vector.
+///   Class that contains 2 vectors.
 /// </summary>
-public class IRVectorTransform
+public class IRDoubleVector
 {
     /// <summary>
     ///   The location and rotation.
@@ -13,11 +13,11 @@ public class IRVectorTransform
     private IRVector3 position, rotation;
 
     /// <summary>
-    ///   Initializes a new instance of the IRVectorTransform class.
+    ///   Initializes a new instance of the IRDoubleVector class.
     /// </summary>
     /// <param name="position">location value</param>
     /// <param name="rotation">rotation value</param>
-    public IRVectorTransform(IRVector3 position, IRVector3 rotation)
+    public IRDoubleVector(IRVector3 position, IRVector3 rotation)
     {
         this.position = position;
         this.rotation = rotation;
