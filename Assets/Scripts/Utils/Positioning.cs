@@ -10,6 +10,7 @@ using UnityEngine;
 /// </summary>
 public static class Positioning
 { 
+    //TODO test this class after user testing.
     /// <summary>
     ///   Convert a radian to a degree angle.
     /// </summary>
