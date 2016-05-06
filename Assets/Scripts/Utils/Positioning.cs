@@ -8,9 +8,9 @@ using UnityEngine;
 /// <summary>
 ///   Utility class to calculate the absolute position of a relative position.
 /// </summary>
+/// TODO test this class after user testing.
 public static class Positioning
 { 
-    //TODO test this class after user testing.
     /// <summary>
     ///   Convert a radian to a degree angle.
     /// </summary>
@@ -29,9 +29,6 @@ public static class Positioning
         IRVector3 relativeRotation = relativeLocation.GetRotation();
         float distance = CalculateDistance(absolutePosition, relativeLocation.GetPosition());
         IRVectorTransform newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
-
-        Debug.Log("ROTATION--- X:" + newLocation.GetRotation().GetX() + ", Y:" + newLocation.GetRotation().GetY() + ", Z:" + newLocation.GetRotation().GetZ());
-        Debug.Log("POSITION--- X:" + newLocation.GetPosition().GetX() + ", Y:" + newLocation.GetPosition().GetY() + ", Z:" + newLocation.GetPosition().GetZ());
 
         return newLocation;
     }

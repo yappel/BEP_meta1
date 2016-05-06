@@ -12,6 +12,16 @@ using Assets.Scripts.Inputsensors;
 public class MarkerSensor : ILocationSource, IRotationSource
 {
     /// <summary>
+    ///   Standard deviation of marker tracking.
+    /// </summary>
+    private readonly float standardDeviation = 0.0f;
+
+    /// <summary>
+    ///   Path to the saved markers.
+    /// </summary>
+    private readonly string savePath = "./Assets/Maps/MarkerMap01.xml";
+
+    /// <summary>
     ///   The predicted locations.
     /// </summary>
     private List<SensorVector3> locations;
@@ -31,7 +41,7 @@ public class MarkerSensor : ILocationSource, IRotationSource
     /// </summary>
     public MarkerSensor()
     {
-        this.MarkerLocations = new MarkerLocations("./Assets/Maps/MarkerMap01.xml");
+        this.MarkerLocations = new MarkerLocations(this.savePath);
     }
 
     /// <summary>
@@ -66,8 +76,8 @@ public class MarkerSensor : ILocationSource, IRotationSource
             {
                 Marker currentMarker = this.MarkerLocations.GetMarker(pair.Key);
                 IRVectorTransform location = Positioning.GetLocation(currentMarker, pair.Value);
-                this.locations.Add(new SensorVector3(location.GetPosition().GetX(), location.GetPosition().GetY(), location.GetPosition().GetZ(), 1));
-                this.rotations.Add(new SensorVector3(location.GetRotation().GetX(), location.GetRotation().GetY(), location.GetRotation().GetZ(), 1));
+                this.locations.Add(new SensorVector3(location.GetPosition().GetX(), location.GetPosition().GetY(), location.GetPosition().GetZ(), this.standardDeviation));
+                this.rotations.Add(new SensorVector3(location.GetRotation().GetX(), location.GetRotation().GetY(), location.GetRotation().GetZ(), this.standardDeviation));
             }
             catch (UnallocatedMarkerException e)
             {

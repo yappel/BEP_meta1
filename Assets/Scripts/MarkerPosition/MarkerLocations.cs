@@ -74,22 +74,34 @@ public class MarkerLocations
             foreach (XmlNode node in nodeList)
             {
                 int id = XmlConvert.ToInt32(node["id"].InnerText);
-                XmlNode xmlPosition = node.SelectSingleNode("position");
-                XmlNode xmlRotation = node.SelectSingleNode("rotation");
-                IRVector3 position = new IRVector3(
-                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
-                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText),
-                    XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
-                IRVector3 rotation = new IRVector3(
-                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
-                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
-                    XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
-                this.markers.Add(id, new Marker(id, position, rotation));
+                this.markers.Add(id, this.XmlTransform(id, node));
             }
         }
         catch (Exception e)
         {
             Console.WriteLine("ERROR: ", e);
         }
+    }
+
+    /// <summary>
+    ///   Load the marker variables from the XML node.
+    /// </summary>
+    /// <param name="id">Id of the marker</param>
+    /// <param name="node">The current XML node.</param>
+    /// <returns>The parsed marker.</returns>
+    private Marker XmlTransform(int id, XmlNode node)
+    {
+        XmlNode xmlPosition = node.SelectSingleNode("position");
+        XmlNode xmlRotation = node.SelectSingleNode("rotation");
+        IRVector3 position = new IRVector3(
+            XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
+            XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText),
+            XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
+        IRVector3 rotation = new IRVector3(
+            XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
+            XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
+            XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
+      
+        return new Marker(id, position, rotation);
     }
 }
