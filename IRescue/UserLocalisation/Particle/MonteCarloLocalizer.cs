@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Assets.Scripts.Inputsensors;
-
-namespace Assets.Scripts.UserLocalisation
+﻿namespace IRescue.UserLocalisation.Particle
 {
-    class MonteCarloLocalizer : AbstractUserLocalizer, IMotionReceiver, ILocationReceiver
+    using Core.Datatypes;
+    using Core.Sensors;
+    using System;
+    using System.Collections.Generic;
+
+    public class MonteCarloLocalizer : AbstractUserLocalizer, IMotionReceiver, ILocationReceiver
     {
         public override void ProcessLocation(List<IRVectorDeviation> locations)
         {

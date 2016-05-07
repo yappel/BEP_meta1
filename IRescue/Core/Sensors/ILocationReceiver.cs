@@ -2,10 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Assets.Scripts.UserLocalisation
+namespace IRescue.Core.Sensors
 {
-    using Assets.Scripts.Inputsensors;
-
     /// <summary>
     /// A location receiver is able to register a location source
     /// </summary>

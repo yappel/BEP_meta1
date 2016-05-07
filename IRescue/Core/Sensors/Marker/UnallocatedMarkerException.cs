@@ -1,7 +1,7 @@
 ﻿// <copyright file="UnallocatedMarkerException.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.Core.Exceptions
+namespace IRescue.Core.Sensors.Marker
 {
 
 using System;

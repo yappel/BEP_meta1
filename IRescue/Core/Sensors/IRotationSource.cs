@@ -2,7 +2,9 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Assets.Scripts.Inputsensors
+using IRescue.Core.Datatypes;
+
+namespace IRescue.Core.Sensors
 {
     using System.Collections.Generic;
   

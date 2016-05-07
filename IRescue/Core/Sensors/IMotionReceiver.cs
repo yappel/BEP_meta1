@@ -2,10 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Assets.Scripts.UserLocalisation
+namespace IRescue.Core.Sensors
 {
-    using Assets.Scripts.Inputsensors;
-
     /// <summary>
     /// A motion receiver is able to register a motion source
     /// </summary>

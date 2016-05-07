@@ -37,9 +37,9 @@
 # ============== #
 # META generated #
 # ============== #
-/IRescue-unity/Assets/Meta/
-/IRescue-unity/Assets/MetaPackages/
-/IRescue-unity/Assets/Plugins/
+/IRescue/Unity/Assets/Meta/
+/IRescue/Unity/Assets/MetaPackages/
+/IRescue/Unity/Assets/Plugins/
 */Meta.meta
 */MetaPackages.meta
 */Plugins.meta
