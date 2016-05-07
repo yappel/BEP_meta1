@@ -7,7 +7,7 @@
 [Ll]ibrary/
 *sysinfo.txt
 *.stackdump
- 
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
@@ -21,7 +21,7 @@
 *.user
 *.unityproj
 *.booproj
- 
+
 # ============ #
 # OS generated #
 # ============ #
@@ -37,9 +37,9 @@
 # ============== #
 # META generated #
 # ============== #
-/Assets/Meta/
-/Assets/MetaPackages/
-/Assets/Plugins/
+/IRescue-unity/Assets/Meta/
+/IRescue-unity/Assets/MetaPackages/
+/IRescue-unity/Assets/Plugins/
 */Meta.meta
 */MetaPackages.meta
 */Plugins.meta

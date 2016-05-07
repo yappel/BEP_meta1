@@ -1,6 +1,8 @@
 ﻿// <copyright file="UnallocatedMarkerException.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
+namespace IRescue.Core.Exceptions
+{
 
 using System;
 
@@ -16,4 +18,5 @@ public class UnallocatedMarkerException : Exception
     public UnallocatedMarkerException(string message) : base(message)
     {
     }
+}
 }
