@@ -50,7 +50,6 @@
      <Compile Include="Assets\Tests\Editor\IRVectorDeviationTest.cs" />
      <Compile Include="Assets\Tests\Editor\MarkerLocationsTest.cs" />
      <Compile Include="Assets\Tests\Editor\MarkerTest.cs" />
-     <None Include="Assets\Maps\MarkerMap01.xml" />
      <None Include="Assets\Tests\Resources\MarkerMapFail.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingBlur.shader" />
      <None Include="Assets\MetaPackages\LeanTween\LeanTween-ReadMe.txt" />
