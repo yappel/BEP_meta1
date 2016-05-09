@@ -48,12 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Datatypes\IRDoubleVector.cs" />
-    <Compile Include="Datatypes\Pose.cs" />
-    <Compile Include="Datatypes\SensorVector.cs" />
     <Compile Include="Datatypes\IRVectorDeviation.cs" />
     <Compile Include="Datatypes\MarkerPose.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SensorPose.cs" />
     <Compile Include="Sensors\ILocationReceiver.cs" />
     <Compile Include="Sensors\ILocationSource.cs" />
     <Compile Include="Sensors\IMotionReceiver.cs" />
@@ -67,9 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Sensors\IMU\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
