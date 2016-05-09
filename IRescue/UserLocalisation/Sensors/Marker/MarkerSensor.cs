@@ -2,13 +2,13 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.Core.DataTypes;
-using IRescue.Core.Utils;
-using System;
-using System.Collections.Generic;
-
 namespace IRescue.UserLocalisation.Sensors.Marker
 {
+    using System;
+    using System.Collections.Generic;
+    using Core.DataTypes;
+    using Core.Utils;
+
     /// <summary>
     ///  This class keeps track of the location based on Markers.
     /// </summary>
@@ -27,12 +27,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         ///   The predicted locations.
         /// </summary>
-        private List<SensorVector3> locations;
+        private List<Measurement<Vector3>> locations;
 
         /// <summary>
         ///   The predicted rotations.
         /// </summary>
-        private List<SensorVector3> rotations;
+        private List<Measurement<Vector3>> rotations;
 
         /// <summary>
         ///   Gets or sets the MarkerLocations.
@@ -53,7 +53,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///   Get the locations based on the visible markers.
         /// </summary>
         /// <returns>List of SensorVector3</returns>
-        public List<SensorVector3> GetLocations()
+        public List<Measurement<Vector3>> GetLocations()
         {
             return this.locations;
         }
@@ -62,7 +62,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///   Get the rotations based on the visible markers.
         /// </summary>
         /// <returns>List of SensorVector3</returns>
-        public List<SensorVector3> GetRotations()
+        public List<Measurement<Vector3>> GetRotations()
         {
             return this.rotations;
         }
@@ -71,18 +71,19 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///   Update the locations derived from Markers.
         /// </summary>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-        public void UpdateLocations(Dictionary<int, IRDoubleVector> visibleMarkerIds)
+        /// <param name="timeStamp">The current timestamp of the call</param>
+        public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds, long timeStamp)
         {
-            this.locations = new List<SensorVector3>(visibleMarkerIds.Count);
-            this.rotations = new List<SensorVector3>(visibleMarkerIds.Count);
-            foreach (KeyValuePair<int, IRDoubleVector> pair in visibleMarkerIds)
+            this.locations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
+            this.rotations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
+            foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
-                    MarkerPose currentMarkerPose = this.MarkerLocations.GetMarker(pair.Key);
-                    IRDoubleVector location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.locations.Add(new SensorVector3(location.GetPosition().GetX(), location.GetPosition().GetY(), location.GetPosition().GetZ(), this.standardDeviation));
-                    this.rotations.Add(new SensorVector3(location.GetRotation().GetX(), location.GetRotation().GetY(), location.GetRotation().GetZ(), this.standardDeviation));
+                    Pose currentMarkerPose = this.MarkerLocations.GetMarker(pair.Key);
+                    Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
+                    this.locations.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
+                    this.rotations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
                 }
                 catch (UnallocatedMarkerException e)
                 {

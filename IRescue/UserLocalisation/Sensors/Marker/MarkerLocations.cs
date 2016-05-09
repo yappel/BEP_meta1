@@ -2,13 +2,13 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections.Generic;
-using System.Xml;
-using IRescue.Core.DataTypes;
-
 namespace IRescue.UserLocalisation.Sensors.Marker
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Xml;
+    using Core.DataTypes;
+
     /// <summary>
     ///   Class that knows the location of every marker and can give their attributes.
     /// </summary>
@@ -17,7 +17,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         ///   Hash table of the markers in the Scene.
         /// </summary>
-        private Dictionary<int, MarkerPose> markers;
+        private Dictionary<int, Pose> markers;
 
         /// <summary>
         ///   Initializes a new instance of the MarkerLocations class with the markers from a defines file.
@@ -25,7 +25,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <param name="path">Path to the xml file</param>
         public MarkerLocations(string path)
         {
-            this.markers = new Dictionary<int, MarkerPose>();
+            this.markers = new Dictionary<int, Pose>();
             this.LoadMarkers(path);
         }
 
@@ -34,16 +34,17 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// </summary>
         public MarkerLocations()
         {
-            this.markers = new Dictionary<int, MarkerPose>();
+            this.markers = new Dictionary<int, Pose>();
         }
 
         /// <summary>
         ///   Adds a Marker to the list.
         /// </summary>
+        /// <param name="id">id of the new marker</param>
         /// <param name="markerPose">The new marker</param>
-        public void AddMarker(MarkerPose markerPose)
+        public void AddMarker(int id, Pose markerPose)
         {
-            this.markers.Add(markerPose.GetId(), markerPose);
+            this.markers.Add(id, markerPose);
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// </summary>
         /// <param name="id">id of the required marker</param>
         /// <returns>Marker with the id</returns>
-        public MarkerPose GetMarker(int id)
+        public Pose GetMarker(int id)
         {
             if (this.markers.ContainsKey(id))
             {
@@ -76,8 +77,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 XmlNodeList nodeList = xml.SelectNodes("/markers/marker");
                 foreach (XmlNode node in nodeList)
                 {
-                    int id = XmlConvert.ToInt32(node["id"].InnerText);
-                    this.markers.Add(id, this.XmlTransform(id, node));
+                    this.markers.Add(XmlConvert.ToInt32(node["id"].InnerText), this.XmlTransform(node));
                 }
             }
             catch (Exception e)
@@ -89,23 +89,22 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         ///   Load the marker variables from the XML node.
         /// </summary>
-        /// <param name="id">Id of the marker</param>
         /// <param name="node">The current XML node.</param>
         /// <returns>The parsed marker.</returns>
-        private MarkerPose XmlTransform(int id, XmlNode node)
+        private Pose XmlTransform(XmlNode node)
         {
             XmlNode xmlPosition = node.SelectSingleNode("position");
             XmlNode xmlRotation = node.SelectSingleNode("rotation");
-            IRVector3 position = new IRVector3(
+            Vector3 position = new Vector3(
                 XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
                 XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText),
                 XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
-            IRVector3 rotation = new IRVector3(
+            Vector3 rotation = new Vector3(
                 XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
                 XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
                 XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
       
-            return new MarkerPose(id, position, rotation);
+            return new Pose(position, rotation);
         }
     }
 }
