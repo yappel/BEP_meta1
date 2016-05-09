@@ -1,18 +1,3 @@
-<<<<<<< HEAD:Assets/Scripts/UserLocalisation/MonteCarloLocalizer.cs
-﻿// <copyright file="MonteCarloLocalizer.cs" company="Delft University of Technology">
-// Copyright (c) Delft University of Technology. All rights reserved.
-// </copyright>
-namespace Assets.Scripts.UserLocalisation
-{
-    using Assets.Scripts.Inputsensors;
-    //using MathNet.Numerics.Distributions;
-    //using MathNet.Numerics.LinearAlgebra;
-    //using MathNet.Numerics.Random;
-    using System;
-    using System.Collections.Generic;
-    class MonteCarloLocalizer : AbstractUserLocalizer, IMotionReceiver, ILocationReceiver
-=======
-﻿
 namespace IRescue.UserLocalisation.Particle
 {
     using Sensors;
@@ -20,22 +5,21 @@ namespace IRescue.UserLocalisation.Particle
     using System;
     using System.Collections.Generic;
 
-    public class MonteCarloLocalizer : AbstractUserLocalizer, IMotionReceiver, ILocationReceiver
->>>>>>> development:IRescue/UserLocalisation/Particle/MonteCarloLocalizer.cs
+    public class MonteCarloLocalizer : AbstractUserLocalizer, IOrientationReceiver, IPositionReceiver
     {
         private int particleAmount;
 
-        private IRVector3 locationgrid;
+        private Vector3 locationgrid;
 
-        private IRVector3 orientationgrid;
+        private Vector3 orientationgrid;
 
         private List<MonteCarloParticle> particlelist;
 
-        private List<ILocationSource> locsources;
+        private List<IPositionSource> locsources;
 
-        private List<IMotionSource> motsources;
+        private List<IOrientationSource> motsources;
 
-        public MonteCarloLocalizer(int particleAmount, IRVector3 locationgrid, IRVector3 orientationgrid)
+        public MonteCarloLocalizer(int particleAmount, Vector3 locationgrid, Vector3 orientationgrid)
         {
             this.particleAmount = particleAmount;
             this.locationgrid = locationgrid;
@@ -43,43 +27,35 @@ namespace IRescue.UserLocalisation.Particle
             this.particlelist = this.InitParticles();
             this.WeighParticles();
         }
-        public override void CalculateLocation()
+        public override Pose CalculatePose(long timeStamp)
         {
             this.Resample();
             this.WeighParticles();
-            this.position = this.WeightedAverageParticles();
+            return this.WeightedAverageParticles();
         }
 
-        public IRVector3 WeightedAverageParticles()
+        public Pose WeightedAverageParticles()
         {
-            IRVector3 calculatedPosition = new IRVector3(0, 0, 0);
-            foreach (MonteCarloParticle particle in particlelist)
+            var calculatedPose = new Pose();
+
+            foreach (var particle in particlelist)
             {
-                calculatedPosition.Add(particle.Xyz.Multiply(particle.Weight));
+                calculatedPose.Position.Add(particle.pose.Position.Multiply(particle.Weight));
+                calculatedPose.Orientation.Add(particle.pose.Orientation.Multiply(particle.Weight));
             }
-            return calculatedPosition;
-        }
-
-        public void RegisterLocationReceiver(ILocationSource source)
-        {
-            locsources.Add(source);
-        }
-
-        public void RegisterMotionSource(IMotionSource source)
-        {
-            motsources.Add(source);
+            return calculatedPose;
         }
 
         private List<MonteCarloParticle> InitParticles()
         {
             //Maybe speedup if list is prelocated
-            List<MonteCarloParticle> particlelist = new List<MonteCarloParticle>();
-            for (int i = 0; i < this.particleAmount; i++)
+            var particlelist = new List<MonteCarloParticle>();
+            for (var i = 0; i < this.particleAmount; i++)
             {
                 float percentage = i / this.particleAmount;
-                IRVector3 xyz = new IRVector3(locationgrid.GetX(), locationgrid.GetY(), locationgrid.GetZ());
+                var xyz = new Vector3(locationgrid.Values);
                 xyz.Multiply(percentage);
-                IRVector3 pyr = new IRVector3(orientationgrid.GetX(), orientationgrid.GetY(), orientationgrid.GetZ());
+                var pyr = new Vector3(orientationgrid.Values);
                 pyr.Multiply(percentage);
                 particlelist.Add(new MonteCarloParticle(xyz, pyr, percentage));
             }
@@ -88,12 +64,13 @@ namespace IRescue.UserLocalisation.Particle
 
         public float[] cumsum()
         {
-            float[] cumsum = new float[this.particleAmount];
+            var cumsum = new float[this.particleAmount];
             cumsum[0] = this.particlelist[0].Weight;
-            int i = 1;
+            var i = 1;
             while (i < cumsum.Length)
             {
                 cumsum[i] = cumsum[i - 1] + this.particlelist[i].Weight;
+                i++;
             }
             return cumsum;
         }
@@ -104,9 +81,9 @@ namespace IRescue.UserLocalisation.Particle
             {
                 throw new NotImplementedException();
             }
-            float[] linspaced = new float[amount];
-            float step = end - start;
-            for (int i = 0; i < linspaced.Length; i++)
+            var linspaced = new float[amount];
+            var step = end - start;
+            for (var i = 0; i < linspaced.Length; i++)
             {
                 linspaced[i] = start + step * i;
             }
@@ -169,7 +146,17 @@ namespace IRescue.UserLocalisation.Particle
             }
         }
 
-        public void MoveParticles(SensorVector3 translation)
+        public void MoveParticles(Vector3 translation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddOrientationSource(IOrientationSource source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPositionSource(IPositionSource source)
         {
             throw new NotImplementedException();
         }

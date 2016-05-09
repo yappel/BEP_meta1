@@ -2,61 +2,22 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 using System;
+using IRescue.Core.DataTypes;
 
-namespace Assets.Scripts.UserLocalisation
+namespace IRescue.UserLocalisation.Particle
 {
     /// <summary>
     /// TODO
     /// </summary>
     public class MonteCarloParticle
     {
-        private IRVector3 xyz;
-        private IRVector3 pyr;
-        private float weight;
+        public Pose pose { get; set; }
+        public float Weight { get; set; }
 
-        public IRVector3 Xyz
+
+        public MonteCarloParticle(Vector3 xyz, Vector3 pyr, float weight)
         {
-            get
-            {
-                return xyz;
-            }
-
-            set
-            {
-                xyz = value;
-            }
-        }
-
-        public IRVector3 Pyr
-        {
-            get
-            {
-                return pyr;
-            }
-
-            set
-            {
-                pyr = value;
-            }
-        }
-
-        public float Weight
-        {
-            get
-            {
-                return weight;
-            }
-
-            set
-            {
-                weight = value;
-            }
-        }
-
-        public MonteCarloParticle(IRVector3 xyz, IRVector3 pyr, float weight)
-        {
-            this.Xyz = xyz;
-            this.Pyr = pyr;
+            this.pose = new Pose(xyz, pyr);
             this.Weight = weight;
         }
 
