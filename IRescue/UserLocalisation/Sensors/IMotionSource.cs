@@ -4,7 +4,7 @@
 
 using IRescue.Core.Datatypes;
 
-namespace IRescue.Core.Sensors
+namespace IRescue.UserLocalisation.Sensors
 {
     using System.Collections.Generic;
 

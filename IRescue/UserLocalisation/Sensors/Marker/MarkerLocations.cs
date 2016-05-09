@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Xml;
 using IRescue.Core.Datatypes;
 
-namespace IRescue.Core.Sensors.Marker
+namespace IRescue.UserLocalisation.Sensors.Marker
 {
     /// <summary>
     ///   Class that knows the location of every marker and can give their attributes.

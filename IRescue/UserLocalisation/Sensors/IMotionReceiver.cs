@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Sensors
+namespace IRescue.UserLocalisation.Sensors
 {
     /// <summary>
     /// A motion receiver is able to register a motion source

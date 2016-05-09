@@ -48,29 +48,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Datatypes\IRDoubleVector.cs" />
-    <Compile Include="Datatypes\Pose.cs" />
-    <Compile Include="Datatypes\SensorVector.cs" />
+    <Compile Include="Datatypes\IRVector3.cs" />
     <Compile Include="Datatypes\IRVectorDeviation.cs" />
     <Compile Include="Datatypes\MarkerPose.cs" />
+    <Compile Include="Datatypes\SensorVector3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SensorPose.cs" />
-    <Compile Include="Sensors\ILocationReceiver.cs" />
-    <Compile Include="Sensors\ILocationSource.cs" />
-    <Compile Include="Sensors\IMotionReceiver.cs" />
-    <Compile Include="Sensors\IMotionSource.cs" />
-    <Compile Include="Sensors\IRotationReceiver.cs" />
-    <Compile Include="Sensors\IRotationSource.cs" />
-    <Compile Include="Sensors\Marker\MarkerLocations.cs" />
-    <Compile Include="Sensors\Marker\MarkerSensor.cs" />
-    <Compile Include="Sensors\Marker\UnallocatedMarkerException.cs" />
     <Compile Include="Utils\AbRelPositioning.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sensors\IMU\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

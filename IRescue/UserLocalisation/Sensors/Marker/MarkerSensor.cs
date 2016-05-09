@@ -7,7 +7,7 @@ using IRescue.Core.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace IRescue.Core.Sensors.Marker
+namespace IRescue.UserLocalisation.Sensors.Marker
 {
     /// <summary>
     ///  This class keeps track of the location based on Markers.
