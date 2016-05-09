@@ -13,6 +13,6 @@ namespace IRescue.UserLocalisation.Sensors
         /// Add a displacement source to the receiver.
         /// </summary>
         /// <param name="source">The source from which data can be extracted.</param>
-        void AddPositionSource(IDisplacementSource source);
+        void AddDisplacementSource(IDisplacementSource source);
     }
 }
