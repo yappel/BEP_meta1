@@ -2,11 +2,11 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace IRescue.Core.DataTypes
 {
+    using System;
     using MathNet.Numerics.LinearAlgebra.Single;
+
     /// <summary>
     ///  Vector of length 3 which uses MathNet
     /// </summary>
@@ -87,7 +87,7 @@ namespace IRescue.Core.DataTypes
         {
             if (vectorValues.Length != 3)
             {
-                throw new ArgumentException(String.Format("{0} is not of length 3", vectorValues.Length), "vectorValues");
+                throw new ArgumentException(string.Format("{0} is not of length 3", vectorValues.Length), "vectorValues");
             }
         }
     }
