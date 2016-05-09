@@ -41,7 +41,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///   Adds a Marker to the list.
         /// </summary>
         /// <param name="id">id of the new marker</param>
-        /// <param name="markerPose">The new marker</param>
+        /// <param name="markerPose"><see cref="Pose"/> of the marker pose</param>
         public void AddMarker(int id, Pose markerPose)
         {
             this.markers.Add(id, markerPose);

@@ -6,7 +6,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     using System;
 
     /// <summary>
-    ///   Exception throws when a marker was found that was not initialized.
+    ///   Exception throws when a markerPose was found that was not initialized.
     /// </summary>
     public class UnallocatedMarkerException : Exception
     {

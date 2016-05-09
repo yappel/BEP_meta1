@@ -35,7 +35,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private List<Measurement<Vector3>> orientations;
 
         /// <summary>
-        ///   Initializes a new instance of the MarkerSensor class.
+        ///   Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
         /// <param name="standardDeviation">The standard deviation of the sensor</param>
         public MarkerSensor(float standardDeviation)
@@ -77,7 +77,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Get the last known orientation measurement.
         /// </summary>
-        /// <returns>The orientation measurement with time stamp and standard deviation. Null if no data was found</returns>
+        /// <returns>The orientation <see cref="Measurement{T}"/> with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastOrientation()
         {
             return this.orientations.Count > 0 ? this.orientations[this.orientations.Count - 1] : null;
@@ -87,7 +87,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Get the orientation measurement from the specified time stamp.
         /// </summary>
         /// <param name="timeStamp">The time stamp to take the measurement from.</param>
-        /// <returns>The measurement at the specified timestamp with standard deviation. Null if no data was found</returns>
+        /// <returns>The <see cref="Measurement{T}"/> at the specified timestamp with standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetOrientation(long timeStamp)
         {
             return this.GetTimeStampMeasurement(this.orientations, timeStamp);
@@ -98,23 +98,23 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// </summary>
         /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
         /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
-        /// <returns>A list of measurements with their time stamps and standard deviations. Null if no data was found</returns>
+        /// <returns>A list of <see cref="Measurement{T}"/> with their time stamps and standard deviations. Null if no data was found</returns>
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
         {
             return this.GetTimeStampMeasurements(this.orientations, startTimeStamp, endTimeStamp);
         }
 
         /// <summary>
-        /// Get all the known orientation measurements from the source.
+        /// Get all the known orientation <see cref="Measurement{T}"/> from the source.
         /// </summary>
-        /// <returns>A list of all measurements and their time stamps and standard deviations.</returns>
+        /// <returns>A list of all <see cref="Measurement{T}"/> and their time stamps and standard deviations.</returns>
         public List<Measurement<Vector3>> GetAllOrientations()
         {
             return this.orientations;
         }
 
         /// <summary>
-        /// Get the last known position measurement from the sensor.
+        /// Get the last known position <see cref="Measurement{T}"/> from the sensor.
         /// </summary>
         /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastPosition()
@@ -123,10 +123,10 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         }
 
         /// <summary>
-        /// Get the position measurement from the specified time stamp.
+        /// Get the position <see cref="Measurement{T}"/> from the specified time stamp.
         /// </summary>
         /// <param name="timeStamp">The time stamp to take the measurement from.</param>
-        /// <returns>The measurement at the specified time stamp with standard deviation. Null if no data was found</returns>
+        /// <returns>The <see cref="Measurement{T}"/> at the specified time stamp with standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetPosition(long timeStamp)
         {
             return this.GetTimeStampMeasurement(this.positions, timeStamp);
@@ -137,27 +137,27 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// </summary>
         /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
         /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
-        /// <returns>A list of measurements with their time stamps and standard deviations.</returns>
+        /// <returns>A list of <see cref="Measurement{T}"/> with their time stamps and standard deviations.</returns>
         public List<Measurement<Vector3>> GetPositions(long startTimeStamp, long endTimeStamp)
         {
             return this.GetTimeStampMeasurements(this.positions, startTimeStamp, endTimeStamp);
         }
 
         /// <summary>
-        /// Get all the known position measurements from the source.
+        /// Get all the known position <see cref="Measurement{T}"/> from the source.
         /// </summary>
-        /// <returns>A list of all measurements and their time stamps and standard deviations.</returns>
+        /// <returns>A list of all <see cref="Measurement{T}"/> and their time stamps and standard deviations.</returns>
         public List<Measurement<Vector3>> GetAllPositions()
         {
             return this.positions;
         }
 
         /// <summary>
-        /// Get a measurement with the give timestamp.
+        /// Get a <see cref="Measurement{T}"/> with the give timestamp.
         /// </summary>
-        /// <param name="measurements">The list of measurements</param>
+        /// <param name="measurements">The list of <see cref="Measurement{T}"/></param>
         /// <param name="timeStamp">The timestamp</param>
-        /// <returns>The measurement. Null if no data was measured at this timestamp</returns>
+        /// <returns>The <see cref="Measurement{T}"/>. Null if no data was measured at this timestamp</returns>
         private Measurement<Vector3> GetTimeStampMeasurement(List<Measurement<Vector3>> measurements, long timeStamp)
         {
             for (int i = 0; i < measurements.Count; i++)
@@ -172,12 +172,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         }
 
         /// <summary>
-        /// Get the measurements between two timestamps.
+        /// Get the <see cref="Measurement{T}"/> between two timestamps.
         /// </summary>
-        /// <param name="measurements">List of measurements</param>
+        /// <param name="measurements">List of <see cref="Measurement{T}"/></param>
         /// <param name="startTimeStamp">The start timestamp</param>
         /// <param name="endTimeStamp">The end timestamp</param>
-        /// <returns>List of measurements between the timestamps</returns>
+        /// <returns>List of <see cref="Measurement{T}"/> between the timestamps</returns>
         private List<Measurement<Vector3>> GetTimeStampMeasurements(
             List<Measurement<Vector3>> measurements, long startTimeStamp, long endTimeStamp)
         {
