@@ -4,8 +4,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Assets.Scripts.Inputsensors;
 using Assets.Scripts.Unity.SensorControllers;
+using IRescue.Core.Datatypes;
+using IRescue.UserLocalisation.Sensors;
+using IRescue.UserLocalisation.Sensors.Marker;
 using Meta;
 using UnityEngine;
 

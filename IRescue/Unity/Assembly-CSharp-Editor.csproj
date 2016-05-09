@@ -95,6 +95,9 @@
  <Reference Include="IRescue-userLocalisation">
  <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/IRescue-userLocalisation.dll</HintPath>
  </Reference>
+ <Reference Include="MathNet.Numerics">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MathNet.Numerics.dll</HintPath>
+ </Reference>
  <Reference Include="Meta">
  <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Meta/Meta.dll</HintPath>
  </Reference>

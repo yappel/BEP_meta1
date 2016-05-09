@@ -2,9 +2,10 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.UserLocalisation.Sensors;
+
 namespace Assets.Scripts.Unity.SensorControllers
 {
-    using Assets.Scripts.Inputsensors;
     using UnityEngine;
 
     /// <summary>

@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Assets.Scripts.Inputsensors;
 using Assets.Scripts.Unity.SensorControllers;
-using Assets.Scripts.UserLocalisation;
+using IRescue.UserLocalisation;
+using IRescue.UserLocalisation.Sensors;
 using UnityEngine;
 
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Start gets called because of MonoBehaviour")]
