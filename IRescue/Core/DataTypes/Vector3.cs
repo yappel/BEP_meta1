@@ -4,7 +4,7 @@
 
 using System;
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     /// <summary>
     ///  Vector of length 3 which uses MathNet
