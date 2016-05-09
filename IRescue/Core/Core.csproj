@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datatypes\InvalidVectorSizeException.cs" />
+    <Compile Include="Datatypes\Vector3.cs" />
     <Compile Include="Datatypes\IRDoubleVector.cs" />
     <Compile Include="Datatypes\IRVector3.cs" />
     <Compile Include="Datatypes\IRVectorDeviation.cs" />
