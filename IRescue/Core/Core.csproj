@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datatypes\Pose.cs" />
     <Compile Include="Datatypes\IRDoubleVector.cs" />
     <Compile Include="Datatypes\IRVector3.cs" />
     <Compile Include="Datatypes\IRVectorDeviation.cs" />
