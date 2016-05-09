@@ -6,7 +6,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
 {
     using System;
     using System.Collections.Generic;
-    using IRescue.Core.DataTypes;
+    using Core.DataTypes;
 
     /// <summary>
     /// The IMU Source provides data from sensors in an IMU and computes values which can be derived from this.
@@ -92,9 +92,24 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
         }
 
+        /// <summary>
+        /// Returns the acceleration measurement and standard deviation from the specified time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <returns>Acceleration vector and the standard deviation of the measurement, null when there is no measurement.</returns>
         public Measurement<Vector3> GetAcceleration(long timeStamp)
         {
-            throw new NotImplementedException();
+            if (this.currentSize > 0)
+            {
+                for (int i = 0; i < currentSize; i++)
+                {
+                    if (this.timeStamps[i] == timeStamp)
+                    {
+                        return new Measurement<Vector3>(this.accelerations[i], this.accelerationStd, timeStamp);
+                    }
+                }
+            }
+            return null;
         }
 
         public List<Measurement<Vector3>> GetAccelerations(long startTimeStamp, long endTimeStamp)
@@ -167,16 +182,24 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
         }
 
+        /// <summary>
+        /// Get the orientation measurement and standard deviation from the specified time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp to get the measurement from.</param>
+        /// <returns></returns>
         public Measurement<Vector3> GetOrientation(long timeStamp)
         {
             if (this.currentSize > 0)
             {
-                return null;
+                for (int i = 0; i < currentSize; i++)
+                {
+                    if (this.timeStamps[i] == timeStamp)
+                    {
+                        return new Measurement<Vector3>(this.orientations[i], this.orientationStd, timeStamp);
+                    }
+                }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
