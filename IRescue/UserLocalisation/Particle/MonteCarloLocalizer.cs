@@ -38,7 +38,7 @@ namespace IRescue.UserLocalisation.Particle
         {
             var calculatedPose = new Pose();
 
-            foreach (var particle in particlelist)
+            foreach (var particle in this.particlelist)
             {
                 calculatedPose.Position.Add(particle.pose.Position.Multiply(particle.Weight));
                 calculatedPose.Orientation.Add(particle.pose.Orientation.Multiply(particle.Weight));
@@ -49,17 +49,17 @@ namespace IRescue.UserLocalisation.Particle
         private List<MonteCarloParticle> InitParticles()
         {
             //Maybe speedup if list is prelocated
-            var particlelist = new List<MonteCarloParticle>();
-            for (var i = 0; i < this.particleAmount; i++)
+            var particles = new List<MonteCarloParticle>();
+            for (var i = 0; i < particleAmount; i++)
             {
-                float percentage = i / this.particleAmount;
+                float percentage = i / particleAmount;
                 var xyz = new Vector3(locationgrid.Values);
                 xyz.Multiply(percentage);
                 var pyr = new Vector3(orientationgrid.Values);
                 pyr.Multiply(percentage);
-                particlelist.Add(new MonteCarloParticle(xyz, pyr, percentage));
+                particles.Add(new MonteCarloParticle(xyz, pyr, percentage));
             }
-            return particlelist;
+            return particles;
         }
 
         public float[] cumsum()
@@ -92,7 +92,6 @@ namespace IRescue.UserLocalisation.Particle
 
         public void Resample()
         {
-            var rng = new Random();
             var cumsum = this.cumsum();
             var linspaced = this.linspace(0, 1 - 1 / this.particleAmount, this.particleAmount);
             var newparticlepointer = 1;
