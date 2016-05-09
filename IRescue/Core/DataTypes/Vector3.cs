@@ -10,7 +10,7 @@ namespace IRescue.Core.Datatypes
     public class Vector3 : MathNet.Numerics.LinearAlgebra.Single.DenseVector
     {
         /// <summary>
-        ///  Initializes a new instance of the Vector3 class.
+        ///  Initializes a new instance of the <see cref="Vector3"/> class.
         /// </summary>
         /// <param name="x">x value</param>
         /// <param name="y">y value</param>
