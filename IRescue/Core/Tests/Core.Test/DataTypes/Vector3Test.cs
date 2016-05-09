@@ -4,7 +4,6 @@ using IRescue.Core.DataTypes;
 
 namespace Core.Test
 {
-    [TestFixture]
     public class Vector3Test
     {
         [Test]

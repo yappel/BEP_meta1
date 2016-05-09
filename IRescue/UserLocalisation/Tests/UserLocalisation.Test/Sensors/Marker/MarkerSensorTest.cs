@@ -2,7 +2,6 @@
 
 namespace UserLocalisation.Test.Sensors.Marker
 {
-    [TestFixture]
     class MarkerSensorTest
     {
         [Test]
