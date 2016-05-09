@@ -2,6 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System;
+
 namespace IRescue.Core.Datatypes
 {
     /// <summary>
@@ -84,7 +86,7 @@ namespace IRescue.Core.Datatypes
         {
             if (vectorValues.Length != 3)
             {
-                throw new InvalidVectorSizeException("Vector expects 3 variables, got " + vectorValues.Length);
+                throw new ArgumentException(String.Format("{0} is not of length 3", vectorValues.Length), "vectorValues");
             }
         }
     }
