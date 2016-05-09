@@ -101,7 +101,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         {
             if (this.currentSize > 0)
             {
-                for (int i = 0; i < currentSize; i++)
+                for (int i = 0; i < this.currentSize; i++)
                 {
                     if (this.timeStamps[i] == timeStamp)
                     {
@@ -109,40 +109,64 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                     }
                 }
             }
+
             return null;
         }
 
+        /// <summary>
+        /// Get the acceleration measurements from the specified starting time stamp up to and including the ending time stamp.
+        /// </summary>
+        /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
+        /// <param name="endTimeStamp">The time stamps to include measurements up to.</param>
+        /// <returns>List of all acceleration measurements and their time stamps and standard deviation.</returns>
         public List<Measurement<Vector3>> GetAccelerations(long startTimeStamp, long endTimeStamp)
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            if (this.currentSize > 0)
+            int first = this.GetOldestMeasurementIndex();
+            for (int i = 0; i < this.currentSize; i++)
             {
-                // Oldest element in the measurement buffer
-                int first = (this.pointer - this.currentSize + 1) % measurementBufferSize;
-                for(int i = 0; i < currentSize; i++)
+                int index = (first + i) % this.measurementBufferSize;
+                if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
-                    int index = (first + i) % measurementBufferSize;
-                    if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
-                    {
-                        res.Add(new Measurement<Vector3>(this.accelerations[index], accelerationStd, this.timeStamps[index]));
-                    }
+                    res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
                 }
-                return res;
             }
-            else
-            {
-                return res;
-            }
+
+            return res;
         }
 
+        /// <summary>
+        /// Get all the the acceleration measurements currently in the buffer with their time stamp and the standard deviation.
+        /// </summary>
+        /// <returns>A list with all the acceleration measurements.</returns>
         public List<Measurement<Vector3>> GetAllAccelerations()
         {
-            throw new NotImplementedException();
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.currentSize);
+            int first = this.GetOldestMeasurementIndex();
+            for (int i = 0; i < this.currentSize; i++)
+            {
+                int index = (first + i) % this.measurementBufferSize;
+                res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
+            }
+
+            return res;
         }
 
+        /// <summary>
+        /// Get all the the orientation measurements currently in the buffer with their time stamp and the standard deviation.
+        /// </summary>
+        /// <returns>A list with all the orientation measurements.</returns>
         public List<Measurement<Vector3>> GetAllOrientations()
         {
-            throw new NotImplementedException();
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.currentSize);
+            int first = this.GetOldestMeasurementIndex();
+            for (int i = 0; i < this.currentSize; i++)
+            {
+                int index = (first + i) % this.measurementBufferSize;
+                res.Add(new Measurement<Vector3>(this.orientations[index], this.orientationStd, this.timeStamps[index]));
+            }
+
+            return res;
         }
 
         public Measurement<Vector3> GetDisplacement(long startTimeStamp, long endTimeStamp)
@@ -186,12 +210,12 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// Get the orientation measurement and standard deviation from the specified time stamp.
         /// </summary>
         /// <param name="timeStamp">The time stamp to get the measurement from.</param>
-        /// <returns></returns>
+        /// <returns>The orientation measurement at the time stamp with standard deviation.</returns>
         public Measurement<Vector3> GetOrientation(long timeStamp)
         {
             if (this.currentSize > 0)
             {
-                for (int i = 0; i < currentSize; i++)
+                for (int i = 0; i < this.currentSize; i++)
                 {
                     if (this.timeStamps[i] == timeStamp)
                     {
@@ -199,12 +223,39 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                     }
                 }
             }
+
             return null;
         }
 
+        /// <summary>
+        /// Get the orientation measurements from the specified starting time stamp up to and including the ending time stamp.
+        /// </summary>
+        /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
+        /// <param name="endTimeStamp">The time stamps to include measurements up to.</param>
+        /// <returns>List of all orientation measurements and their time stamps and standard deviation.</returns>
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
         {
-            throw new NotImplementedException();
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            int first = this.GetOldestMeasurementIndex();
+            for (int i = 0; i < this.currentSize; i++)
+            {
+                int index = (first + i) % this.measurementBufferSize;
+                if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
+                {
+                    res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Get the index of the oldest added measurement in the buffer.
+        /// </summary>
+        /// <returns>The index of the oldest measurement.</returns>
+        private int GetOldestMeasurementIndex()
+        {
+            return (this.pointer - this.currentSize + 1) % this.measurementBufferSize;
         }
     }
 }
