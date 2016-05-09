@@ -21,16 +21,16 @@ namespace IRescue.UserLocalisation.Particle
             this.Weight = weight;
         }
 
-        public void Translatexyz(IRVector3 translation)
+        public void Translatexyz(Vector3 translation)
         {
-            Xyz.Add(translation);
+            pose.Position.Add(translation);
         }
 
         public MonteCarloParticle duplicate()
         {
-            IRVector3 newxyz = new IRVector3(this.xyz.GetX(), this.xyz.GetY(), this.xyz.GetZ());
-            IRVector3 newpyr = new IRVector3(this.pyr.GetX(), this.pyr.GetY(), this.pyr.GetZ());
-            return new MonteCarloParticle(newxyz, newpyr, weight);
+            var newxyz = new Vector3(this.pose.Position.Values);
+            var newpyr = new Vector3(this.pose.Orientation.Values);
+            return new MonteCarloParticle(newxyz, newpyr, this.Weight);
         }
 
     }

@@ -92,12 +92,12 @@ namespace IRescue.UserLocalisation.Particle
 
         public void Resample()
         {
-            Random rng = new Random();
-            float[] cumsum = this.cumsum();
-            float[] linspaced = this.linspace(0, 1 - 1 / this.particleAmount, this.particleAmount);
-            int newparticlepointer = 1;
-            int oldparticlepointer = 1;
-            List<MonteCarloParticle> newparlist = new List<MonteCarloParticle>();
+            var rng = new Random();
+            var cumsum = this.cumsum();
+            var linspaced = this.linspace(0, 1 - 1 / this.particleAmount, this.particleAmount);
+            var newparticlepointer = 1;
+            var oldparticlepointer = 1;
+            var newparlist = new List<MonteCarloParticle>();
             while (newparticlepointer <= this.particleAmount)
             {
                 if (linspaced[newparticlepointer] < cumsum[oldparticlepointer])
@@ -116,7 +116,7 @@ namespace IRescue.UserLocalisation.Particle
         public void WeighParticles()
         {
             float sum = 0;
-            foreach (MonteCarloParticle particle in particlelist)
+            foreach (var particle in particlelist)
             {
                 particle.Weight = calculateProbabity(particle); ;
                 sum += particle.Weight;
@@ -140,7 +140,7 @@ namespace IRescue.UserLocalisation.Particle
 
         public void normalizeParticleWeights(float sum)
         {
-            foreach (MonteCarloParticle particle in particlelist)
+            foreach (var particle in particlelist)
             {
                 particle.Weight = particle.Weight / sum;
             }
