@@ -10,9 +10,9 @@ namespace IRescue.UserLocalisation.Sensors
     public interface IAccelerationReceiver
     {
         /// <summary>
-        /// Add a displacement source to the receiver.
+        /// Add an acceleration source to the receiver.
         /// </summary>
         /// <param name="source">The source from which data can be extracted.</param>
-        void AddPositionSource(IAccelerationSource source);
+        void AddAccelerationSource(IAccelerationSource source);
     }
 }
