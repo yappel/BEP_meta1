@@ -1,19 +1,15 @@
-﻿// <copyright file="AssemblyInfo.cs" company="Delft University of Technology">
-// Copyright (c) Delft University of Technology. All rights reserved.
-// </copyright>
-
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("IRescue-core")]
+[assembly: AssemblyTitle("UserLocalisation.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IRescue-core")]
+[assembly: AssemblyCompany("Hewlett-Packard Company")]
+[assembly: AssemblyProduct("UserLocalisation.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -24,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("e8d9cc15-d570-4524-84b6-bb049a355fc4")]
+[assembly: Guid("253320e8-be33-4601-bce0-ae1dad1f151f")]
 
 // Version information for an assembly consists of the following four values:
 //

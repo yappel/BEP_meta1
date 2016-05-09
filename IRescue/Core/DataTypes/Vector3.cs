@@ -2,14 +2,15 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-
 namespace IRescue.Core.DataTypes
 {
+    using System;
+    using MathNet.Numerics.LinearAlgebra.Single;
+
     /// <summary>
     ///  Vector of length 3 which uses MathNet
     /// </summary>
-    public class Vector3 : MathNet.Numerics.LinearAlgebra.Single.DenseVector
+    public class Vector3 : DenseVector
     {
         /// <summary>
         ///  Initializes a new instance of the <see cref="Vector3"/> class.
@@ -86,7 +87,7 @@ namespace IRescue.Core.DataTypes
         {
             if (vectorValues.Length != 3)
             {
-                throw new ArgumentException(String.Format("{0} is not of length 3", vectorValues.Length), "vectorValues");
+                throw new ArgumentException(string.Format("{0} is not of length 3", vectorValues.Length), "vectorValues");
             }
         }
     }
