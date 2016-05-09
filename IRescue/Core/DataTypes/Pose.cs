@@ -4,7 +4,7 @@
 
 namespace IRescue.Core.DataTypes
 {
-    using IRescue.Core.Datatypes;
+    using IRescue.Core.DataTypes;
 
     /// <summary>
     /// A pose of an object or person. Contains the orientation and position.

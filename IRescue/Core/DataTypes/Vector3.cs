@@ -6,10 +6,11 @@ using System;
 
 namespace IRescue.Core.DataTypes
 {
+    using MathNet.Numerics.LinearAlgebra.Single;
     /// <summary>
     ///  Vector of length 3 which uses MathNet
     /// </summary>
-    public class Vector3 : MathNet.Numerics.LinearAlgebra.Single.DenseVector
+    public class Vector3 : DenseVector
     {
         /// <summary>
         ///  Initializes a new instance of the <see cref="Vector3"/> class.

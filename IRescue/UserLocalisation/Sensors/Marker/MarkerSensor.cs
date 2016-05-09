@@ -12,7 +12,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     /// <summary>
     ///  This class keeps track of the location based on Markers.
     /// </summary>
-    public class MarkerSensor : ILocationSource, IRotationSource
+    public class MarkerSensor
     {
         /// <summary>
         ///   Standard deviation of marker tracking.
