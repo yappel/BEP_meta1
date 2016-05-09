@@ -12,7 +12,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     /// <summary>
     ///  This class keeps track of the location based on Markers.
     /// </summary>
-    public class MarkerSensor : ILocationSource, IRotationSource
+    public class MarkerSensor : IPositionSource, IOrientationSource
     {
         /// <summary>
         ///   Standard deviation of marker tracking.
@@ -27,12 +27,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         ///   The predicted locations.
         /// </summary>
-        private List<Measurement<Vector3>> locations;
+        private List<Measurement<Vector3>> positions;
 
         /// <summary>
         ///   The predicted rotations.
         /// </summary>
-        private List<Measurement<Vector3>> rotations;
+        private List<Measurement<Vector3>> orientations;
 
         /// <summary>
         ///   Initializes a new instance of the MarkerSensor class.
@@ -50,46 +50,147 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public MarkerLocations MarkerLocations { get; set; }
 
         /// <summary>
-        ///   Get the locations based on the visible markers.
-        /// </summary>
-        /// <returns>List of SensorVector3</returns>
-        public List<Measurement<Vector3>> GetLocations()
-        {
-            return this.locations;
-        }
-
-        /// <summary>
-        ///   Get the rotations based on the visible markers.
-        /// </summary>
-        /// <returns>List of SensorVector3</returns>
-        public List<Measurement<Vector3>> GetRotations()
-        {
-            return this.rotations;
-        }
-
-        /// <summary>
         ///   Update the locations derived from Markers.
         /// </summary>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
         /// <param name="timeStamp">The current timestamp of the call</param>
         public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds, long timeStamp)
         {
-            this.locations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
-            this.rotations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
+            this.positions = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
+            this.orientations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
                     Pose currentMarkerPose = this.MarkerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.locations.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
-                    this.rotations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
+                    this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
+                    this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
                 }
                 catch (UnallocatedMarkerException e)
                 {
                     Console.WriteLine("ERROR: ", e);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get the last known orientation measurement.
+        /// </summary>
+        /// <returns>The orientation measurement with time stamp and standard deviation. Null if no data was found</returns>
+        public Measurement<Vector3> GetLastOrientation()
+        {
+            return this.orientations.Count > 0 ? this.orientations[this.orientations.Count - 1] : null;
+        }
+
+        /// <summary>
+        /// Get the orientation measurement from the specified time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <returns>The measurement at the specified timestamp with standard deviation. Null if no data was found</returns>
+        public Measurement<Vector3> GetOrientation(long timeStamp)
+        {
+            return this.GetTimeStampMeasurement(this.orientations, timeStamp);
+        }
+
+        /// <summary>
+        /// Get the orientations starting from the specified start time stamp up to and including the end time stamp.
+        /// </summary>
+        /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
+        /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
+        /// <returns>A list of measurements with their time stamps and standard deviations. Null if no data was found</returns>
+        public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
+        {
+            return this.GetTimeStampMeasurements(this.orientations, startTimeStamp, endTimeStamp);
+        }
+
+        /// <summary>
+        /// Get all the known orientation measurements from the source.
+        /// </summary>
+        /// <returns>A list of all measurements and their time stamps and standard deviations.</returns>
+        public List<Measurement<Vector3>> GetAllOrientations()
+        {
+            return this.orientations;
+        }
+
+        /// <summary>
+        /// Get the last known position measurement from the sensor.
+        /// </summary>
+        /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
+        public Measurement<Vector3> GetLastPosition()
+        {
+            return this.positions.Count > 0 ? this.orientations[this.positions.Count - 1] : null;
+        }
+
+        /// <summary>
+        /// Get the position measurement from the specified time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <returns>The measurement at the specified time stamp with standard deviation. Null if no data was found</returns>
+        public Measurement<Vector3> GetPosition(long timeStamp)
+        {
+            return this.GetTimeStampMeasurement(this.positions, timeStamp);
+        }
+
+        /// <summary>
+        /// Get the positions starting from the specified start time stamp up to and including the end time stamp.
+        /// </summary>
+        /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
+        /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
+        /// <returns>A list of measurements with their time stamps and standard deviations.</returns>
+        public List<Measurement<Vector3>> GetPositions(long startTimeStamp, long endTimeStamp)
+        {
+            return this.GetTimeStampMeasurements(this.positions, startTimeStamp, endTimeStamp);
+        }
+
+        /// <summary>
+        /// Get all the known position measurements from the source.
+        /// </summary>
+        /// <returns>A list of all measurements and their time stamps and standard deviations.</returns>
+        public List<Measurement<Vector3>> GetAllPositions()
+        {
+            return this.positions;
+        }
+
+        /// <summary>
+        /// Get a measurement with the give timestamp.
+        /// </summary>
+        /// <param name="measurements">The list of measurements</param>
+        /// <param name="timeStamp">The timestamp</param>
+        /// <returns>The measurement. Null if no data was measured at this timestamp</returns>
+        private Measurement<Vector3> GetTimeStampMeasurement(List<Measurement<Vector3>> measurements, long timeStamp)
+        {
+            for (int i = 0; i < measurements.Count; i++)
+            {
+                if (measurements[i].TimeStamp == timeStamp)
+                {
+                    return measurements[i];
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get the measurements between two timestamps.
+        /// </summary>
+        /// <param name="measurements">List of measurements</param>
+        /// <param name="startTimeStamp">The start timestamp</param>
+        /// <param name="endTimeStamp">The end timestamp</param>
+        /// <returns>List of measurements between the timestamps</returns>
+        private List<Measurement<Vector3>> GetTimeStampMeasurements(
+            List<Measurement<Vector3>> measurements, long startTimeStamp, long endTimeStamp)
+        {
+            List<Measurement<Vector3>> timeMeasurements = new List<Measurement<Vector3>>();
+            for (int i = 0; i < measurements.Count; i++)
+            {
+                if (measurements[i].TimeStamp >= startTimeStamp && measurements[i].TimeStamp <= endTimeStamp)
+                {
+                    timeMeasurements.Add(measurements[i]);
+                }
+            }
+
+            return timeMeasurements;
         }
     }
 }
