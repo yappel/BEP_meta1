@@ -2,11 +2,11 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-using IRescue.Core.DataTypes;
-
 namespace IRescue.Core.Utils
 {
+    using System;
+    using DataTypes;
+
     /// <summary>
     ///   Utility class to calculate the absolute position of a relative position.
     /// </summary>
@@ -21,16 +21,16 @@ namespace IRescue.Core.Utils
         /// <summary>
         ///   Calculates the absolute location of relatePosition with an absolute maker location and the relative location to it.
         /// </summary>
-        /// <param name="absoluteLocation">The known absolute position.</param>
-        /// <param name="relativeLocation">The position relative to the absolute location.</param>
+        /// <param name="absoluteLocation">The known absolute pose.</param>
+        /// <param name="relativeLocation">The pose relative to the absolute location.</param>
         /// <returns>The location of the calculated absolute position.</returns>
-        public static IRDoubleVector GetLocation(MarkerPose absoluteLocation, IRDoubleVector relativeLocation)
+        public static Pose GetLocation(Pose absoluteLocation, Pose relativeLocation)
         {
-            IRVector3 absolutePosition = absoluteLocation.GetPosition();
-            IRVector3 absoluteRotation = absoluteLocation.GetRotation();
-            IRVector3 relativeRotation = relativeLocation.GetRotation();
-            float distance = CalculateDistance(absolutePosition, relativeLocation.GetPosition());
-            IRDoubleVector newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
+            Vector3 absolutePosition = absoluteLocation.Position;
+            Vector3 absoluteRotation = absoluteLocation.Orientation;
+            Vector3 relativeRotation = relativeLocation.Orientation;
+            float distance = CalculateDistance(absolutePosition, relativeLocation.Position);
+            Pose newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
 
             return newLocation;
         }
@@ -41,11 +41,11 @@ namespace IRescue.Core.Utils
         /// <param name="pos1">First coordinate</param>
         /// <param name="pos2">Second coordinate</param>
         /// <returns>3D euclidean distance</returns>
-        private static float CalculateDistance(IRVector3 pos1, IRVector3 pos2)
+        private static float CalculateDistance(Vector3 pos1, Vector3 pos2)
         {
-            float xValue = pos1.GetX() - pos2.GetX();
-            float yValue = pos1.GetY() - pos2.GetY();
-            float zValue = pos1.GetZ() - pos2.GetZ();
+            float xValue = pos1.X - pos2.X;
+            float yValue = pos1.Y - pos2.Y;
+            float zValue = pos1.Z - pos2.Z;
 
             return (float)Math.Sqrt((xValue * xValue) + (yValue * yValue) + (zValue * zValue));
         }
@@ -58,19 +58,19 @@ namespace IRescue.Core.Utils
         /// <param name="relativeRotation">Rotation of the relative point</param>
         /// <param name="distance">Distance to the absolute point as seen from the relative point</param>
         /// <returns>Location and rotation of the relatively given location</returns>
-        private static IRDoubleVector CalculateLocation(
-            IRVector3 absolutePosition, IRVector3 absoluteRotation, IRVector3 relativeRotation, float distance)
+        private static Pose CalculateLocation(
+            Vector3 absolutePosition, Vector3 absoluteRotation, Vector3 relativeRotation, float distance)
         {
-            IRVector3 rotation = new IRVector3(
-                relativeRotation.GetX() - absoluteRotation.GetX(),
-                relativeRotation.GetY() - absoluteRotation.GetY(),
-                relativeRotation.GetZ() - absoluteRotation.GetZ());
-            IRVector3 position = new IRVector3(
-                absolutePosition.GetX() + (float)(distance * Math.Cos(rotation.GetZ() * toRadian) * Math.Sin(rotation.GetY() * toRadian)), 
-                absolutePosition.GetY() + (float)(distance * Math.Sin(rotation.GetZ() * toRadian)), 
-                absolutePosition.GetZ() + (float)(distance * Math.Cos(rotation.GetZ() * toRadian) * Math.Cos(rotation.GetY() * toRadian)));
+            Vector3 rotation = new Vector3(
+                relativeRotation.X - absoluteRotation.X,
+                relativeRotation.Y - absoluteRotation.Y,
+                relativeRotation.Z - absoluteRotation.Z);
+            Vector3 position = new Vector3(
+                absolutePosition.X + (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Sin(rotation.Y * toRadian)), 
+                absolutePosition.Y + (float)(distance * Math.Sin(rotation.Z * toRadian)), 
+                absolutePosition.Z + (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Cos(rotation.Y * toRadian)));
 
-            return new IRDoubleVector(position, rotation);
+            return new Pose(position, rotation);
         }
     }
 }

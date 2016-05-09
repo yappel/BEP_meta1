@@ -2,43 +2,48 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-
-/// <summary>
-///   Abstract class for user localization. Every child will implement their own filter.
-/// </summary>
-public abstract class AbstractUserLocalizer
+namespace IRescue.UserLocalisation
 {
+    using System;
+    using System.Collections.Generic;
+    using Core.DataTypes;
     /// <summary>
-    ///   Position coordinates.
+    ///   Abstract class for user localization. Every child will implement their own filter.
     /// </summary>
-    protected IRVector3 position;
-
-    /// <summary>
-    ///   Rotation coordinates.
-    /// </summary>
-    protected IRVector3 rotation;
-
-    /// <summary>
-    ///   Calculate the current location of the user.
-    /// </summary>
-    public abstract void CalculateLocation();
-
-    /// <summary>
-    ///  Return a Vector3 with the calculated position.
-    /// </summary>
-    /// <returns>Vector3 the position</returns>
-    public IRVector3 GetPosition()
+    public abstract class AbstractUserLocalizer
     {
-        return this.position;
-    }
+        /// <summary>
+        ///   Position coordinates.
+        /// </summary>
+        private Vector3 position;
 
-    /// <summary>
-    ///  Return a Vector 3 with the calculated rotation.
-    /// </summary>
-    /// <returns> Vector 3 </returns>
-    public IRVector3 GetRotation()
-    {
-        return this.rotation;
+        /// <summary>
+        ///   Rotation coordinates.
+        /// </summary>
+        private Vector3 rotation;
+
+        /// <summary>
+        ///   Calculate the new location of the user based on the visible markers and accelerometer data.
+        /// </summary>
+        /// <param name="locations">Predicted locations based on data like visible markers and GPS.</param>
+        public abstract void ProcessLocation(List<Object> locations);
+
+        /// <summary>
+        ///  Return a Vector3 with the calculated position.
+        /// </summary>
+        /// <returns>Vector3 the position</returns>
+        public Vector3 GetPosition()
+        {
+            return this.position;
+        }
+
+        /// <summary>
+        ///  Return a Vector 3 with the calculated rotation.
+        /// </summary>
+        /// <returns> Vector 3 </returns>
+        public Vector3 GetRotation()
+        {
+            return this.rotation;
+        }
     }
 }
