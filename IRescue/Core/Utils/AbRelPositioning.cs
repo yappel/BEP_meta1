@@ -3,7 +3,7 @@
 // </copyright>
 
 using System;
-using IRescue.Core.Datatypes;
+using IRescue.Core.DataTypes;
 
 namespace IRescue.Core.Utils
 {

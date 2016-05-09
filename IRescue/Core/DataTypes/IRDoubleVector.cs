@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     /// <summary>
     ///   Class that contains 2 vectors.

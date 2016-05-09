@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     /// <summary>
     ///   StandardDeviation contains the position, rotation and standard deviation of a location.

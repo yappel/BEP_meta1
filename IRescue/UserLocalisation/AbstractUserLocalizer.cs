@@ -7,7 +7,7 @@ namespace IRescue.UserLocalisation
 {
 
 
-    using Core.Datatypes;
+    using Core.DataTypes;
     using System.Collections.Generic;
 
     /// <summary>

@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.Core.Datatypes;
+using IRescue.Core.DataTypes;
 using IRescue.Core.Utils;
 using System;
 using System.Collections.Generic;

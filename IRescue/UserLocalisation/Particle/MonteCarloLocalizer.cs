@@ -2,7 +2,7 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using Sensors;
-    using Core.Datatypes;
+    using Core.DataTypes;
     using System;
     using System.Collections.Generic;
 

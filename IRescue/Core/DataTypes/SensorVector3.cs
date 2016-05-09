@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     /// <summary>
     ///   A vector of size 3 with a standardDeviation to represent the accuracy of the values

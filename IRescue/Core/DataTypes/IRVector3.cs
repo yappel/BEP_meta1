@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     /// <summary>
     ///   Struct to create an independent 3D-Vector.

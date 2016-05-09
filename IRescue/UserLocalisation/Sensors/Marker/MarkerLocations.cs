@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using IRescue.Core.Datatypes;
+using IRescue.Core.DataTypes;
 
 namespace IRescue.UserLocalisation.Sensors.Marker
 {
