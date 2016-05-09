@@ -7,6 +7,8 @@
 [Ll]ibrary/
 *sysinfo.txt
 *.stackdump
+*/Unity/Unity.CSharp.Editor.csproj
+*/Unity/Unity.CSharp.csproj
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -19,6 +21,7 @@
 *.user
 *.unityproj
 *.booproj
+packages/
 
 # ============ #
 # OS generated #
