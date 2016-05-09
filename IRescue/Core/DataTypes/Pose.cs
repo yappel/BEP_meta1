@@ -1,8 +1,11 @@
 ﻿// <copyright file="Pose.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
+
 namespace IRescue.Core.DataTypes
 {
+    using IRescue.Core.Datatypes;
+
     /// <summary>
     /// A pose of an object or person. Contains the orientation and position.
     /// </summary>
