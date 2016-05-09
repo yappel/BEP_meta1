@@ -58,6 +58,7 @@
     <Compile Include="Sensors\IAccelerationSource.cs" />
     <Compile Include="Sensors\IDisplacementReceiver.cs" />
     <Compile Include="Sensors\IDisplacementSource.cs" />
+    <Compile Include="Sensors\IMU\IMUSource.cs" />
     <Compile Include="Sensors\IOrientationReceiver.cs" />
     <Compile Include="Sensors\IOrientationSource.cs" />
     <Compile Include="Sensors\IPositionReceiver.cs" />
@@ -74,9 +75,7 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sensors\IMU\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
