@@ -35,11 +35,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private List<Measurement<Vector3>> rotations;
 
         /// <summary>
-        ///   Gets or sets the MarkerLocations.
-        /// </summary>
-        public MarkerLocations MarkerLocations { get; set; }
-
-        /// <summary>
         ///   Initializes a new instance of the MarkerSensor class.
         /// </summary>
         /// <param name="standardDeviation">The standard deviation of the sensor</param>
@@ -48,6 +43,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             this.standardDeviation = standardDeviation;
             this.MarkerLocations = new MarkerLocations(this.savePath);
         }
+
+        /// <summary>
+        ///   Gets or sets the MarkerLocations.
+        /// </summary>
+        public MarkerLocations MarkerLocations { get; set; }
 
         /// <summary>
         ///   Get the locations based on the visible markers.

@@ -3,20 +3,19 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Sensors.Marker
 {
+    using System;
 
-using System;
-
-/// <summary>
-///   Exception throws when a marker was found that was not initialized.
-/// </summary>
-public class UnallocatedMarkerException : Exception
-{
     /// <summary>
-    ///   Initializes a new instance of the UnallocatedMarkerException class with a message.
+    ///   Exception throws when a marker was found that was not initialized.
     /// </summary>
-    /// <param name="message">Custom message for the Exception.</param>
-    public UnallocatedMarkerException(string message) : base(message)
+    public class UnallocatedMarkerException : Exception
     {
+        /// <summary>
+        ///   Initializes a new instance of the UnallocatedMarkerException class with a message.
+        /// </summary>
+        /// <param name="message">Custom message for the Exception.</param>
+        public UnallocatedMarkerException(string message) : base(message)
+        {
+        }
     }
-}
 }
