@@ -1,3 +1,6 @@
+using MathNet.Numerics.Distributions;
+using UserLocalisation.PositionPrediction;
+
 namespace IRescue.UserLocalisation.Particle
 {
     using Sensors;
@@ -13,32 +16,43 @@ namespace IRescue.UserLocalisation.Particle
 
         private Vector3 orientationgrid;
 
-        private List<MonteCarloParticle> particlelist;
+        private long currentTimeStamp;
 
-        private List<IPositionSource> locsources;
+        public List<MonteCarloParticle> Particlelist { get; set; }
 
-        private List<IOrientationSource> motsources;
+        private List<IPositionSource> posources;
+
+        private List<IOrientationSource> orisources;
+
+        private LinearPredicter posePredicter;
 
         public MonteCarloLocalizer(int particleAmount, Vector3 locationgrid, Vector3 orientationgrid)
         {
+            this.posources = new List<IPositionSource>();
+            this.orisources = new List<IOrientationSource>();
+            this.posePredicter = new LinearPredicter();
             this.particleAmount = particleAmount;
             this.locationgrid = locationgrid;
             this.orientationgrid = orientationgrid;
-            this.particlelist = this.InitParticles();
+            this.Particlelist = this.InitParticles();
             this.WeighParticles();
         }
         public override Pose CalculatePose(long timeStamp)
         {
+            this.MoveParticles(posePredicter.predictPositionAt(timeStamp));
+            this.currentTimeStamp = timeStamp;
             this.Resample();
             this.WeighParticles();
-            return this.WeightedAverageParticles();
+            Pose result = this.WeightedAverageParticles();
+            this.posePredicter.addPose(result, timeStamp);
+            return result;
         }
 
         public Pose WeightedAverageParticles()
         {
             var calculatedPose = new Pose();
 
-            foreach (var particle in this.particlelist)
+            foreach (var particle in this.Particlelist)
             {
                 calculatedPose.Position.Add(particle.pose.Position.Multiply(particle.Weight));
                 calculatedPose.Orientation.Add(particle.pose.Orientation.Multiply(particle.Weight));
@@ -65,11 +79,11 @@ namespace IRescue.UserLocalisation.Particle
         public float[] cumsum()
         {
             var cumsum = new float[this.particleAmount];
-            cumsum[0] = this.particlelist[0].Weight;
+            cumsum[0] = this.Particlelist[0].Weight;
             var i = 1;
             while (i < cumsum.Length)
             {
-                cumsum[i] = cumsum[i - 1] + this.particlelist[i].Weight;
+                cumsum[i] = cumsum[i - 1] + this.Particlelist[i].Weight;
                 i++;
             }
             return cumsum;
@@ -101,7 +115,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 if (linspaced[newparticlepointer] < cumsum[oldparticlepointer])
                 {
-                    newparlist.Add(this.particlelist[oldparticlepointer].duplicate());
+                    newparlist.Add(this.Particlelist[oldparticlepointer].duplicate());
                     newparticlepointer++;
                 }
                 else
@@ -109,13 +123,13 @@ namespace IRescue.UserLocalisation.Particle
                     oldparticlepointer++;
                 }
             }
-            this.particlelist = newparlist;
+            this.Particlelist = newparlist;
         }
 
         public void WeighParticles()
         {
             float sum = 0;
-            foreach (var particle in particlelist)
+            foreach (var particle in Particlelist)
             {
                 particle.Weight = calculateProbabity(particle); ;
                 sum += particle.Weight;
@@ -125,39 +139,57 @@ namespace IRescue.UserLocalisation.Particle
 
         public float calculateProbabity(MonteCarloParticle particle)
         {
-            return 1f;
-            //Todo matrixes for multivariate normal distribution object
-            //MatrixNormal normal = new MatrixNormal();
-            //foreach (ILocationSource source in locsources)
-            //{
-            //    foreach(SensorVector3 measurement in source.GetLocations())
-            //    {
-            //        normal.Density(Matrix<double>.Build.Random(3, 4);)
-            //    }
-            //}
+            double p = 1;
+            foreach (var source in this.posources)
+            {
+                Measurement<Vector3> measurem = source.GetPosition(this.currentTimeStamp);
+                p = p * prob(particle.pose.Position, measurem);
+            }
+            foreach (var source in this.orisources)
+            {
+                Measurement<Vector3> measurem = source.GetOrientation(this.currentTimeStamp);
+                p = p * prob(particle.pose.Orientation, measurem);
+            }
+
+            return (float)p;
+        }
+
+        private double prob(Vector3 xyz, Measurement<Vector3> meas)
+        {
+            double p = 1;
+            for (int i = 0; i < xyz.Count; i++)
+            {
+                p = p * Normal.PDF(xyz.Values[i], meas.Std, meas.Data.Values[i]);
+
+            }
+            return p;
         }
 
         public void normalizeParticleWeights(float sum)
         {
-            foreach (var particle in particlelist)
+            foreach (var particle in Particlelist)
             {
                 particle.Weight = particle.Weight / sum;
             }
         }
 
-        public void MoveParticles(Vector3 translation)
+        public void MoveParticles(Pose translation)
         {
-            throw new NotImplementedException();
+            foreach (var particle in Particlelist)
+            {
+                particle.pose.Position.Add(translation.Position);
+                particle.pose.Orientation.Add(translation.Orientation);
+            }
         }
 
         public void AddOrientationSource(IOrientationSource source)
         {
-            throw new NotImplementedException();
+            this.orisources.Add(source);
         }
 
         public void AddPositionSource(IPositionSource source)
         {
-            throw new NotImplementedException();
+            this.posources.Add(source);
         }
     }
 }
