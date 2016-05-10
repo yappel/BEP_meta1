@@ -53,25 +53,32 @@
      <Compile Include="Assets\Meta\Apps\Meta SDK Guide\Scripts\Quit.cs" />
      <Compile Include="Assets\Meta\Examples\Camera Feed Example\Scripts\CameraFeedExample.cs" />
      <Compile Include="Assets\Meta\Examples\Markers Example\Scripts\MarkerEventTest.cs" />
+     <Compile Include="Assets\Scripts\Enums\Filters.cs" />
      <Compile Include="Assets\Scripts\Unity\InitScript.cs" />
      <Compile Include="Assets\Scripts\Unity\SensorControllers\AbstractSensorController.cs" />
      <Compile Include="Assets\Scripts\Unity\SensorControllers\MarkerSensorController.cs" />
+     <Compile Include="Assets\Scripts\Unity\SourceCouplers\AbstractLocalizerCoupler.cs" />
+     <Compile Include="Assets\Scripts\Unity\SourceCouplers\LocalizerFactory.cs" />
+     <Compile Include="Assets\Scripts\Unity\SourceCouplers\MonteCarloCoupler.cs" />
      <Compile Include="Assets\Scripts\Unity\UserController.cs" />
+     <Compile Include="Assets\Scripts\Unity\testscript.cs" />
      <None Include="Assets\Maps\MarkerMap01.xml" />
-     <None Include="Assets\Tests\Resources\MarkerMapFail.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingBlur.shader" />
      <None Include="Assets\MetaPackages\LeanTween\LeanTween-ReadMe.txt" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingStencilTransparent.shader" />
      <None Include="Assets\MetaPackages\Vectrosity\Documentation\Vectrosity changelog.txt" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingInclude.cginc" />
-     <None Include="Assets\Tests\Resources\MarkerMap01.xml" />
+     <None Include="Assets\MathNet.Numerics.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingComposite.shader" />
+     <None Include="Assets\Plugins\x64\MathNet.Numerics.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingStencilOpaqueZ.shader" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingStencilOpaque.shader" />
      <None Include="Assets\Meta\MetaCore\Shaders\MetaXrayEffect.shader" />
      <None Include="Assets\Meta\Docs\META EULA.txt" />
      <None Include="Assets\Meta\MetaUI\Shaders\Particle AddMeta.shader" />
+     <None Include="Assets\Plugins\x64\System.Threading.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingStencilTransparentZ.shader" />
+     <None Include="Assets\System.Threading.xml" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
@@ -95,6 +102,15 @@
  </Reference>
  <Reference Include="Vectrosity">
  <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MetaPackages/Vectrosity/Vectrosity.dll</HintPath>
+ </Reference>
+ <Reference Include="MathNet.Numerics">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Plugins/x64/MathNet.Numerics.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Threading">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Plugins/x64/System.Threading.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Threading">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/System.Threading.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
