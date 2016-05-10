@@ -30,9 +30,7 @@ namespace IRescue.Core.Utils
             Vector3 absoluteRotation = absoluteLocation.Orientation;
             Vector3 relativeRotation = relativeLocation.Orientation;
             float distance = CalculateDistance(absolutePosition, relativeLocation.Position);
-            Pose newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
-
-            return newLocation;
+            return CalculatePose(absolutePosition, absoluteRotation, relativeRotation, distance);
         }
 
         /// <summary>
@@ -58,13 +56,13 @@ namespace IRescue.Core.Utils
         /// <param name="relativeRotation">Rotation of the relative point</param>
         /// <param name="distance">Distance to the absolute point as seen from the relative point</param>
         /// <returns>Location and rotation of the relatively given location</returns>
-        private static Pose CalculateLocation(
+        private static Pose CalculatePose(
             Vector3 absolutePosition, Vector3 absoluteRotation, Vector3 relativeRotation, float distance)
         {
             Vector3 rotation = new Vector3(
-                relativeRotation.X - absoluteRotation.X,
-                relativeRotation.Y - absoluteRotation.Y,
-                relativeRotation.Z - absoluteRotation.Z);
+                relativeRotation.X + absoluteRotation.X + 180,
+                relativeRotation.Y + absoluteRotation.Y + 180,
+                relativeRotation.Z + absoluteRotation.Z + 180);
             Vector3 position = new Vector3(
                 absolutePosition.X + (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Sin(rotation.Y * toRadian)), 
                 absolutePosition.Y + (float)(distance * Math.Sin(rotation.Z * toRadian)), 
