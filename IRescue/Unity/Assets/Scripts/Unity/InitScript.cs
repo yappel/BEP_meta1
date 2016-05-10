@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Enums;
 using Assets.Scripts.Unity.SensorControllers;
-using IRescue.UserLocalisation.Particle;
+using Assets.Scripts.Unity.SourceCouplers;
+using IRescue.UserLocalisation;
 using UnityEngine;
 
 /// <summary>
@@ -20,9 +22,9 @@ public class InitScript : MonoBehaviour
     public void Start()
     {
         this.AddControllers();
-        MonteCarloLocalizer localizer = new MonteCarloLocalizer();
-        this.InitControllers(localizer);
-        this.InitUser(localizer);
+        AbstractLocalizerCoupler coupler = LocalizerFactory.Get(Filters.MonteCarlo);
+        this.InitControllers(coupler);
+        this.InitUser(coupler.Localizer);
     }
 
     /// <summary>
@@ -54,13 +56,13 @@ public class InitScript : MonoBehaviour
     ///  Disable the controller if its source is not required by the current localizer method.
     /// </summary>
     /// <param name="localizer">The Localizer filter</param>
-    private void InitControllers(MonteCarloLocalizer localizer)
+    private void InitControllers(AbstractLocalizerCoupler localizer)
     {
         AbstractSensorController[] controllers = gameObject.GetComponents<AbstractSensorController>();
         for (int i = 0; i < controllers.Length; i++)
         {
             controllers[i].Init();
-            controllers[i].enabled = MonteCarloCoupler.RegisterSources(localizer, controllers[i]);
+            controllers[i].enabled = localizer.RegisterSource(controllers[i]);
         }
     }
 
@@ -68,7 +70,7 @@ public class InitScript : MonoBehaviour
     ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
     /// </summary>
     /// <param name="localizer">The Localizer filter</param>
-    private void InitUser(MonteCarloLocalizer localizer)
+    private void InitUser(AbstractUserLocalizer localizer)
     {
         gameObject.AddComponent<UserController>().Init(localizer);
     }

@@ -53,7 +53,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///   Update the locations derived from Markers.
         /// </summary>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-        /// <param name="timeStamp">The current timestamp of the call</param>
         public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds)
         {
             long timeStamp = StopwatchSingleton.Time;

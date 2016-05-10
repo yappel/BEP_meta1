@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.UserLocalisation.Particle;
+using IRescue.UserLocalisation;
 using UnityEngine;
 
 /// <summary>
@@ -13,13 +13,13 @@ public class UserController : MonoBehaviour
     /// <summary>
     /// The used localizer.
     /// </summary>
-    private MonteCarloLocalizer localizer;
+    private AbstractUserLocalizer localizer;
 
     /// <summary>
     /// Initializes the User Controller. 
     /// </summary>
-    /// <param name="localizer">The <see cref="MonteCarloLocalizer"/> used for the localization.</param>
-    public void Init(MonteCarloLocalizer localizer)
+    /// <param name="localizer">The <see cref="AbstractUserLocalizer"/> used for the localization.</param>
+    public void Init(AbstractUserLocalizer localizer)
     {
         this.localizer = localizer;
     }
