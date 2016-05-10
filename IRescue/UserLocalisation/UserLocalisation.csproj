@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
+    <Compile Include="PosePrediction\LinearPredicter.cs" />
     <Compile Include="Particle\MonteCarloLocalizer.cs" />
     <Compile Include="Particle\MonteCarloParticle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
