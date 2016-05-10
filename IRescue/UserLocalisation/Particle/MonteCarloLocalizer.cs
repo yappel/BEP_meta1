@@ -95,12 +95,13 @@ namespace IRescue.UserLocalisation.Particle
             {
                 throw new NotImplementedException();
             }
-            var linspaced = new float[amount];
-            var step = end - start;
-            for (var i = 0; i < linspaced.Length; i++)
+            var linspaced = new float[amount + 1];
+            var step = (end - start) / amount;
+            for (var i = 0; i < amount; i++)
             {
                 linspaced[i] = start + step * i;
             }
+            linspaced[amount] = 1;
             return linspaced;
         }
 
@@ -108,10 +109,10 @@ namespace IRescue.UserLocalisation.Particle
         {
             var cumsum = this.cumsum();
             var linspaced = this.linspace(0, 1 - 1 / this.particleAmount, this.particleAmount);
-            var newparticlepointer = 1;
-            var oldparticlepointer = 1;
+            var newparticlepointer = 0;
+            var oldparticlepointer = 0;
             var newparlist = new List<MonteCarloParticle>();
-            while (newparticlepointer <= this.particleAmount)
+            while (newparticlepointer < this.particleAmount)
             {
                 if (linspaced[newparticlepointer] < cumsum[oldparticlepointer])
                 {
