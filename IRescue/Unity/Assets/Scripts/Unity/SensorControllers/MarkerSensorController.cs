@@ -69,9 +69,7 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     public void Update()
     {
-        // TODO
-        long timeStamp = 0;
-        this.markerSensor.UpdateLocations(this.GetVisibleMarkers(), timeStamp);
+        this.markerSensor.UpdateLocations(this.GetVisibleMarkers());
     }
 
     /// <summary>
