@@ -2,10 +2,9 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.UserLocalisation.Sensors;
-
 namespace Assets.Scripts.Unity.SensorControllers
 {
+    using IRescue.UserLocalisation.Sensors;
     using UnityEngine;
 
     /// <summary>
@@ -19,28 +18,46 @@ namespace Assets.Scripts.Unity.SensorControllers
         public abstract void Init();
 
         /// <summary>
-        ///   Return the motion source.
+        ///   Return the acceleration source.
         /// </summary>
-        /// <returns>the ILocationSource</returns>
-        public ILocationSource GetLocationSource()
+        /// <returns>The IAccelerationSource</returns>
+        public IAccelerationSource GetAccelerationSource()
         {
             return null;
         }
 
         /// <summary>
-        ///   Return the motion source.
+        ///   Return the Displacement source.
         /// </summary>
-        /// <returns>The IMotionSource</returns>
-        public IMotionSource GetMotionSource()
+        /// <returns>The IDisplacementSource</returns>
+        public IDisplacementSource GetDisplacementSource()
         {
             return null;
         }
 
         /// <summary>
-        ///   Return the motion source.
+        ///   Return the Orientation source.
         /// </summary>
-        /// <returns>The IRotationSource</returns>
-        public IRotationSource GetRotationSource()
+        /// <returns>The IOrientationSource</returns>
+        public IOrientationSource GetOrientationSource()
+        {
+            return null;
+        }
+
+        /// <summary>
+        ///   Return the position source.
+        /// </summary>
+        /// <returns>the IPositionSource</returns>
+        public IPositionSource GetPositionSource()
+        {
+            return null;
+        }
+
+        /// <summary>
+        ///   Return the velocity source.
+        /// </summary>
+        /// <returns>the IVelocitySource</returns>
+        public IVelocitySource GetVelocitySource()
         {
             return null;
         }
