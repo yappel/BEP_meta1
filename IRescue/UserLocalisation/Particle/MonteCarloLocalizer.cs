@@ -39,8 +39,8 @@ namespace IRescue.UserLocalisation.Particle
         }
         public override Pose CalculatePose(long timeStamp)
         {
-            this.MoveParticles(posePredicter.predictPositionAt(timeStamp));
             this.currentTimeStamp = timeStamp;
+            this.MoveParticles(posePredicter.predictPositionAt(timeStamp));
             this.Resample();
             this.WeighParticles();
             Pose result = this.WeightedAverageParticles();
@@ -176,11 +176,14 @@ namespace IRescue.UserLocalisation.Particle
 
         public void MoveParticles(Pose translation)
         {
+            System.Diagnostics.Debug.WriteLine("SCHIJT");
+            System.Diagnostics.Debug.WriteLine(this.currentTimeStamp);
             foreach (var particle in Particlelist)
             {
                 particle.pose.Position.Add(translation.Position);
                 particle.pose.Orientation.Add(translation.Orientation);
             }
+            System.Diagnostics.Debug.WriteLine(this.currentTimeStamp);
         }
 
         public void AddOrientationSource(IOrientationSource source)

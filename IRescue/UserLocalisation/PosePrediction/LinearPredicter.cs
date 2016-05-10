@@ -4,6 +4,7 @@
 
 using System;
 using IRescue.Core.DataTypes;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace UserLocalisation.PositionPrediction
 {
@@ -29,9 +30,10 @@ namespace UserLocalisation.PositionPrediction
         {
             if (prevpose == null || prevprevpose == null)
             {
-                return new Pose();
+                Pose output = new Pose();
+                return output;
             }
-            if (timestamp < prevtime)
+            if (timestamp <= prevtime)
             {
                 throw new ArgumentException("The timestamp has to be larger then the timestamp of the last known position");
             }
@@ -42,9 +44,10 @@ namespace UserLocalisation.PositionPrediction
             return new Pose(pospredict, oripredict); ;
         }
 
-        private Vector3 predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
+        public Vector3 predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
         {
-            return prev.Add(prevprev.Negate()).Multiply(dt1 / dt2) as Vector3;
+            Vector<float> temp = prev.Add(prevprev.Negate()).Multiply((float)dt1 / (float)dt2);
+            return new Vector3(temp.ToArray());
         }
     }
 }
