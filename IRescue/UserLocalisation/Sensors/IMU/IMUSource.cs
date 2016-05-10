@@ -171,7 +171,40 @@ namespace IRescue.UserLocalisation.Sensors.IMU
 
         public Measurement<Vector3> GetDisplacement(long startTimeStamp, long endTimeStamp)
         {
-            throw new NotImplementedException();
+            List<Measurement<Vector3>> acc = this.GetAccelerations(startTimeStamp, endTimeStamp);
+            if (acc.Count > 2)
+            {
+                List<Measurement<Vector3>> ori = this.GetOrientations(startTimeStamp, endTimeStamp);
+                List<Measurement<Vector3>> worldAcc = new List<Measurement<Vector3>>(acc.Count);
+                for (int i = 0; i < acc.Count; i++)
+                {
+                    worldAcc.Add(new Measurement<Vector3>(IRescue.Core.Utils.VectorMath.RotateVector(acc[i].Data, -1 * ori[i].Data.X, -1 * ori[i].Data.Y, -1 * ori[i].Data.Z), acc[i].Std, acc[i].TimeStamp));
+                }
+                Vector3 displacement = new Vector3(0, 0, 0);
+                Vector3 vel1 = new Vector3(0, 0, 0);
+                Vector3 vel2 = new Vector3(0, 0, 0);
+                // TODO fix std with integration
+                float std = acc[0].Std;
+                long t1;
+                long t2;
+                for (int i = 1; i < (worldAcc.Count - 1); i++)
+                {
+                    t1 = worldAcc[i - 1].TimeStamp + ((worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) / 2);
+                    t2 = worldAcc[i].TimeStamp + ((worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) / 2);
+                    vel1.X = (worldAcc[i - 1].Data.X + worldAcc[i].Data.X) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i-1].TimeStamp) * 1000;
+                    vel2.X = (worldAcc[i].Data.X + worldAcc[i+1].Data.X) / 2 * (float)(worldAcc[i+1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
+                    vel1.Y = (worldAcc[i - 1].Data.Y + worldAcc[i].Data.Y) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) * 1000;
+                    vel2.Y = (worldAcc[i].Data.Y + worldAcc[i + 1].Data.Y) / 2 * (float)(worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
+                    vel1.Z = (worldAcc[i - 1].Data.Z + worldAcc[i].Data.Z) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) * 1000;
+                    vel2.Z = (worldAcc[i].Data.Z + worldAcc[i + 1].Data.Z) / 2 * (float)(worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
+
+                    displacement.X += (vel1.X + vel2.X) / 2 * (float)(t2 - t1) * 1000;
+                    displacement.Y += (vel1.Y + vel2.Y) / 2 * (float)(t2 - t1) * 1000;
+                    displacement.Z += (vel1.Z + vel2.Z) / 2 * (float)(t2 - t1) * 1000;
+                }
+                return new Measurement<Vector3>(displacement, std, (startTimeStamp + endTimeStamp) / 2);
+            }
+            return null;
         }
 
         /// <summary>
