@@ -22,10 +22,16 @@ public class InitScript : MonoBehaviour
     private Filters usedFilter = Filters.MonteCarlo;
 
     /// <summary>
+    /// Size of the used markers in meters
+    /// </summary>
+    private float markerSize = 0.23f;
+
+    /// <summary>
     ///  Called when the game starts.
     /// </summary>
     public void Start()
     {
+        Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
         this.AddControllers();
         AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
         this.InitControllers(coupler);
