@@ -3,15 +3,13 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Assets.Scripts.Unity.SensorControllers;
-using IRescue.Core.Datatypes;
+using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation.Sensors;
 using IRescue.UserLocalisation.Sensors.Marker;
 using Meta;
 using UnityEngine;
-
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Reviewed.")]
+using Vector3 = IRescue.Core.DataTypes.Vector3;
 
 /// <summary>
 ///   This class keeps track of visible markers and the probable user location based on that.
@@ -49,19 +47,19 @@ public class MarkerSensorController : AbstractSensorController
     }
 
     /// <summary>
-    ///   Return the motion source.
+    ///   Return the Orientation source.
     /// </summary>
-    /// <returns>the ILocationSource</returns>
-    public new ILocationSource GetLocationSource()
+    /// <returns>The IOrientationSource</returns>
+    public new IOrientationSource GetOrientationSource()
     {
         return this.markerSensor;
     }
 
     /// <summary>
-    ///   Return the motion source.
+    ///   Return the position source.
     /// </summary>
-    /// <returns>The IRotationSource</returns>
-    public new IRotationSource GetRotationSource()
+    /// <returns>the IPositionSource</returns>
+    public new IPositionSource GetPositionSource()
     {
         return this.markerSensor;
     }
@@ -69,19 +67,21 @@ public class MarkerSensorController : AbstractSensorController
     /// <summary>
     ///   Method calles on every frame.
     /// </summary>
-    void Update()
+    public void Update()
     {
-        this.markerSensor.UpdateLocations(this.GetVisibleMarkers());
+        // TODO
+        long timeStamp = 0;
+        this.markerSensor.UpdateLocations(this.GetVisibleMarkers(), timeStamp);
     }
 
     /// <summary>
     ///   Get all the transforms of the visible markers.
     /// </summary>
     /// <returns>Hash table with the marker id as the key and an IRVectorTransform as the value.</returns>
-    private Dictionary<int, IRDoubleVector> GetVisibleMarkers()
+    private Dictionary<int, Pose> GetVisibleMarkers()
     {
         List<int> visibleMarkers = this.markerDetector.updatedMarkerTransforms;
-        Dictionary<int, IRDoubleVector> visibleMarkerTransforms = new Dictionary<int, IRDoubleVector>();
+        Dictionary<int, Pose> visibleMarkerTransforms = new Dictionary<int, Pose>();
 
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
@@ -90,9 +90,9 @@ public class MarkerSensorController : AbstractSensorController
             if (GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId) != null)
             {
                 var marker = GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId).transform.eulerAngles;
-                IRVector3 position = new IRVector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
-                IRVector3 rotation = new IRVector3(marker.x, marker.y, marker.z);
-                visibleMarkerTransforms.Add(markerId, new IRDoubleVector(position, rotation));
+                Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
+                Vector3 rotation = new Vector3(marker.x, marker.y, marker.z);
+                visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
             }
         }
 

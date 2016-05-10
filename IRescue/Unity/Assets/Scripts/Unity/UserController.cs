@@ -2,12 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Meta;
+using IRescue.UserLocalisation.Particle;
 using UnityEngine;
-
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Reviewed.")]
 
 /// <summary>
 ///  UserController keeps track of the user and its behavior.
@@ -15,16 +11,35 @@ using UnityEngine;
 public class UserController : MonoBehaviour
 {
     /// <summary>
-    ///   Method called when creating a UserController.
+    /// The used localizer.
     /// </summary>
-    void Start()
+    private MonteCarloLocalizer localizer;
+
+    /// <summary>
+    /// Initializes the User Controller. 
+    /// </summary>
+    /// <param name="localizer">The <see cref="MonteCarloLocalizer"/> used for the localization.</param>
+    public void Init(MonteCarloLocalizer localizer)
     {
+        this.localizer = localizer;
     }
 
     /// <summary>
     ///   Method calles on every frame.
     /// </summary>
-    void Update()
+    public void Update()
     {
+        this.transform.position = this.TransformVector(this.localizer.GetPosition());
+        this.transform.eulerAngles = this.TransformVector(this.localizer.GetRotation());
+    }
+
+    /// <summary>
+    ///   Transform a IRescue.Core.DataTypes.Vector3 to a Unity.Vector3. 
+    /// </summary>
+    /// <param name="vector">The IRescue.Core.DataTypes.Vector3</param>
+    /// <returns>Unity.Vector3 instance</returns>
+    private Vector3 TransformVector(IRescue.Core.DataTypes.Vector3 vector)
+    {
+        return new Vector3(vector.X, vector.Y, vector.Z);
     }
 }

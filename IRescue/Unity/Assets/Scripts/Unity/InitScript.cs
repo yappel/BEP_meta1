@@ -4,14 +4,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Assets.Scripts.Unity.SensorControllers;
-using IRescue.UserLocalisation;
-using IRescue.UserLocalisation.Sensors;
+using IRescue.UserLocalisation.Particle;
 using UnityEngine;
-
-[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1400:AccessModifierMustBeDeclared", Justification = "Start gets called because of MonoBehaviour")]
 
 /// <summary>
 ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
@@ -21,13 +17,12 @@ public class InitScript : MonoBehaviour
     /// <summary>
     ///  Called when the game starts.
     /// </summary>
-    void Start()
+    public void Start()
     {
         this.AddControllers();
-
-        // Todo initialise localiser
-        AbstractUserLocalizer localizer = null;
+        MonteCarloLocalizer localizer = new MonteCarloLocalizer();
         this.InitControllers(localizer);
+        this.InitUser(localizer);
     }
 
     /// <summary>
@@ -43,9 +38,9 @@ public class InitScript : MonoBehaviour
     }
 
     /// <summary>
-    ///  Get all the Scripts that inherit AbstractSensorController.
+    ///  Get all the Scripts that inherit <see cref="AbstractSensorController"/>.
     /// </summary>
-    /// <returns>List of the controller class types that inherit AbstractSensorController</returns>
+    /// <returns>List of the controller class types that inherit <see cref="AbstractSensorController"/></returns>
     private IEnumerable<AbstractSensorController> GetAbstractControllers()
     {
         return typeof(AbstractSensorController)
@@ -59,77 +54,22 @@ public class InitScript : MonoBehaviour
     ///  Disable the controller if its source is not required by the current localizer method.
     /// </summary>
     /// <param name="localizer">The Localizer filter</param>
-    private void InitControllers(AbstractUserLocalizer localizer)
+    private void InitControllers(MonteCarloLocalizer localizer)
     {
         AbstractSensorController[] controllers = gameObject.GetComponents<AbstractSensorController>();
         for (int i = 0; i < controllers.Length; i++)
         {
             controllers[i].Init();
-            controllers[i].enabled = this.RegisterSources(localizer, controllers[i]);
+            controllers[i].enabled = MonteCarloCoupler.RegisterSources(localizer, controllers[i]);
         }
     }
 
     /// <summary>
-    /// Register the sensor sources to a localizer.
+    ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
     /// </summary>
-    /// <param name="localizer">the localizer class used</param>
-    /// <param name="sensor">the sensor controller</param>
-    /// <returns>if the controller was registered once or more</returns>
-    private bool RegisterSources(AbstractUserLocalizer localizer, AbstractSensorController sensor)
+    /// <param name="localizer">The Localizer filter</param>
+    private void InitUser(MonteCarloLocalizer localizer)
     {
-        return this.RegisterLocationReceiver(localizer, sensor.GetLocationSource()) ||
-            this.RegisterMotionReceiver(localizer, sensor.GetMotionSource()) ||
-            this.RegisterRotationReceiver(localizer, sensor.GetRotationSource());
-    }
-
-    /// <summary>
-    /// Registers a location source if the localizer can register it.
-    /// </summary>
-    /// <param name="localizer">The AbstractUserLocalizer</param>
-    /// <param name="source">The location source to register</param>
-    /// <returns>if the controller was registered</returns>
-    private bool RegisterLocationReceiver(AbstractUserLocalizer localizer, ILocationSource source)
-    {
-        if (localizer is ILocationReceiver && source != null)
-        {
-            (localizer as ILocationReceiver).RegisterLocationReceiver(source);
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Registers a motion source if the localizer can register it.
-    /// </summary>
-    /// <param name="localizer">The AbstractUserLocalizer</param>
-    /// <param name="source">The motion source to register</param>
-    /// <returns>if the controller was registered</returns>
-    private bool RegisterMotionReceiver(AbstractUserLocalizer localizer, IMotionSource source)
-    {
-        if (localizer is IMotionReceiver && source != null)
-        {
-            (localizer as IMotionReceiver).RegisterMotionSource(source);
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Registers a rotation source if the localizer can register it.
-    /// </summary>
-    /// <param name="localizer">The AbstractUserLocalizer</param>
-    /// <param name="source">The rotation source to register</param>
-    /// <returns>if the controller was registered</returns>
-    private bool RegisterRotationReceiver(AbstractUserLocalizer localizer, IRotationSource source)
-    {
-        if (localizer is IRotationReceiver && source != null)
-        {
-            (localizer as IRotationReceiver).RegisterRotationSource(source);
-            return true;
-        }
-
-        return false;
+        gameObject.AddComponent<UserController>().Init(localizer);
     }
 }
