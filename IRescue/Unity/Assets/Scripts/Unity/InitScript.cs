@@ -17,12 +17,17 @@ using UnityEngine;
 public class InitScript : MonoBehaviour
 {
     /// <summary>
+    /// Enum type of the filter that is going to be used
+    /// </summary>
+    private Filters usedFilter = Filters.MonteCarlo;
+
+    /// <summary>
     ///  Called when the game starts.
     /// </summary>
     public void Start()
     {
         this.AddControllers();
-        AbstractLocalizerCoupler coupler = LocalizerFactory.Get(Filters.MonteCarlo);
+        AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
         this.InitControllers(coupler);
         this.InitUser(coupler.Localizer);
     }
