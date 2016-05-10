@@ -25,9 +25,9 @@ public class UserController : MonoBehaviour
     }
 
     /// <summary>
-    ///   Method calles on every frame.
+    /// Last code that gets executed to update the rotation and position correctly.
     /// </summary>
-    public void Update()
+    public void LateUpdate()
     {
         this.transform.position = this.TransformVector(this.localizer.GetPosition());
         this.transform.eulerAngles = this.TransformVector(this.localizer.GetRotation());
