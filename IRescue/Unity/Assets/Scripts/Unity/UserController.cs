@@ -30,7 +30,7 @@ public class UserController : MonoBehaviour
     public void LateUpdate()
     {
         this.transform.position = this.TransformVector(this.localizer.GetPosition());
-        this.transform.eulerAngles = this.TransformVector(this.localizer.GetRotation());
+        this.transform.GetChild(0).eulerAngles = this.TransformVector(this.localizer.GetRotation());
     }
 
     /// <summary>
