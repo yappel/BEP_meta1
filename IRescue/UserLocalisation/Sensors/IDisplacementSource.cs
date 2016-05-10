@@ -14,8 +14,8 @@ namespace IRescue.UserLocalisation.Sensors
         /// <summary>
         /// Get the displacement from the specified start time stamp up to and including the end time stamp.
         /// </summary>
-        /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
-        /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
+        /// <param name="startTimeStamp">The start time stamp to include measurements from in milliseconds.</param>
+        /// <param name="endTimeStamp">The end time stamp to include measurements up to in milliseconds.</param>
         /// <returns>The total displacement over the specified time period.</returns>
         Measurement<Vector3> GetDisplacement(long startTimeStamp, long endTimeStamp);
     }
