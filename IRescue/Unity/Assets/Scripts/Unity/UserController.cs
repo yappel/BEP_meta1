@@ -2,8 +2,11 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.Core.DataTypes;
+using IRescue.Core.Utils;
 using IRescue.UserLocalisation;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 /// <summary>
 ///  UserController keeps track of the user and its behavior.
@@ -29,8 +32,9 @@ public class UserController : MonoBehaviour
     /// </summary>
     public void Update()
     {
-        this.transform.position = this.TransformVector(this.localizer.GetPosition());
-        this.transform.eulerAngles = this.TransformVector(this.localizer.GetRotation());
+        Pose pose = localizer.CalculatePose(StopwatchSingleton.Time);
+        this.transform.position = this.TransformVector(pose.Position);
+        this.transform.eulerAngles = this.TransformVector(pose.Orientation);
     }
 
     /// <summary>

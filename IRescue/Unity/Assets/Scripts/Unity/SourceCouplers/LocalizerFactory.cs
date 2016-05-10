@@ -23,7 +23,8 @@ namespace Assets.Scripts.Unity.SourceCouplers
             switch (localizer)
             {
                 case Filters.MonteCarlo:
-                    return new MonteCarloCoupler(new MonteCarloLocalizer());
+                    //TODO NOT THE WAY IT SHOULD BE
+                    return new MonteCarloCoupler(new MonteCarloLocalizer(200, new IRescue.Core.DataTypes.Vector3(500, 2, 500), new IRescue.Core.DataTypes.Vector3(360, 360, 360)));
                 default:
                     throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer), "filter");
             }
