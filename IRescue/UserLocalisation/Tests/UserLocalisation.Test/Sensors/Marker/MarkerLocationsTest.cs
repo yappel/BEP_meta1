@@ -51,7 +51,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             {
                 this.markerLocations.GetMarker(1);
             }
-                catch (UnallocatedMarkerException e)
+                catch (UnallocatedMarkerException)
             {
                 Assert.Pass();
             }
@@ -105,7 +105,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             {
                 this.markerLocations.GetMarker(2);
             }
-            catch (UnallocatedMarkerException e)
+            catch (UnallocatedMarkerException)
             {
                 Assert.Pass();
             }
@@ -124,7 +124,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             {
                 this.markerLocations.GetMarker(1);
             }
-            catch (UnallocatedMarkerException e)
+            catch (UnallocatedMarkerException)
             {
                 Assert.Pass();
             }

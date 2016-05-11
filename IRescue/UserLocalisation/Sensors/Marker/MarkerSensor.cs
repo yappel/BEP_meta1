@@ -37,7 +37,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         ///  The MarkerLocations.
         /// </summary>
-        private MarkerLocations MarkerLocations;
+        private MarkerLocations markerLocations;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="MarkerSensor"/> class.
@@ -46,7 +46,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public MarkerSensor(float standardDeviation)
         {
             this.standardDeviation = standardDeviation;
-            this.MarkerLocations = new MarkerLocations(this.savePath);
+            this.markerLocations = new MarkerLocations(this.savePath);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public MarkerSensor(float standardDeviation, string path)
         {
             this.standardDeviation = standardDeviation;
-            this.MarkerLocations = new MarkerLocations(path);
+            this.markerLocations = new MarkerLocations(path);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             {
                 try
                 {
-                    Pose currentMarkerPose = this.MarkerLocations.GetMarker(pair.Key);
+                    Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
                     this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
                     this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));

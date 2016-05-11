@@ -45,7 +45,7 @@ namespace Core.Test
             {
                 Vector3 vector = new Vector3(new float[] { 1, 2, 3, 4 });
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 Assert.Pass();
             }

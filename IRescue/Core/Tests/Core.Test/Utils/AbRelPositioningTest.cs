@@ -6,7 +6,6 @@ namespace Core.Test
 {
     using IRescue.Core.DataTypes;
     using IRescue.Core.Utils;
-    using MathNet.Numerics.LinearAlgebra.Single;
     using NUnit.Framework;
 
     /// <summary>
@@ -29,54 +28,32 @@ namespace Core.Test
         /// </summary>
         private float epsilon = 0.00005f;
 
+        /// <summary>
+        /// Test GetLocation2D
+        /// </summary>
         [Test]
         public void Test2D()
         {
-            abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
-            relPosition = new Pose(new Vector3(5, 0, 0), new Vector3(0, 0, 0));
-            Pose result = AbRelPositioning.GetLocation2D(abPosition, relPosition);
-            Assert.AreEqual(10, result.Position.X, epsilon);
-            Assert.AreEqual(0, result.Position.Y, epsilon);
-            Assert.AreEqual(5, result.Position.Z, epsilon);
+            this.abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
+            this.relPosition = new Pose(new Vector3(5, 0, 0), new Vector3(0, 0, 0));
+            Pose result = AbRelPositioning.GetLocation2D(this.abPosition, this.relPosition);
+            Assert.AreEqual(10, result.Position.X, this.epsilon);
+            Assert.AreEqual(0, result.Position.Y, this.epsilon);
+            Assert.AreEqual(5, result.Position.Z, this.epsilon);
         }
 
+        /// <summary>
+        /// Test 2D calculation.
+        /// </summary>
         [Test]
         public void Test2D2()
         {
-            abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 270, 0));
-            relPosition = new Pose(new Vector3(3, 0, 3), new Vector3(0, 315, 0));
-            Pose result = AbRelPositioning.GetLocation2D(abPosition, relPosition);
-            Assert.AreEqual(2, result.Position.X, 0.2);
-            Assert.AreEqual(0, result.Position.Y, epsilon);
-            Assert.AreEqual(2, result.Position.Z, 0.2);
-        }
-
-        /// <summary>
-        /// Test for simple position.
-        /// </summary>
-        [Test]
-        public void TestSimple()
-        {
-            //abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
-            //relPosition = new Pose(new Vector3(5, 0, 0), new Vector3(0, 90, 0));
-            //Pose result = AbRelPositioning.GetLocation(abPosition, relPosition);
-            //Assert.AreEqual(5, result.Position.X, epsilon);
-            //Assert.AreEqual(0, result.Position.Y, epsilon);
-            //Assert.AreEqual(10, result.Position.Z, epsilon);
-        }
-
-        /// <summary>
-        /// Expected at location 3,0,5
-        /// </summary>
-        [Test]
-        public void TestSimple2()
-        {
-            //abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
-            //relPosition = new Pose(new Vector3(2, 0, 0), new Vector3(0, 0, 0));
-            //Pose result = AbRelPositioning.GetLocation(abPosition, relPosition);
-            //Assert.AreEqual(3, result.Position.X, epsilon);
-            //Assert.AreEqual(0, result.Position.Y, epsilon);
-            //Assert.AreEqual(5, result.Position.Z, epsilon);
+            this.abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 270, 0));
+            this.relPosition = new Pose(new Vector3(3, 0, 3), new Vector3(0, 315, 0));
+            Pose result = AbRelPositioning.GetLocation2D(this.abPosition, this.relPosition);
+            Assert.AreEqual(2, result.Position.X, this.epsilon);
+            Assert.AreEqual(0, result.Position.Y, this.epsilon);
+            Assert.AreEqual(2, result.Position.Z, this.epsilon);
         }
 
         /// <summary>
@@ -85,14 +62,17 @@ namespace Core.Test
         [Test]
         public void TestSimple3()
         {
-            abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
-            relPosition = new Pose(new Vector3(2, 0, 2), new Vector3(0, 45, 0));
-            Pose result = AbRelPositioning.GetLocation(abPosition, relPosition);
-            Assert.AreEqual(3, result.Position.X, epsilon);
-            Assert.AreEqual(0, result.Position.Y, epsilon);
-            Assert.AreEqual(3, result.Position.Z, epsilon);
+            this.abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
+            this.relPosition = new Pose(new Vector3(2, 0, 2), new Vector3(0, 45, 0));
+            Pose result = AbRelPositioning.GetLocation(this.abPosition, this.relPosition);
+            Assert.AreEqual(3, result.Position.X, this.epsilon);
+            Assert.AreEqual(0, result.Position.Y, this.epsilon);
+            Assert.AreEqual(3, result.Position.Z, this.epsilon);
         }
 
+        /// <summary>
+        /// Test GetDistance
+        /// </summary>
         [Test]
         public void TestGetDistance()
         {
