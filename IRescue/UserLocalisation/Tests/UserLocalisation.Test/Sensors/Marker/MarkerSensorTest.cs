@@ -97,6 +97,34 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
+        /// test the get orientation measurement.
+        /// </summary>
+        [Test]
+        public void TestGetOrientationMeasurement()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(910, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.AreEqual(90, this.sensor.GetOrientation(0).Data.X);
+        }
+
+        /// <summary>
+        /// test the get orientation measurement for null.
+        /// </summary>
+        [Test]
+        public void TestGetOrientationMeasurementNull()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(910, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.Null(this.sensor.GetOrientation(-50));
+        }
+
+        /// <summary>
         /// test the get orientation measurements.
         /// </summary>
         [Test]
@@ -108,6 +136,34 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(0, pose2);
             this.sensor.UpdateLocations(dic);
             Assert.AreEqual(2, this.sensor.GetOrientations(0, long.MaxValue).Count);
+        }
+
+        /// <summary>
+        /// test the get position measurements.
+        /// </summary>
+        [Test]
+        public void TestGetPositionMeasurement()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.AreEqual(12f, this.sensor.GetPosition(0).Data.X);
+        }
+
+        /// <summary>
+        /// test the get position measurements for null.
+        /// </summary>
+        [Test]
+        public void TestGetPositionMeasurementNull()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.Null(this.sensor.GetPosition(-50));
         }
     }
 }

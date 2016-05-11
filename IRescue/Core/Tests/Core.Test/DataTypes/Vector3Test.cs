@@ -4,6 +4,7 @@
 
 namespace Core.Test
 {
+    using System;
     using IRescue.Core.DataTypes;
     using MathNet.Numerics.LinearAlgebra.Single;
     using NUnit.Framework;
@@ -21,6 +22,35 @@ namespace Core.Test
         {
             Vector3 vector = new Vector3(1, 2, 3);
             Assert.True(vector is DenseVector);
+        }
+
+        /// <summary>
+        /// Test the constructor
+        /// </summary>
+        [Test]
+        public void TestConstructor2()
+        {
+            Vector3 vector = new Vector3(new float[] { 1, 2, 3 });
+            Assert.True(vector is DenseVector);
+            Assert.True(vector.X == 1);
+        }
+
+        /// <summary>
+        /// Test the constructor exception
+        /// </summary>
+        [Test]
+        public void TestConstructorException()
+        {
+            try
+            {
+                Vector3 vector = new Vector3(new float[] { 1, 2, 3, 4 });
+            }
+            catch (ArgumentException e)
+            {
+                Assert.Pass();
+            }
+
+            Assert.Fail();
         }
 
         /// <summary>
