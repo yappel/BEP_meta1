@@ -29,6 +29,28 @@ namespace Core.Test
         /// </summary>
         private float epsilon = 0.00005f;
 
+        [Test]
+        public void Test2D()
+        {
+            abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
+            relPosition = new Pose(new Vector3(5, 0, 0), new Vector3(0, 0, 0));
+            Pose result = AbRelPositioning.GetLocation2D(abPosition, relPosition);
+            Assert.AreEqual(0, result.Position.X, epsilon);
+            Assert.AreEqual(0, result.Position.Y, epsilon);
+            Assert.AreEqual(5, result.Position.Z, epsilon);
+        }
+
+        [Test]
+        public void Test2D2()
+        {
+            abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 270, 0));
+            relPosition = new Pose(new Vector3(3, 0, 3), new Vector3(0, 315, 0));
+            Pose result = AbRelPositioning.GetLocation2D(abPosition, relPosition);
+            Assert.AreEqual(2, result.Position.X, 0.2);
+            Assert.AreEqual(0, result.Position.Y, epsilon);
+            Assert.AreEqual(2, result.Position.Z, 0.2);
+        }
+
         /// <summary>
         /// Test for simple position.
         /// </summary>
