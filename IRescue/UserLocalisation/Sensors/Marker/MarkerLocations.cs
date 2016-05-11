@@ -82,7 +82,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR: ", e);
+                Console.WriteLine("ERROR: ", e.Message);
             }
         }
 

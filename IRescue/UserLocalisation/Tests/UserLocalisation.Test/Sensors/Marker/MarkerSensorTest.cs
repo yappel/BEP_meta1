@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-
-namespace UserLocalisation.Test.Sensors.Marker
+﻿namespace UserLocalisation.Test.Sensors.Marker
 {
+    using NUnit.Framework;
+
     class MarkerSensorTest
     {
         [Test]
