@@ -47,7 +47,7 @@ namespace IRescue.Core.Utils
             Vector3 absolutePosition = absoluteLocation.Position;
             float distanceXY = (float)Math.Sqrt((relativeLocation.Position.X * relativeLocation.Position.X) + (relativeLocation.Position.Z * relativeLocation.Position.Z));
             return CalculateLocation2D(absoluteLocation.Position, absoluteLocation.Orientation, relativeLocation.Orientation, distanceXY);
-        }
+        } 
 
         /// <summary>
         ///   Calculate the Euclidean distance.
