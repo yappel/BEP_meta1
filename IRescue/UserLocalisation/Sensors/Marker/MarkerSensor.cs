@@ -35,6 +35,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private List<Measurement<Vector3>> orientations;
 
         /// <summary>
+        ///  The MarkerLocations.
+        /// </summary>
+        private MarkerLocations MarkerLocations;
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
         /// <param name="standardDeviation">The standard deviation of the sensor</param>
@@ -45,9 +50,15 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         }
 
         /// <summary>
-        ///   Gets or sets the MarkerLocations.
+        /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        public MarkerLocations MarkerLocations { get; set; }
+        /// <param name="standardDeviation">the standard deviation</param>
+        /// <param name="path">url to the xml file</param>
+        public MarkerSensor(float standardDeviation, string path)
+        {
+            this.standardDeviation = standardDeviation;
+            this.MarkerLocations = new MarkerLocations(path);
+        }
 
         /// <summary>
         ///   Update the locations derived from Markers.
@@ -119,7 +130,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastPosition()
         {
-            return this.positions.Count > 0 ? this.orientations[this.positions.Count - 1] : null;
+            return this.positions.Count > 0 ? this.positions[this.positions.Count - 1] : null;
         }
 
         /// <summary>

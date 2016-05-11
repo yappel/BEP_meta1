@@ -1,98 +1,134 @@
-﻿namespace UserLocalisation.Test.Sensors.Marker
+﻿// <copyright file="MarkerLocationsTest.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
+
+namespace UserLocalisation.Test.Sensors.Marker
 {
+    using System.IO;
+    using System.Reflection;
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Sensors.Marker;
     using NUnit.Framework;
-    using System;
-    using System.IO;
-    using System.Reflection;
+
+    /// <summary>
+    /// Test for MarkerLocations
+    /// </summary>
     public class MarkerLocationsTest
     {
+        /// <summary>
+        /// Used position
+        /// </summary>
         private Vector3 position;
+
+        /// <summary>
+        /// Used rotation
+        /// </summary>
         private Vector3 rotation;
+
+        /// <summary>
+        /// User MarkerLocations
+        /// </summary>
         private MarkerLocations markerLocations;
 
+        /// <summary>
+        /// Setup the test
+        /// </summary>
         [SetUp]
         public void Init()
         {
-            position = new Vector3(1, 2, 3);
-            rotation = new Vector3(4, 5, 6);
+            this.position = new Vector3(1, 2, 3);
+            this.rotation = new Vector3(4, 5, 6);
         }
 
-        // Test the empty constructor with an empty exception.
+        /// <summary>
+        /// Test the constructor empty
+        /// </summary>
         [Test]
         public void TestConstructorEmpty()
         {
-            markerLocations = new MarkerLocations();
+            this.markerLocations = new MarkerLocations();
             try
             {
-                markerLocations.GetMarker(1);
+                this.markerLocations.GetMarker(1);
             }
                 catch (UnallocatedMarkerException e)
             {
                 Assert.Pass();
             }
+
             Assert.Fail();
         }
 
-        // Test add marker for empty constructor.
+        /// <summary>
+        /// Test the constructor empty
+        /// </summary>
         [Test]
         public void TestConstructorEmptyAddMarker()
         {
-            markerLocations = new MarkerLocations();
-            Pose newMarker = new Pose(position, rotation);
-            markerLocations.AddMarker(1, newMarker);
-            Assert.AreEqual(markerLocations.GetMarker(1), newMarker);
+            this.markerLocations = new MarkerLocations();
+            Pose newMarker = new Pose(this.position, this.rotation);
+            this.markerLocations.AddMarker(1, newMarker);
+            Assert.AreEqual(this.markerLocations.GetMarker(1), newMarker);
         }
 
-        // Test add marker exception for empty constructor.
+        /// <summary>
+        /// Test the constructor empty exception
+        /// </summary>
         [Test]
         public void TestConstructorEmptyAddMarkerException()
         {
-            markerLocations = new MarkerLocations();
-            Pose newMarker = new Pose(position, rotation);
-            markerLocations.AddMarker(2, newMarker);
-            Assert.AreEqual(markerLocations.GetMarker(2), newMarker);
+            this.markerLocations = new MarkerLocations();
+            Pose newMarker = new Pose(this.position, this.rotation);
+            this.markerLocations.AddMarker(2, newMarker);
+            Assert.AreEqual(this.markerLocations.GetMarker(2), newMarker);
         }
 
-        // Test the constructor with an XML file.
+        /// <summary>
+        /// Test the constructor with xml
+        /// </summary>
         [Test]
         public void TestConstructorLoad()
         {
-            markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
-            Assert.AreEqual(markerLocations.GetMarker(0).Position.X, 25);
-            Assert.AreEqual(markerLocations.GetMarker(0).Position.Y, 13);
+            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.X, 25);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13);
         }
 
-        // Test the exception when an XML was loaded.
+        /// <summary>
+        /// Test the constructor exception with xml
+        /// </summary>
         [Test]
         public void TestConstructorException()
         {
-            markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
+            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
             try
             {
-                markerLocations.GetMarker(2);
+                this.markerLocations.GetMarker(2);
             }
             catch (UnallocatedMarkerException e)
             {
                 Assert.Pass();
             }
+
             Assert.Fail();
         }
 
-        // Test the exception the XML was wrong.
+        /// <summary>
+        /// Test the constructor for wrong xml
+        /// </summary>
         [Test]
         public void TestConstructorLoadException()
         {
-            markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMapFail.xml");
+            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMapFail.xml");
             try
             {
-                markerLocations.GetMarker(1);
+                this.markerLocations.GetMarker(1);
             }
             catch (UnallocatedMarkerException e)
             {
                 Assert.Pass();
             }
+
             Assert.Fail();
         }
     }
