@@ -6,6 +6,7 @@ namespace IRescue.Core.Utils
 {
     using System;
     using DataTypes;
+    using MathNet.Numerics;
 
     /// <summary>
     ///   Utility class to calculate the absolute position of a relative position.
@@ -44,14 +45,8 @@ namespace IRescue.Core.Utils
         public static Pose GetLocation2D(Pose absoluteLocation, Pose relativeLocation)
         {
             Vector3 absolutePosition = absoluteLocation.Position;
-            float distanceXY = (float)Math.Sqrt(relativeLocation.Position.X * relativeLocation.Position.X + relativeLocation.Position.Y + relativeLocation.Position.Y);
-            Vector3 rotation = CalculateRotation(absoluteLocation.Orientation, relativeLocation.Orientation);
-            Vector3 position = new Vector3(
-                absolutePosition.X + (float)(distanceXY * Math.Sin(rotation.Y * toRadian)),
-                absolutePosition.Y,
-                absolutePosition.Z + (float)(distanceXY * Math.Cos(rotation.Y * toRadian)));
-
-            return new Pose(position, rotation);
+            float distanceXY = (float)Math.Sqrt((relativeLocation.Position.X * relativeLocation.Position.X) + (relativeLocation.Position.Z * relativeLocation.Position.Z));
+            return CalculateLocation2D(absoluteLocation.Position, absoluteLocation.Orientation, relativeLocation.Orientation, distanceXY);
         }
 
         /// <summary>
@@ -69,6 +64,32 @@ namespace IRescue.Core.Utils
             return (float)Math.Sqrt((xValue * xValue) + (yValue * yValue) + (zValue * zValue));
         }
 
+        /// <summary>
+        /// Calculate the pose in a 2D plane.
+        /// </summary>
+        /// <param name="absolutePosition">the absolute position</param>
+        /// <param name="absoluteRotation">the absolute rotation</param>
+        /// <param name="relativeRotation">the relative rotation</param>
+        /// <param name="distanceXY">the distance between the two points</param>
+        /// <returns>pose of the calculated position</returns>
+        private static Pose CalculateLocation2D(
+            Vector3 absolutePosition, Vector3 absoluteRotation, Vector3 relativeRotation, float distanceXY)
+        {
+            Vector3 rotation = CalculateRotation(absoluteRotation, relativeRotation);
+            Vector3 position = new Vector3(
+                absolutePosition.X + (distanceXY * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
+                absolutePosition.Y,
+                absolutePosition.Z + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y))));
+
+            return new Pose(position, rotation);
+        }
+
+        /// <summary>
+        /// Calculate the absolute rotation
+        /// </summary>
+        /// <param name="absoluteRotation">absolute rotation</param>
+        /// <param name="relativeRotation">relative rotation</param>
+        /// <returns>the absolute rotation of the relative position</returns>
         private static Vector3 CalculateRotation(Vector3 absoluteRotation, Vector3 relativeRotation)
         {
             return new Vector3(
