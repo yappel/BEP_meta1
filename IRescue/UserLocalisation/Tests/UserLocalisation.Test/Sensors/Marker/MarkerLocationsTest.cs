@@ -89,7 +89,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorLoad()
         {
-            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
+            this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml");
             Assert.AreEqual(this.markerLocations.GetMarker(0).Position.X, 25);
             Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13);
         }
@@ -119,7 +119,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorLoadException()
         {
-            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMapFail.xml");
+            this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFail.xml");
             try
             {
                 this.markerLocations.GetMarker(1);

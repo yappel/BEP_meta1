@@ -29,7 +29,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         /// <summary>
         /// Path to the xml
         /// </summary>
-        private string savePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml";
+        private string savePath = TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml";
 
         /// <summary>
         /// Setup the map
@@ -97,6 +97,20 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
+        /// test the get all position measurements.
+        /// </summary>
+        [Test]
+        public void TestGetAllPositions()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.AreEqual(2, this.sensor.GetAllPositions().Count);
+        }
+
+        /// <summary>
         /// test the get orientation measurement.
         /// </summary>
         [Test]
@@ -136,6 +150,20 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(0, pose2);
             this.sensor.UpdateLocations(dic);
             Assert.AreEqual(2, this.sensor.GetOrientations(0, long.MaxValue).Count);
+        }
+
+        /// <summary>
+        /// test the get all orientation measurements.
+        /// </summary>
+        [Test]
+        public void TestGetAllOrientation()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            Assert.AreEqual(2, this.sensor.GetAllOrientations().Count);
         }
 
         /// <summary>
