@@ -6,11 +6,11 @@ namespace IRescue.Core.Utils
 {
     using System;
     using DataTypes;
-
-    /// <summary>
-    ///   Utility class to calculate the absolute position of a relative position.
-    /// </summary>
-    /// TODO test this class after user testing.
+    using MathNet.Numerics.LinearAlgebra;
+    using MathNet.Numerics.LinearAlgebra.Single;    /// <summary>
+                                                    ///   Utility class to calculate the absolute position of a relative position.
+                                                    /// </summary>
+                                                    /// TODO test this class after user testing.
     public static class AbRelPositioning
     { 
         /// <summary>
@@ -28,9 +28,10 @@ namespace IRescue.Core.Utils
         {
             Vector3 absolutePosition = absoluteLocation.Position;
             Vector3 absoluteRotation = absoluteLocation.Orientation;
+            Vector3 relativePosition = relativeLocation.Position;
             Vector3 relativeRotation = relativeLocation.Orientation;
-            float distance = CalculateDistance(absolutePosition, relativeLocation.Position);
-            Pose newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativeRotation, distance);
+            float distance = CalculateDistance(relativePosition);
+            Pose newLocation = CalculateLocation(absolutePosition, absoluteRotation, relativePosition, relativeRotation, distance);
 
             return newLocation;
         }
@@ -38,16 +39,11 @@ namespace IRescue.Core.Utils
         /// <summary>
         ///   Calculate the Euclidean distance.
         /// </summary>
-        /// <param name="pos1">First coordinate</param>
-        /// <param name="pos2">Second coordinate</param>
+        /// <param name="pos">Distance vector</param>
         /// <returns>3D euclidean distance</returns>
-        private static float CalculateDistance(Vector3 pos1, Vector3 pos2)
+        public static float CalculateDistance(Vector3 pos)
         {
-            float xValue = pos1.X - pos2.X;
-            float yValue = pos1.Y - pos2.Y;
-            float zValue = pos1.Z - pos2.Z;
-
-            return (float)Math.Sqrt((xValue * xValue) + (yValue * yValue) + (zValue * zValue));
+            return (float)Math.Sqrt((pos.X * pos.X) + (pos.Y * pos.Y) + (pos.Z * pos.Z));
         }
 
         /// <summary>
@@ -59,16 +55,19 @@ namespace IRescue.Core.Utils
         /// <param name="distance">Distance to the absolute point as seen from the relative point</param>
         /// <returns>Location and rotation of the relatively given location</returns>
         private static Pose CalculateLocation(
-            Vector3 absolutePosition, Vector3 absoluteRotation, Vector3 relativeRotation, float distance)
+            Vector3 absolutePosition, Vector3 absoluteRotation, Vector3 relativePosition, Vector3 relativeRotation, float distance)
         {
             Vector3 rotation = new Vector3(
-                relativeRotation.X - absoluteRotation.X,
-                relativeRotation.Y - absoluteRotation.Y,
-                relativeRotation.Z - absoluteRotation.Z);
+                relativeRotation.X + absoluteRotation.X,
+                relativeRotation.Y + absoluteRotation.Y,
+                relativeRotation.Z + absoluteRotation.Z);
             Vector3 position = new Vector3(
-                absolutePosition.X + (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Sin(rotation.Y * toRadian)), 
-                absolutePosition.Y + (float)(distance * Math.Sin(rotation.Z * toRadian)), 
-                absolutePosition.Z + (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Cos(rotation.Y * toRadian)));
+                absolutePosition.X - (float)(distance * Math.Sin(rotation.Y * toRadian)),
+                absolutePosition.Y - (float)(distance * -1 * Math.Sin(rotation.X * toRadian) * Math.Cos(rotation.Y * toRadian)),
+                absolutePosition.Z - (float)(distance * Math.Cos(rotation.Y * toRadian) * Math.Cos(rotation.Y * toRadian)));
+                //absolutePosition.X - (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Sin(rotation.Y * toRadian)), 
+                //absolutePosition.Y - (float)(distance * Math.Sin(rotation.Z * toRadian)), 
+                //absolutePosition.Z - (float)(distance * Math.Cos(rotation.Z * toRadian) * Math.Cos(rotation.Y * toRadian)));
 
             return new Pose(position, rotation);
         }
