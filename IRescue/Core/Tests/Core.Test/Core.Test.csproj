@@ -70,6 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTypes\MeasurementTest.cs" />
+    <Compile Include="DataTypes\PoseTest.cs" />
     <Compile Include="DataTypes\Vector3Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
