@@ -4,12 +4,12 @@
 
 namespace UserLocalisation.Test.Sensors.Marker
 {
-    using System.IO;
-    using System.Reflection;
+    using System;
+    using System.Xml;
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Sensors.Marker;
     using NUnit.Framework;
-
+    
     /// <summary>
     /// Test for MarkerLocations
     /// </summary>
@@ -100,7 +100,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorException()
         {
-            this.markerLocations = new MarkerLocations(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\MarkerMap01.xml");
+            this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml");
             try
             {
                 this.markerLocations.GetMarker(2);
@@ -119,12 +119,29 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorLoadException()
         {
-            this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFail.xml");
             try
             {
-                this.markerLocations.GetMarker(1);
+                this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFail.xml");
             }
-            catch (UnallocatedMarkerException)
+            catch (NullReferenceException)
+            {
+                Assert.Pass();
+            }
+
+            Assert.Fail();
+        }
+
+        /// <summary>
+        /// Test the constructor for wrongly parsed xml
+        /// </summary>
+        [Test]
+        public void TestConstructorFailLoadException()
+        {
+            try
+            {
+                this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFailFormat.xml");
+            }
+            catch (XmlException)
             {
                 Assert.Pass();
             }

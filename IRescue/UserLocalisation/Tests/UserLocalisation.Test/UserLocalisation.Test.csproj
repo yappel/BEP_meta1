@@ -80,6 +80,7 @@
   <ItemGroup>
     <Content Include="Resources\MarkerMap01.xml" />
     <Content Include="Resources\MarkerMapFail.xml" />
+    <Content Include="Resources\MarkerMapFailFormat.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Core.csproj">
