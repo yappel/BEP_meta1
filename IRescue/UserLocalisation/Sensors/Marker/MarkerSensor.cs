@@ -20,11 +20,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private readonly float standardDeviation;
 
         /// <summary>
-        ///   Path to the saved markers.
-        /// </summary>
-        private readonly string savePath = "./Assets/Maps/MarkerMap01.xml";
-
-        /// <summary>
         ///   The predicted locations.
         /// </summary>
         private List<Measurement<Vector3>> positions;
@@ -35,41 +30,42 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private List<Measurement<Vector3>> orientations;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MarkerSensor"/> class.
+        ///  The MarkerLocations.
         /// </summary>
-        /// <param name="standardDeviation">The standard deviation of the sensor</param>
-        public MarkerSensor(float standardDeviation)
-        {
-            this.standardDeviation = standardDeviation;
-            this.MarkerLocations = new MarkerLocations(this.savePath);
-        }
+        private MarkerLocations markerLocations;
 
         /// <summary>
-        ///   Gets or sets the MarkerLocations.
+        /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        public MarkerLocations MarkerLocations { get; set; }
+        /// <param name="standardDeviation">the standard deviation</param>
+        /// <param name="path">url to the xml file</param>
+        public MarkerSensor(float standardDeviation, string path)
+        {
+            this.standardDeviation = standardDeviation;
+            this.markerLocations = new MarkerLocations(path);
+        }
 
         /// <summary>
         ///   Update the locations derived from Markers.
         /// </summary>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-        /// <param name="timeStamp">The current timestamp of the call</param>
-        public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds, long timeStamp)
+        public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds)
         {
+            long timeStamp = StopwatchSingleton.Time;
             this.positions = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
             this.orientations = new List<Measurement<Vector3>>(visibleMarkerIds.Count);
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
-                    Pose currentMarkerPose = this.MarkerLocations.GetMarker(pair.Key);
+                    Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
                     this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
                     this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
                 }
                 catch (UnallocatedMarkerException e)
                 {
-                    Console.WriteLine("ERROR: ", e);
+                    Console.WriteLine("ERROR: ", e.Message);
                 }
             }
         }
@@ -119,7 +115,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastPosition()
         {
-            return this.positions.Count > 0 ? this.orientations[this.positions.Count - 1] : null;
+            return this.positions.Count > 0 ? this.positions[this.positions.Count - 1] : null;
         }
 
         /// <summary>
