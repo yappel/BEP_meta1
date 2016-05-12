@@ -111,21 +111,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
         /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
         public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize, Vector3 gravity)
+            : this(accelerationStd, orientationStd, measurementBufferSize)
         {
-            //// Init measurement buffers
-            this.accelerations = new Vector3[measurementBufferSize];
-            this.orientations = new Vector3[measurementBufferSize];
-            this.velocity = new Vector3[measurementBufferSize];
-            this.timeStamps = new long[measurementBufferSize];
-            //// Init parameters
-            this.measurementBufferSize = measurementBufferSize;
-            this.accelerationStd = accelerationStd;
-            this.orientationStd = orientationStd;
             this.gravity = gravity;
-            //// No starting velocity specified, init on 0.
-            this.velocity[0] = new Vector3(0, 0, 0);
-            this.velocitySize = 1;
-            this.velocityPointer = 0;
         }
 
         /// <summary>
@@ -139,18 +127,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
         /// <param name="startVelocity">The starting velocity of the IMU.</param>
         public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize, Vector3 gravity, Vector3 startVelocity)
+            : this(accelerationStd, orientationStd, measurementBufferSize, gravity)
         {
-            //// Init measurement buffers
-            this.accelerations = new Vector3[measurementBufferSize];
-            this.orientations = new Vector3[measurementBufferSize];
-            this.velocity = new Vector3[measurementBufferSize];
-            this.timeStamps = new long[measurementBufferSize];
-            //// Init parameters
-            this.measurementBufferSize = measurementBufferSize;
-            this.accelerationStd = accelerationStd;
-            this.orientationStd = orientationStd;
-            //// Set specified gravity and velocity
-            this.gravity = gravity;
             this.velocity[0] = startVelocity;
             this.velocitySize = 1;
             this.velocityPointer = 0;
