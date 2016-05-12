@@ -35,7 +35,7 @@ public class ImuSensorController : AbstractSensorController
     /// <summary>
     ///   The measurement buffer size
     /// </summary>
-    private int bufferSize;
+    private int bufferSize = 30;
 
     /// <summary>
     ///   Method called when creating a UserController.
@@ -59,6 +59,10 @@ public class ImuSensorController : AbstractSensorController
     /// </summary>
     public void Update()
     {
-        this.imuSource.AddMeasurements();
+        UnityEngine.Vector3 unity_acc = IMULocalizer.Instance.accelerometerValues;
+        UnityEngine.Vector3 unity_ori = IMULocalizer.Instance.localizerOrientation;
+        Vector3 acc = new Vector3(unity_acc.x * (float)(9.81 / 8192), unity_acc.y * (float)(9.81 / 8192), unity_acc.z * (float)(9.81 / 8192));
+        Vector3 ori = new Vector3(unity_ori.x, unity_ori.y, unity_ori.z);
+        this.imuSource.AddMeasurements(IRescue.Core.Utils.StopwatchSingleton.Time, acc, ori);
     }
 }
