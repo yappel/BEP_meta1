@@ -65,18 +65,9 @@ namespace Core.Test
             this.abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 0, 0));
             this.relPosition = new Pose(new Vector3(2, 0, 2), new Vector3(0, 45, 0));
             Pose result = AbRelPositioning.GetLocation(this.abPosition, this.relPosition);
-            Assert.AreEqual(3, result.Position.X, this.epsilon);
+            Assert.AreEqual(7, result.Position.X, this.epsilon);
             Assert.AreEqual(0, result.Position.Y, this.epsilon);
-            Assert.AreEqual(3, result.Position.Z, this.epsilon);
-        }
-
-        /// <summary>
-        /// Test GetDistance
-        /// </summary>
-        [Test]
-        public void TestGetDistance()
-        {
-            Assert.AreEqual(1, AbRelPositioning.CalculateDistance(new Vector3(1, 0, 0)));
+            Assert.AreEqual(7, result.Position.Z, this.epsilon);
         }
     }
 }
