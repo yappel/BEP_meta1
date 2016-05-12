@@ -21,15 +21,15 @@ namespace IRescue.UserLocalisation.Sensors
         /// <summary>
         /// Get the orientation measurement from the specified time stamp.
         /// </summary>
-        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <param name="timeStamp">The time stamp to take the measurement from in milliseconds.</param>
         /// <returns>The measurement at the specified timestamp with standard deviation.</returns>
         Measurement<Vector3> GetOrientation(long timeStamp);
 
         /// <summary>
         /// Get the orientations starting from the specified start time stamp up to and including the end time stamp.
         /// </summary>
-        /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
-        /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
+        /// <param name="startTimeStamp">The start time stamp to include measurements from in milliseconds.</param>
+        /// <param name="endTimeStamp">The end time stamp to include measurements up to in milliseconds.</param>
         /// <returns>A list of measurements with their time stamps and standard deviations.</returns>
         List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp);
 
