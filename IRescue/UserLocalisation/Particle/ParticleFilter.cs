@@ -116,6 +116,7 @@ namespace IRescue.UserLocalisation.Particle
                         return c;
                     }
                 });
+                matrix.SetColumn(i, column.ToArray());
             }
             foreach (Vector<float> column in matrix.EnumerateColumns())
             {
@@ -175,7 +176,15 @@ namespace IRescue.UserLocalisation.Particle
             measx.AddRange(measy);
             measx.AddRange(measz);
             measx.AddRange(std);
-            this.measurementspos = new DenseMatrix(std.Count, 4, measx.ToArray());
+
+            if (std.Count() == 0)
+            {
+                this.measurementspos = null;
+            }
+            else
+            {
+                this.measurementspos = new DenseMatrix(std.Count, 4, measx.ToArray());
+            }
 
             measx.Clear();
             measy.Clear();
