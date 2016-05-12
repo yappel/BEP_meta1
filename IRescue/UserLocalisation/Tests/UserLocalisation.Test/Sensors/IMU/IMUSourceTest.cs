@@ -441,6 +441,52 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// the correct results for get last acceleration.
+        /// </summary>
+        [Test]
+        public void GetLastAccelerationBufferLimitReached()
+        {
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0,0,0));
+            Vector3 v0 = new Vector3(0, 0, 0);
+            Vector3 v1 = new Vector3(1, 1, 1);
+            Vector3 v2 = new Vector3(2, 2, 2);
+            Vector3 v3 = new Vector3(3, 3, 3);
+            Vector3 v4 = new Vector3(4, 4, 4);
+            this.source.AddMeasurements(0, v0, this.zeroOrientation);
+            this.source.AddMeasurements(1, v1, this.zeroOrientation);
+            this.source.AddMeasurements(2, v2, this.zeroOrientation);
+            this.source.AddMeasurements(3, v3, this.zeroOrientation);
+            this.source.AddMeasurements(4, v4, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetLastAcceleration();
+            this.AssertVectorAreEqual(v4, res.Data);
+            Assert.AreEqual(4, res.TimeStamp);
+        }
+
+        /// <summary>
+        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// the correct results for get last orientation.
+        /// </summary>
+        [Test]
+        public void GetLastOrientationBufferLimitReached()
+        {
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
+            Vector3 v0 = new Vector3(0, 0, 0);
+            Vector3 v1 = new Vector3(1, 1, 1);
+            Vector3 v2 = new Vector3(2, 2, 2);
+            Vector3 v3 = new Vector3(3, 3, 3);
+            Vector3 v4 = new Vector3(4, 4, 4);
+            this.source.AddMeasurements(0, v0, v0);
+            this.source.AddMeasurements(1, v0, v1);
+            this.source.AddMeasurements(2, v0, v2);
+            this.source.AddMeasurements(3, v0, v3);
+            this.source.AddMeasurements(4, v0, v4);
+            Measurement<Vector3> res = this.source.GetLastOrientation();
+            this.AssertVectorAreEqual(v4, res.Data);
+            Assert.AreEqual(4, res.TimeStamp);
+        }
+
+        /// <summary>
         /// Assert that all elements in the vectors match with possible deviation 0.0001.
         /// </summary>
         /// <param name="expected">The expected vector.</param>
