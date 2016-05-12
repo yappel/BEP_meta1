@@ -6,6 +6,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Xml;
     using Core.DataTypes;
 
@@ -80,9 +81,10 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                     this.markers.Add(XmlConvert.ToInt32(node["id"].InnerText), this.XmlTransform(node));
                 }
             }
-            catch (Exception e)
+            catch (Exception ex) when (ex is IOException || ex is NullReferenceException || ex is XmlException)
             {
-                Console.WriteLine("ERROR: ", e);
+                Console.WriteLine("ERROR: ", ex.Message);
+                throw;
             }
         }
 
