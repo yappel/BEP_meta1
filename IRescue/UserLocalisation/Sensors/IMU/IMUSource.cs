@@ -9,8 +9,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
 
     /// <summary>
     /// The IMU Source provides data from sensors in an IMU and computes values which can be derived from this.
-    /// Implements <see cref="IAccelerationSource"/>, <see cref="IDisplacementSource"/> and <see cref="IOrientationSource"/> 
-    /// to provide data on acceleration, displacement, orientation and velocity.
+    /// Implements <see cref="IAccelerationSource"/>, <see cref="IDisplacementSource"/>, <see cref="IVelocitySource"/> 
+    /// and <see cref="IOrientationSource"/> to provide data on acceleration, displacement, orientation and velocity.
     /// </summary>
     public class IMUSource : IAccelerationSource, IDisplacementSource, IOrientationSource, IVelocitySource
     {
@@ -287,10 +287,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.accelerations[this.measurementPointer], this.accelerationStd, this.timeStamps[this.measurementPointer]);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -303,10 +300,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.orientations[this.measurementPointer], this.orientationStd, this.timeStamps[this.measurementPointer]);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -362,10 +356,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.velocity[this.velocityPointer], this.accelerationStd, this.timeStamps[this.velocityPointer]);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
