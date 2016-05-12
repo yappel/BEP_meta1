@@ -54,6 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
+    <Compile Include="Particle\Algos\InitParticles.cs" />
+    <Compile Include="Particle\Algos\Feeder.cs" />
+    <Compile Include="Particle\Algos\NoiseGenerator.cs" />
+    <Compile Include="Particle\Algos\Resample.cs" />
+    <Compile Include="Particle\ParticleFilter.cs" />
     <Compile Include="PosePrediction\LinearPredicter.cs" />
     <Compile Include="Particle\MonteCarloLocalizer.cs" />
     <Compile Include="Particle\MonteCarloParticle.cs" />
@@ -85,7 +90,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
