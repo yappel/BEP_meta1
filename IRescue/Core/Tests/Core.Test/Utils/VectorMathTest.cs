@@ -7,36 +7,48 @@ namespace Core.Test
     using IRescue.Core.DataTypes;
     using NUnit.Framework;
 
+    /// <summary>
+    /// Test class for testing the <see cref="IRescue.Core.Utils.VectorMath"/> class.
+    /// </summary>
     public class VectorMathTest
     {
+        /// <summary>
+        /// Test that a simple 90 degrees rotation around the X axis returns the correct result.
+        /// </summary>
         [Test]
-        public void RotateVectorSimpleRollTest()
+        public void RotateVectorSimpleXAxisRotationTest()
         {
             Vector3 vec = new Vector3(0, 1, 0);
-            Vector3 res = IRescue.Core.Utils.VectorMath.RotateVector(vec, 90, 0, 0);
-            Assert.AreEqual(0, res.X, 0.01f);
-            Assert.AreEqual(0, res.Y, 0.01f);
-            Assert.AreEqual(1, res.Z, 0.01f);
+            IRescue.Core.Utils.VectorMath.RotateVector(vec, 90, 0, 0);
+            Assert.AreEqual(0, vec.X, 0.01f);
+            Assert.AreEqual(0, vec.Y, 0.01f);
+            Assert.AreEqual(1, vec.Z, 0.01f);
         }
 
+        /// <summary>
+        /// Test that a simple 90 degrees rotation around the Y axis returns the correct result. 
+        /// </summary>
         [Test]
-        public void RotateVectorSimplePitchTest()
+        public void RotateVectorSimpleYAxisRotationTest()
         {
             Vector3 vec = new Vector3(0, 0, 1);
-            Vector3 res = IRescue.Core.Utils.VectorMath.RotateVector(vec, 0, 90, 0);
-            Assert.AreEqual(1, res.X, 0.01f);
-            Assert.AreEqual(0, res.Y, 0.01f);
-            Assert.AreEqual(0, res.Z, 0.01f);
+            IRescue.Core.Utils.VectorMath.RotateVector(vec, 0, 90, 0);
+            Assert.AreEqual(1, vec.X, 0.01f);
+            Assert.AreEqual(0, vec.Y, 0.01f);
+            Assert.AreEqual(0, vec.Z, 0.01f);
         }
 
+        /// <summary>
+        /// Test that a simple 90 degrees rotation around the Z axis returns the correct result.
+        /// </summary>
         [Test]
-        public void RotateVectorSimpleYawTest()
+        public void RotateVectorSimpleZAxisRotationTest()
         {
             Vector3 vec = new Vector3(0, 1, 0);
-            Vector3 res = IRescue.Core.Utils.VectorMath.RotateVector(vec, 0, 0, 90);
-            Assert.AreEqual(-1, res.X, 0.01f);
-            Assert.AreEqual(0, res.Y, 0.01f);
-            Assert.AreEqual(0, res.Z, 0.01f);
+            IRescue.Core.Utils.VectorMath.RotateVector(vec, 0, 0, 90);
+            Assert.AreEqual(-1, vec.X, 0.01f);
+            Assert.AreEqual(0, vec.Y, 0.01f);
+            Assert.AreEqual(0, vec.Z, 0.01f);
         }
     }
 }

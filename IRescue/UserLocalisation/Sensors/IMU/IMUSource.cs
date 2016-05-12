@@ -4,7 +4,6 @@
 
 namespace IRescue.UserLocalisation.Sensors.IMU
 {
-    using System;
     using System.Collections.Generic;
     using Core.DataTypes;
 
@@ -13,17 +12,27 @@ namespace IRescue.UserLocalisation.Sensors.IMU
     /// Implements <see cref="IAccelerationSource"/>, <see cref="IDisplacementSource"/> and <see cref="IOrientationSource"/> 
     /// to provide data on acceleration, displacement, orientation and velocity.
     /// </summary>
-    public class IMUSource : IAccelerationSource, IDisplacementSource, IOrientationSource
+    public class IMUSource : IAccelerationSource, IDisplacementSource, IOrientationSource, IVelocitySource
     {
         /// <summary>
-        /// Pointer to the last added measurement.
+        /// Pointer to the last added acceleration, time stamp and orientation measurement.
         /// </summary>
-        private int pointer = -1;
+        private int measurementPointer = -1;
+
+        /// <summary>
+        /// Pointer to the last added velocity measurement.
+        /// </summary>
+        private int velocityPointer = -1;
 
         /// <summary>
         /// Size of the currently stored measurements.
         /// </summary>
-        private int currentSize = 0;
+        private int measurementSize = 0;
+
+        /// <summary>
+        /// Size of the currently stored velocities.
+        /// </summary>
+        private int velocitySize = 0;
 
         /// <summary>
         /// The size of the buffer in which data can be stored.
@@ -34,6 +43,11 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// Array storing the acceleration measurements with size of <see cref="measurementBufferSize"/>.
         /// </summary>
         private Vector3[] accelerations;
+
+        /// <summary>
+        /// Array storing all derived velocity measurements with size of <see cref="measurementBufferSize"/>.
+        /// </summary>
+        private Vector3[] velocity;
 
         /// <summary>
         /// The standard deviation belonging to the measurements of the acceleration.
@@ -56,6 +70,65 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         private long[] timeStamps;
 
         /// <summary>
+        /// The gravity acceleration vector of the environment, defaults to Earth's gravity.
+        /// </summary>
+        private Vector3 gravity = new Vector3(new float[] { 0f, -9.81f, 0 });
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IMUSource"/> class. Measurements can be added to the source and the last 
+        /// number of measurements specified by <see cref="measurementBufferSize"/> are stored. Acceleration and orientation both 
+        /// have an accompanying standard deviation belonging to the sensor: <see cref="accelerationStd"/> and <see cref="orientationStd"/>.
+        /// Initializes default Earth gravity and starting velocity of 0.
+        /// </summary>
+        /// <param name="accelerationStd">The standard deviation of the acceleration sensor of the IMU.</param>
+        /// <param name="orientationStd">The standard deviation of the orientation sensor of the IMU.</param>
+        /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
+        public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize)
+        {
+            //// Create measurement buffers
+            this.accelerations = new Vector3[measurementBufferSize];
+            this.orientations = new Vector3[measurementBufferSize];
+            this.velocity = new Vector3[measurementBufferSize];
+            this.timeStamps = new long[measurementBufferSize];
+            //// Set parameters
+            this.measurementBufferSize = measurementBufferSize;
+            this.accelerationStd = accelerationStd;
+            this.orientationStd = orientationStd;
+            //// No starting velocity specified, init on 0
+            this.velocity[0] = new Vector3(0, 0, 0);
+            this.velocitySize = 1;
+            this.velocityPointer = 0;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IMUSource"/> class. Measurements can be added to the source and the last 
+        /// number of measurements specified by <see cref="measurementBufferSize"/> are stored. Acceleration and orientation both 
+        /// have an accompanying standard deviation belonging to the sensor: <see cref="accelerationStd"/> and <see cref="orientationStd"/>.
+        /// Initializes starting velocity of 0.
+        /// </summary>
+        /// <param name="accelerationStd">The standard deviation of the acceleration sensor of the IMU.</param>
+        /// <param name="orientationStd">The standard deviation of the orientation sensor of the IMU.</param>
+        /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
+        /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
+        public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize, Vector3 gravity)
+        {
+            //// Init measurement buffers
+            this.accelerations = new Vector3[measurementBufferSize];
+            this.orientations = new Vector3[measurementBufferSize];
+            this.velocity = new Vector3[measurementBufferSize];
+            this.timeStamps = new long[measurementBufferSize];
+            //// Init parameters
+            this.measurementBufferSize = measurementBufferSize;
+            this.accelerationStd = accelerationStd;
+            this.orientationStd = orientationStd;
+            this.gravity = gravity;
+            //// No starting velocity specified, init on 0.
+            this.velocity[0] = new Vector3(0, 0, 0);
+            this.velocitySize = 1;
+            this.velocityPointer = 0;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="IMUSource"/> class. Measurements can be added to the source and the last 
         /// number of measurements specified by <see cref="measurementBufferSize"/> are stored. Acceleration and orientation both 
         /// have an accompanying standard deviation belonging to the sensor: <see cref="accelerationStd"/> and <see cref="orientationStd"/>.
@@ -63,14 +136,24 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="accelerationStd">The standard deviation of the acceleration sensor of the IMU.</param>
         /// <param name="orientationStd">The standard deviation of the orientation sensor of the IMU.</param>
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
-        public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize)
+        /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
+        /// <param name="startVelocity">The starting velocity of the IMU.</param>
+        public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize, Vector3 gravity, Vector3 startVelocity)
         {
+            //// Init measurement buffers
             this.accelerations = new Vector3[measurementBufferSize];
             this.orientations = new Vector3[measurementBufferSize];
+            this.velocity = new Vector3[measurementBufferSize];
             this.timeStamps = new long[measurementBufferSize];
+            //// Init parameters
             this.measurementBufferSize = measurementBufferSize;
             this.accelerationStd = accelerationStd;
             this.orientationStd = orientationStd;
+            //// Set specified gravity and velocity
+            this.gravity = gravity;
+            this.velocity[0] = startVelocity;
+            this.velocitySize = 1;
+            this.velocityPointer = 0;
         }
 
         /// <summary>
@@ -82,13 +165,28 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="orientation">The orientation measurement.</param>
         public void AddMeasurements(long timeStamp, Vector3 acceleration, Vector3 orientation)
         {
-            this.pointer = (this.pointer + 1) % this.measurementBufferSize;
-            this.timeStamps[this.pointer] = timeStamp;
-            this.accelerations[this.pointer] = acceleration;
-            this.orientations[this.pointer] = orientation;
-            if (this.currentSize < this.measurementBufferSize)
+            this.measurementPointer = (this.measurementPointer + 1) % this.measurementBufferSize;
+            this.timeStamps[this.measurementPointer] = timeStamp;
+            Vector3 acc = new Vector3(0, 0, 0);
+            IRescue.Core.Utils.VectorMath.RotateVector(acceleration, orientation.X, orientation.Y, orientation.Z, acc);
+            acc.Subtract(this.gravity, acc);
+            this.accelerations[this.measurementPointer] = acc;
+            this.orientations[this.measurementPointer] = orientation;
+            if (this.measurementSize < this.measurementBufferSize)
             {
-                this.currentSize++;
+                this.measurementSize++;
+            }
+            //// If there are more than 2 measurements, calculate velocity
+            if (this.measurementSize > 1)
+            {
+                this.velocityPointer = (this.velocityPointer + 1) % this.measurementBufferSize;
+                Vector3 vel = this.CalculateDeltaV(this.accelerations[this.measurementPointer - 1], this.accelerations[this.measurementPointer], this.timeStamps[this.measurementPointer - 1], this.timeStamps[this.measurementPointer]);
+                vel.Add(this.velocity[this.velocityPointer - 1], vel);
+                this.velocity[this.velocityPointer] = vel;
+                if (this.velocitySize < this.measurementBufferSize)
+                {
+                    this.velocitySize++;
+                }
             }
         }
 
@@ -99,9 +197,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>Acceleration vector and the standard deviation of the measurement, null when there is no measurement.</returns>
         public Measurement<Vector3> GetAcceleration(long timeStamp)
         {
-            if (this.currentSize > 0)
+            if (this.measurementSize > 0)
             {
-                for (int i = 0; i < this.currentSize; i++)
+                for (int i = 0; i < this.measurementSize; i++)
                 {
                     if (this.timeStamps[i] == timeStamp)
                     {
@@ -122,8 +220,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         public List<Measurement<Vector3>> GetAccelerations(long startTimeStamp, long endTimeStamp)
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            int first = this.GetOldestMeasurementIndex();
-            for (int i = 0; i < this.currentSize; i++)
+            int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 int index = (first + i) % this.measurementBufferSize;
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
@@ -141,9 +239,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list with all the acceleration measurements.</returns>
         public List<Measurement<Vector3>> GetAllAccelerations()
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.currentSize);
-            int first = this.GetOldestMeasurementIndex();
-            for (int i = 0; i < this.currentSize; i++)
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.measurementSize);
+            int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 int index = (first + i) % this.measurementBufferSize;
                 res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
@@ -158,9 +256,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list with all the orientation measurements.</returns>
         public List<Measurement<Vector3>> GetAllOrientations()
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.currentSize);
-            int first = this.GetOldestMeasurementIndex();
-            for (int i = 0; i < this.currentSize; i++)
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.measurementSize);
+            int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 int index = (first + i) % this.measurementBufferSize;
                 res.Add(new Measurement<Vector3>(this.orientations[index], this.orientationStd, this.timeStamps[index]));
@@ -169,42 +267,36 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             return res;
         }
 
+        /// <summary>
+        /// Get the displacement over the specified time period.
+        /// Performs double integration of acceleration: inaccurate errors accumulate over time.
+        /// </summary>
+        /// <param name="startTimeStamp">The start time stamp to calculate displacement from.</param>
+        /// <param name="endTimeStamp">The end time stamp to calculate displacement to.</param>
+        /// <returns>Displacement with standard deviation and time stamp of last velocity measurement.</returns>
         public Measurement<Vector3> GetDisplacement(long startTimeStamp, long endTimeStamp)
         {
-            List<Measurement<Vector3>> acc = this.GetAccelerations(startTimeStamp, endTimeStamp);
-            if (acc.Count > 2)
+            List<Measurement<Vector3>> vel = this.GetVelocities(startTimeStamp, endTimeStamp);
+            Vector3 displacement = new Vector3(0, 0, 0);
+            Vector3 temp = new Vector3(0, 0, 0);
+            if (vel.Count > 0)
             {
-                List<Measurement<Vector3>> ori = this.GetOrientations(startTimeStamp, endTimeStamp);
-                List<Measurement<Vector3>> worldAcc = new List<Measurement<Vector3>>(acc.Count);
-                for (int i = 0; i < acc.Count; i++)
+                for (int i = 0; i < vel.Count - 1; i++)
                 {
-                    worldAcc.Add(new Measurement<Vector3>(IRescue.Core.Utils.VectorMath.RotateVector(acc[i].Data, -1 * ori[i].Data.X, -1 * ori[i].Data.Y, -1 * ori[i].Data.Z), acc[i].Std, acc[i].TimeStamp));
+                    Vector3 v1 = vel[i].Data;
+                    Vector3 v2 = vel[i + 1].Data;
+                    long t1 = vel[i].TimeStamp;
+                    long t2 = vel[i + 1].TimeStamp;
+                    v1.Add(v2, temp);
+                    temp.Divide(2, temp);
+                    temp.Multiply(this.MilliSecondsToSeconds(t2 - t1), temp);
+                    displacement.Add(temp, displacement);
                 }
-                Vector3 displacement = new Vector3(0, 0, 0);
-                Vector3 vel1 = new Vector3(0, 0, 0);
-                Vector3 vel2 = new Vector3(0, 0, 0);
-                // TODO fix std with integration
-                float std = acc[0].Std;
-                long t1;
-                long t2;
-                for (int i = 1; i < (worldAcc.Count - 1); i++)
-                {
-                    t1 = worldAcc[i - 1].TimeStamp + ((worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) / 2);
-                    t2 = worldAcc[i].TimeStamp + ((worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) / 2);
-                    vel1.X = (worldAcc[i - 1].Data.X + worldAcc[i].Data.X) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i-1].TimeStamp) * 1000;
-                    vel2.X = (worldAcc[i].Data.X + worldAcc[i+1].Data.X) / 2 * (float)(worldAcc[i+1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
-                    vel1.Y = (worldAcc[i - 1].Data.Y + worldAcc[i].Data.Y) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) * 1000;
-                    vel2.Y = (worldAcc[i].Data.Y + worldAcc[i + 1].Data.Y) / 2 * (float)(worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
-                    vel1.Z = (worldAcc[i - 1].Data.Z + worldAcc[i].Data.Z) / 2 * (float)(worldAcc[i].TimeStamp - worldAcc[i - 1].TimeStamp) * 1000;
-                    vel2.Z = (worldAcc[i].Data.Z + worldAcc[i + 1].Data.Z) / 2 * (float)(worldAcc[i + 1].TimeStamp - worldAcc[i].TimeStamp) * 1000;
-
-                    displacement.X += (vel1.X + vel2.X) / 2 * (float)(t2 - t1) * 1000;
-                    displacement.Y += (vel1.Y + vel2.Y) / 2 * (float)(t2 - t1) * 1000;
-                    displacement.Z += (vel1.Z + vel2.Z) / 2 * (float)(t2 - t1) * 1000;
-                }
-                return new Measurement<Vector3>(displacement, std, (startTimeStamp + endTimeStamp) / 2);
+                //// TODO fix std and time
+                return new Measurement<Vector3>(displacement, vel[0].Std, vel[vel.Count - 1].TimeStamp);
             }
-            return null;
+            //// TODO fix std and time
+            return new Measurement<Vector3>(displacement, 100, endTimeStamp);
         }
 
         /// <summary>
@@ -213,9 +305,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>The acceleration vector with time stamp and standard deviation or null when there is no measurement.</returns>
         public Measurement<Vector3> GetLastAcceleration()
         {
-            if (this.currentSize > 0)
+            if (this.measurementSize > 0)
             {
-                return new Measurement<Vector3>(this.accelerations[this.pointer], this.accelerationStd, this.timeStamps[this.pointer]);
+                return new Measurement<Vector3>(this.accelerations[this.measurementPointer], this.accelerationStd, this.timeStamps[this.measurementPointer]);
             }
             else
             {
@@ -229,9 +321,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>The orientation vector with time stamp and standard deviation or null when there is no measurement.</returns>
         public Measurement<Vector3> GetLastOrientation()
         {
-            if (this.currentSize > 0)
+            if (this.measurementSize > 0)
             {
-                return new Measurement<Vector3>(this.orientations[this.pointer], this.orientationStd, this.timeStamps[this.pointer]);
+                return new Measurement<Vector3>(this.orientations[this.measurementPointer], this.orientationStd, this.timeStamps[this.measurementPointer]);
             }
             else
             {
@@ -246,9 +338,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>The orientation measurement at the time stamp with standard deviation.</returns>
         public Measurement<Vector3> GetOrientation(long timeStamp)
         {
-            if (this.currentSize > 0)
+            if (this.measurementSize > 0)
             {
-                for (int i = 0; i < this.currentSize; i++)
+                for (int i = 0; i < this.measurementSize; i++)
                 {
                     if (this.timeStamps[i] == timeStamp)
                     {
@@ -269,14 +361,93 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            int first = this.GetOldestMeasurementIndex();
-            for (int i = 0; i < this.currentSize; i++)
+            int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 int index = (first + i) % this.measurementBufferSize;
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
-                    res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
+                    res.Add(new Measurement<Vector3>(this.orientations[index], this.orientationStd, this.timeStamps[index]));
                 }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Get the last added velocity measurement.
+        /// </summary>
+        /// <returns>The velocity measurement with time stamp and standard deviation, null when there is no measurement.</returns>
+        public Measurement<Vector3> GetLastVelocity()
+        {
+            if (this.velocitySize > 0)
+            {
+                return new Measurement<Vector3>(this.velocity[this.velocityPointer], this.accelerationStd, this.timeStamps[this.velocityPointer]);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the velocity measurement at the specified time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <returns>Velocity measurement with time stamp and standard deviation, null when there is no such measurement.</returns>
+        public Measurement<Vector3> GetVelocity(long timeStamp)
+        {
+            if (this.velocitySize > 0)
+            {
+                for (int i = 0; i < this.velocitySize; i++)
+                {
+                    if (this.timeStamps[i] == timeStamp)
+                    {
+                        // TODO fix acceleration std
+                        return new Measurement<Vector3>(this.velocity[i], this.accelerationStd, timeStamp);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets all the velocities between the specified time stamps.
+        /// </summary>
+        /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
+        /// <param name="endTimeStamp">The time stamp to include measurements up to.</param>
+        /// <returns>List of all the velocities and their time stamps and deviations.</returns>
+        public List<Measurement<Vector3>> GetVelocities(long startTimeStamp, long endTimeStamp)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            int first = this.GetOldestMeasurementIndex(this.velocityPointer, this.velocitySize);
+            for (int i = 0; i < this.velocitySize; i++)
+            {
+                int index = (first + i) % this.measurementBufferSize;
+                if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
+                {
+                    // TODO fix std of velocity
+                    res.Add(new Measurement<Vector3>(this.velocity[index], this.accelerationStd, this.timeStamps[index]));
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Get all the velocity measurements stored in the source.
+        /// </summary>
+        /// <returns>List of all velocity measurements with time stamps and standard deviations.</returns>
+        public List<Measurement<Vector3>> GetAllVelocities()
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>(this.velocitySize);
+            int first = this.GetOldestMeasurementIndex(this.velocityPointer, this.velocitySize);
+            for (int i = 0; i < this.velocitySize; i++)
+            {
+                int index = (first + i) % this.measurementBufferSize;
+                //// TODO fix velocity std
+                res.Add(new Measurement<Vector3>(this.velocity[index], this.accelerationStd, this.timeStamps[index]));
             }
 
             return res;
@@ -285,10 +456,39 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <summary>
         /// Get the index of the oldest added measurement in the buffer.
         /// </summary>
+        /// <param name="pointer">The pointer in the array of the last measurement.</param>
+        /// <param name="size">The size of the stored measurements.</param>
         /// <returns>The index of the oldest measurement.</returns>
-        private int GetOldestMeasurementIndex()
+        private int GetOldestMeasurementIndex(int pointer, int size)
         {
-            return (this.pointer - this.currentSize + 1) % this.measurementBufferSize;
+            return (pointer - size + 1) % this.measurementBufferSize;
+        }
+
+        /// <summary>
+        /// Returns the difference in velocity between two acceleration measurements at two time stamp.
+        /// </summary>
+        /// <param name="acc1">The first acceleration measurement.</param>
+        /// <param name="acc2">The second acceleration measurement.</param>
+        /// <param name="t1">The time stamp of the first time stamp.</param>
+        /// <param name="t2">The time stamp of the second measurement.</param>
+        /// <returns>Vector containing the difference in velocity over the time period.</returns>
+        private Vector3 CalculateDeltaV(Vector3 acc1, Vector3 acc2, long t1, long t2)
+        {
+            Vector3 dv = new Vector3(0, 0, 0);
+            acc1.Add(acc2, dv);
+            dv.Divide(2, dv);
+            dv.Multiply(this.MilliSecondsToSeconds(t2 - t1), dv);
+            return dv;
+        }
+
+        /// <summary>
+        /// Converts milliseconds to seconds.
+        /// </summary>
+        /// <param name="ms">The milliseconds to convert.</param>
+        /// <returns>Converted milliseconds in seconds</returns>
+        private long MilliSecondsToSeconds(long ms)
+        {
+            return ms / 1000;
         }
     }
 }
