@@ -17,6 +17,11 @@ using Vector3 = IRescue.Core.DataTypes.Vector3;
 public class MarkerSensorController : AbstractSensorController
 {
     /// <summary>
+    /// Path to the save file
+    /// </summary>
+    private const string Path = "./Assets/Maps/MarkerMap01.xml";
+
+    /// <summary>
     ///   Keeps track of the user location and calculates the new one on update.
     /// </summary>
     private MarkerSensor markerSensor;
@@ -34,14 +39,19 @@ public class MarkerSensorController : AbstractSensorController
     /// <summary>
     ///   The standard deviation of the meta sensor for markers.
     /// </summary>
-    private float markerStandardDeviation = 0.0f;
+    private float positionStd = 0.0f;
+
+    /// <summary>
+    /// standard deviation for orientation
+    /// </summary>
+    private float orientationStd = 2;
 
     /// <summary>
     ///   Method called when creating a UserController.
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor(this.markerStandardDeviation);
+        this.markerSensor = new MarkerSensor(this.positionStd, Path);
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }
