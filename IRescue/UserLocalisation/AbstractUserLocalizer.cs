@@ -7,6 +7,7 @@ namespace IRescue.UserLocalisation
     using System;
     using System.Collections.Generic;
     using Core.DataTypes;
+
     /// <summary>
     ///   Abstract class for user localization. Every child will implement their own filter.
     /// </summary>

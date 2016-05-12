@@ -2,11 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.Core.DataTypes;
-using IRescue.Core.Utils;
 using IRescue.UserLocalisation;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 /// <summary>
 ///  UserController keeps track of the user and its behavior.
@@ -28,13 +25,12 @@ public class UserController : MonoBehaviour
     }
 
     /// <summary>
-    ///   Method calles on every frame.
+    /// Last code that gets executed to update the rotation and position correctly.
     /// </summary>
-    public void Update()
+    public void LateUpdate()
     {
-        Pose pose = localizer.CalculatePose(StopwatchSingleton.Time);
-        this.transform.position = this.TransformVector(pose.Position);
-        this.transform.eulerAngles = this.TransformVector(pose.Orientation);
+        this.transform.position = this.TransformVector(this.localizer.GetPosition());
+        this.transform.GetChild(0).eulerAngles = this.TransformVector(this.localizer.GetRotation());
     }
 
     /// <summary>

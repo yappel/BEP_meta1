@@ -21,15 +21,15 @@ namespace IRescue.UserLocalisation.Sensors
         /// <summary>
         /// Get the velocity measurement from the specified time stamp.
         /// </summary>
-        /// <param name="timeStamp">The time stamp to take the measurement from.</param>
+        /// <param name="timeStamp">The time stamp to take the measurement from in milliseconds.</param>
         /// <returns>The measurement at the specified time stamp with standard deviation.</returns>
         Measurement<Vector3> GetVelocity(long timeStamp);
 
         /// <summary>
         /// Get the velocities starting from the specified start time stamp up to and including the end time stamp.
         /// </summary>
-        /// <param name="startTimeStamp">The start time stamp to include measurements from.</param>
-        /// <param name="endTimeStamp">The end time stamp to include measurements up to.</param>
+        /// <param name="startTimeStamp">The start time stamp to include measurements from in milliseconds.</param>
+        /// <param name="endTimeStamp">The end time stamp to include measurements up to in milliseconds.</param>
         /// <returns>A list of measurements with their time stamps and standard deviations.</returns>
         List<Measurement<Vector3>> GetVelocities(long startTimeStamp, long endTimeStamp);
 
