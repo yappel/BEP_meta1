@@ -24,7 +24,7 @@ namespace Assets.Scripts.Unity.SourceCouplers
             {
                 case Filters.MonteCarlo:
                     //TODO NOT THE WAY IT SHOULD BE
-                    return new MonteCarloCoupler(new MonteCarloLocalizer(200, new IRescue.Core.DataTypes.Vector3(500, 2, 500), new IRescue.Core.DataTypes.Vector3(360, 360, 360)));
+                    return new MonteCarloCoupler(new ParticleFilter(new double[] { 300, 200, 300, 360, 360, 360},40,0.5));
                 default:
                     throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer), "filter");
             }

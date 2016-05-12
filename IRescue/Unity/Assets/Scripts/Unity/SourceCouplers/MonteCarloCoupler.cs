@@ -17,7 +17,7 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     /// Initializes a new instance of the <see cref="MonteCarloCoupler"/> class
     /// </summary>
     /// <param name="localizer">The used localizer</param>
-    public MonteCarloCoupler(MonteCarloLocalizer localizer)
+    public MonteCarloCoupler(ParticleFilter localizer)
     {
         this.Localizer = localizer;
     }
@@ -25,7 +25,7 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     /// <summary>
     ///  Gets or sets the Localizer of the coupler.
     /// </summary>
-    public MonteCarloLocalizer Localizer { get; set; }
+    public ParticleFilter Localizer { get; set; }
 
     /// <summary>
     /// Register the sensor sources to the localizer.
