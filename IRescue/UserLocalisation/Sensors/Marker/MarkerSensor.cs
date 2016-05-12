@@ -20,11 +20,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private readonly float standardDeviation;
 
         /// <summary>
-        ///   Path to the saved markers.
-        /// </summary>
-        private readonly string savePath = "./Assets/Maps/MarkerMap01.xml";
-
-        /// <summary>
         ///   The predicted locations.
         /// </summary>
         private List<Measurement<Vector3>> positions;
@@ -38,16 +33,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         ///  The MarkerLocations.
         /// </summary>
         private MarkerLocations markerLocations;
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="MarkerSensor"/> class.
-        /// </summary>
-        /// <param name="standardDeviation">The standard deviation of the sensor</param>
-        public MarkerSensor(float standardDeviation)
-        {
-            this.standardDeviation = standardDeviation;
-            this.markerLocations = new MarkerLocations(this.savePath);
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
