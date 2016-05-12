@@ -287,6 +287,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.accelerations[this.measurementPointer], this.accelerationStd, this.timeStamps[this.measurementPointer]);
             }
+
             return null;
         }
 
@@ -300,6 +301,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.orientations[this.measurementPointer], this.orientationStd, this.timeStamps[this.measurementPointer]);
             }
+
             return null;
         }
 
@@ -356,6 +358,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             {
                 return new Measurement<Vector3>(this.velocity[this.velocityPointer], this.accelerationStd, this.timeStamps[this.velocityPointer]);
             }
+
             return null;
         }
 

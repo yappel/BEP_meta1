@@ -447,7 +447,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         [Test]
         public void GetLastAccelerationBufferLimitReached()
         {
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0,0,0));
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
             Vector3 v0 = new Vector3(0, 0, 0);
             Vector3 v1 = new Vector3(1, 1, 1);
             Vector3 v2 = new Vector3(2, 2, 2);
