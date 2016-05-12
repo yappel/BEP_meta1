@@ -26,12 +26,11 @@ namespace UserLocalisation.PositionPrediction
             prevtime = timestamp;
         }
 
-        public Pose predictPositionAt(long timestamp)
+        public float[] predictPositionAt(long timestamp)
         {
             if (prevpose == null || prevprevpose == null)
             {
-                Pose output = new Pose();
-                return output;
+                return new float[6] { 0, 0, 0, 0, 0, 0 }; ;
             }
             if (timestamp <= prevtime)
             {
@@ -39,15 +38,18 @@ namespace UserLocalisation.PositionPrediction
             }
             long dt1 = timestamp - prevtime;
             long dt2 = prevtime - prevprevtime;
-            Vector3 pospredict = predict(prevpose.Position, prevprevpose.Position, dt1, dt2);
-            Vector3 oripredict = predict(prevpose.Orientation, prevprevpose.Orientation, dt1, dt2);
-            return new Pose(pospredict, oripredict); ;
+            float[] pospredict = predict(prevpose.Position, prevprevpose.Position, dt1, dt2);
+            float[] oripredict = predict(prevpose.Orientation, prevprevpose.Orientation, dt1, dt2);
+            float[] result = new float[pospredict.Length + oripredict.Length];
+            Array.Copy(pospredict, result, pospredict.Length);
+            Array.Copy(oripredict, 0, result, pospredict.Length, oripredict.Length);
+            return result;
         }
 
-        public Vector3 predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
+        public float[] predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
         {
             Vector<float> temp = prev.Add(prevprev.Negate()).Multiply((float)dt1 / (float)dt2);
-            return new Vector3(temp.ToArray());
+            return temp.ToArray();
         }
     }
 }

@@ -2,6 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System.Linq;
 using IRescue.Core.DataTypes;
 using UserLocalisation.PositionPrediction;
 
@@ -21,8 +22,8 @@ namespace IRescue.UserLocalisation.Particle
         public void TestPredict()
         {
             LinearPredicter pred = new LinearPredicter();
-            Vector3 output = pred.predict(new Vector3(), new Vector3(), 1, 1);
-            Assert.NotNull(output);
+            float[] output = pred.predict(new Vector3(), new Vector3(), 1, 1);
+            Assert.AreEqual(0, output.Sum());
         }
     }
 }

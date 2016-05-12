@@ -71,8 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Particle\MonteCarloLocalizerTest.cs" />
-    <Compile Include="Particle\MonteCarloParticleTest.cs" />
+    <Compile Include="Particle\ParticleFilterTest.cs" />
     <Compile Include="PosePrediction\LinearPredicter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\Marker\MarkerSensorTest.cs" />

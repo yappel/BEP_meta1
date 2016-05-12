@@ -25,7 +25,7 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestParticleFilterRun()
         {
-            ParticleFilter filter = new ParticleFilter(500, 200, 360, 30, 0.5);
+            ParticleFilter filter = new ParticleFilter(new double[] { 500, 200, 500, 360, 360, 360 }, 30, 0.5);
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
             returnlist.Add(new Measurement<Vector3>(new Vector3(250, 180, 250), 100, 0));
@@ -46,7 +46,7 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void ParticleFilterUnits()
         {
-            ParticleFilter filter = new ParticleFilter(500, 200, 360, 30, 0.5);
+            ParticleFilter filter = new ParticleFilter(new double[] { 500, 200, 500, 360, 360, 360 }, 30, 0.5);
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
             returnlist.Add(new Measurement<Vector3>(new Vector3(250, 180, 250), 100, 0));
@@ -57,33 +57,29 @@ namespace IRescue.UserLocalisation.Particle
             filter.AddPositionSource(possourcemock.Object);
 
 
-            Assert.AreEqual(30, filter.listx.Length);
-            Resample.MultinomialAll(filter.listx, filter.listy, filter.listz, filter.listp, filter.listyy, filter.listr);
-            Assert.AreEqual(30, filter.listx.Length);
+            Assert.AreEqual(30, filter.particles.RowCount);
+            Resample.Multinomial(filter.particles, filter.weights);
+            Assert.AreEqual(30, filter.particles.RowCount);
+            Assert.AreEqual(6, filter.particles.ColumnCount);
             filter.AddMeasurements(1);
-            Assert.AreEqual(30, filter.listx.Length);
-            Feeder.AddWeights(20, filter.listx, filter.measx);
-            Feeder.AddWeights(20, filter.listy, filter.measy);
-            Feeder.AddWeights(20, filter.listz, filter.measz);
-            Feeder.AddWeights(20, filter.listp, filter.measp);
-            Feeder.AddWeights(20, filter.listyy, filter.measyy);
-            Feeder.AddWeights(20, filter.listr, filter.measr);
-            Assert.AreEqual(30, filter.listx.Length);
-            filter.normalizeWeightsAll(filter.listx, filter.listy, filter.listz, filter.listp, filter.listyy, filter.listr);
-            Assert.AreEqual(30, filter.listx.Length);
+            Assert.AreEqual(30, filter.particles.RowCount);
+            Feeder.AddWeights(20, filter.particles.SubMatrix(0, filter.particles.RowCount, 0, 3), filter.measurementspos,
+                filter.weights);
+            Assert.AreEqual(30, filter.particles.RowCount);
+            Assert.AreEqual(6, filter.particles.ColumnCount);
+            filter.normalizeWeightsAll(filter.weights);
+            Assert.AreEqual(30, filter.particles.RowCount);
+            Assert.AreEqual(6, filter.particles.ColumnCount);
         }
 
         [Test]
         public void ResampleMultinomalTest()
         {
-            Tuple<float, float>[] list = new Tuple<float, float>[30];
-            InitParticles.Random(30, 500, list);
-            Assert.AreEqual(30, list.Length);
-            Resample.MultinomialAll(list);
-            Assert.AreEqual(30, list.Length);
+            var res = InitParticles.RandomUniform(300, 6, new double[] { 500, 200, 500, 360, 360, 360 });
+            Assert.AreEqual(300 * 6, res.Length);
         }
 
-        [Test]
+
         public void NoiseTest()
         {
             Tuple<float, float>[] list = new Tuple<float, float>[30];
@@ -105,7 +101,6 @@ namespace IRescue.UserLocalisation.Particle
                 }
             }
             Assert.AreEqual(0, max - min);
-            NoiseGenerator.Uniform(100, list);
             min = 500;
             max = 0;
             foreach (Tuple<float, float> tuple in list)
@@ -129,7 +124,7 @@ namespace IRescue.UserLocalisation.Particle
         //[Test]
         public void writefile()
         {
-            ParticleFilter filter = new ParticleFilter(500, 200, 360, 30, 0.5);
+            ParticleFilter filter = new ParticleFilter(new double[] { 500, 200, 500, 360, 360, 360 }, 30, 0.5);
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
             returnlist.Add(new Measurement<Vector3>(new Vector3(400, 180, 250), 50, 0));
@@ -142,20 +137,12 @@ namespace IRescue.UserLocalisation.Particle
             var fullpath = System.IO.Path.GetFullPath("D:\\Users\\Yoeri 2\\Documenten\\MATLAB\\DATA.txt");
             Pose pose = filter.CalculatePose(1);
             System.IO.File.WriteAllText(fullpath, pose.Position.X + " " + pose.Position.Z + " " + pose.Orientation.Y + System.Environment.NewLine);
-            for (int i = 0; i < filter.listx.Length; i++)
-            {
-                System.IO.File.AppendAllText(fullpath, filter.listx[i].Item1 + " " + filter.listz[i].Item1 + " " + 0.5 * (filter.listx[i].Item2 + filter.listz[i].Item2) + System.Environment.NewLine);
-            }
 
             for (int j = 0; j < 60; j++)
             {
                 fullpath = System.IO.Path.GetFullPath("D:\\Users\\Yoeri 2\\Documenten\\MATLAB\\DATA.txt");
                 pose = filter.CalculatePose(1);
                 System.IO.File.AppendAllText(fullpath, pose.Position.X + " " + pose.Position.Z + " " + pose.Orientation.Y + System.Environment.NewLine);
-                for (int i = 0; i < filter.listx.Length; i++)
-                {
-                    System.IO.File.AppendAllText(fullpath, filter.listx[i].Item1 + " " + filter.listz[i].Item1 + " " + 0.5 * (filter.listx[i].Item2 + filter.listz[i].Item2) + System.Environment.NewLine);
-                }
 
             }
         }

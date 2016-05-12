@@ -20,18 +20,6 @@ namespace IRescue.UserLocalisation.Particle
     public class ParticleFilter : AbstractUserLocalizer, IOrientationReceiver, IPositionReceiver
     {
 
-        //public Tuple<float, float>[] listx { get; set; }
-        //public Tuple<float, float>[] listy { get; set; }
-        //public Tuple<float, float>[] listz { get; set; }
-        //public Tuple<float, float>[] listp { get; set; }
-        //public Tuple<float, float>[] listyy { get; set; }
-        //public Tuple<float, float>[] listr { get; set; }
-        //public List<Tuple<float, float>> measx { get; set; }
-        //public List<Tuple<float, float>> measy { get; set; }
-        //public List<Tuple<float, float>> measz { get; set; }
-        //public List<Tuple<float, float>> measp { get; set; }
-        //public List<Tuple<float, float>> measyy { get; set; }
-        //public List<Tuple<float, float>> measr { get; set; }
         public Matrix<float> particles;
         public Matrix<float> weights;
         public Matrix<float> measurementsori;
@@ -62,15 +50,46 @@ namespace IRescue.UserLocalisation.Particle
 
         public override Pose CalculatePose(long timeStamp)
         {
+            AddMeasurements(timeStamp);
+            previousTS = timeStamp;
+            resample();
+            predict(timeStamp);
+            update();
+            return getResult(timeStamp);
+        }
+
+        private void resample()
+        {
             Resample.Multinomial(this.particles, this.weights);
             NoiseGenerator.Uniform(this.particles, NOISESIZE);
-            AddMeasurements(timeStamp);
-            Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 0, 3), measurementspos, weights.SubMatrix(0, particles.RowCount, 0, 3));
-            Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights.SubMatrix(0, particles.RowCount, 3, 3));
+        }
+
+        private void predict(long timeStamp)
+        {
+            float[] translation = posePredictor.predictPositionAt(timeStamp);
+            Matrix<float> transmatrix = new DenseMatrix(1, DIMENSIONSAMOUNT, translation);
+        }
+
+        private void update()
+        {
+            if (measurementspos != null)
+            {
+                Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 0, 3), measurementspos, weights.SubMatrix(0, particles.RowCount, 0, 3));
+            }
+            if (measurementsori != null)
+            {
+                Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights.SubMatrix(0, particles.RowCount, 3, 3));
+            }
             normalizeWeightsAll(this.weights);
-            previousTS = timeStamp;
+        }
+
+        private Pose getResult(long timeStamp)
+        {
             float[] averages = process(this.particles, this.weights);
-            return new Pose(new Vector3(averages[0], averages[1], averages[2]), new Vector3(averages[3], averages[4], averages[5]));
+            Pose result = new Pose(new Vector3(averages[0], averages[1], averages[2]),
+                new Vector3(averages[3], averages[4], averages[5]));
+            posePredictor.addPose(result, timeStamp);
+            return result;
         }
 
         public void AddOrientationSource(IOrientationSource source)
@@ -125,8 +144,12 @@ namespace IRescue.UserLocalisation.Particle
             measx.AddRange(measy);
             measx.AddRange(measz);
             measx.AddRange(std);
-            this.measurementspos = new DenseMatrix(measx.Count, 4, measx.ToArray());
+            this.measurementspos = new DenseMatrix(std.Count, 4, measx.ToArray());
 
+            measx.Clear();
+            measy.Clear();
+            measz.Clear();
+            std.Clear();
             foreach (IOrientationSource orientationSource in this.orilist)
             {
                 List<Measurement<Vector3>> measall = orientationSource.GetOrientations(this.previousTS, timeStamp);
@@ -141,7 +164,15 @@ namespace IRescue.UserLocalisation.Particle
             measx.AddRange(measy);
             measx.AddRange(measz);
             measx.AddRange(std);
-            this.measurementsori = new DenseMatrix(measx.Count, 4, measx.ToArray());
+            if (std.Count() == 0)
+            {
+                this.measurementsori = null;
+            }
+            else
+            {
+                this.measurementsori = new DenseMatrix(std.Count, 4, measx.ToArray());
+            }
+
         }
 
         public static void FillArray<T>(T[] arr, T value)
