@@ -31,6 +31,7 @@ namespace IRescue.UserLocalisation.Particle
         private readonly double probabilityMargin;
         private long previousTS = 0;
         private LinearPredicter posePredictor;
+        private double[] maxima;
 
 
 
@@ -38,6 +39,7 @@ namespace IRescue.UserLocalisation.Particle
         {
             this.posePredictor = new LinearPredicter();
             this.probabilityMargin = probabilityMargin;
+            this.maxima = maxima;
             particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT,
                 InitParticles.RandomUniform(particleamount, DIMENSIONSAMOUNT, maxima));
             float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
@@ -62,7 +64,9 @@ namespace IRescue.UserLocalisation.Particle
         {
             Resample.Multinomial(this.particles, this.weights);
             NoiseGenerator.Uniform(this.particles, NOISESIZE);
+            ContainParticles(this.particles, this.maxima);
         }
+
 
         private void predict(long timeStamp)
         {
@@ -90,6 +94,33 @@ namespace IRescue.UserLocalisation.Particle
                 new Vector3(averages[3], averages[4], averages[5]));
             posePredictor.addPose(result, timeStamp);
             return result;
+        }
+
+        public void ContainParticles(Matrix<float> matrix, double[] doubles)
+        {
+            for (int i = 0; i < matrix.ColumnCount; i++)
+            {
+                Vector<float> column = matrix.Column(i);
+                column.Map(c =>
+                {
+                    if (c > doubles[i])
+                    {
+                        return doubles[i];
+                    }
+                    else if (c < 0)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return c;
+                    }
+                });
+            }
+            foreach (Vector<float> column in matrix.EnumerateColumns())
+            {
+                //column.Map(f)
+            }
         }
 
         public void AddOrientationSource(IOrientationSource source)
