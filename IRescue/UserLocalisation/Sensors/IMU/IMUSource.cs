@@ -165,7 +165,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="orientation">The orientation measurement.</param>
         public void AddMeasurements(long timeStamp, Vector3 acceleration, Vector3 orientation)
         {
-            this.measurementPointer = mod((this.measurementPointer + 1), this.measurementBufferSize);
+            this.measurementPointer = this.Mod(this.measurementPointer + 1, this.measurementBufferSize);
             this.timeStamps[this.measurementPointer] = timeStamp;
             Vector3 acc = new Vector3(0, 0, 0);
             IRescue.Core.Utils.VectorMath.RotateVector(acceleration, orientation.X, orientation.Y, orientation.Z, acc);
@@ -179,9 +179,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             //// If there are more than 2 measurements, calculate velocity
             if (this.measurementSize > 1)
             {
-                this.velocityPointer = mod((this.velocityPointer + 1), this.measurementBufferSize);
-                Vector3 vel = this.CalculateDeltaV(this.accelerations[mod((this.measurementPointer - 1), this.measurementBufferSize)], this.accelerations[this.measurementPointer], this.timeStamps[mod((this.measurementPointer - 1), this.measurementBufferSize)], this.timeStamps[this.measurementPointer]);
-                vel.Add(this.velocity[mod((this.velocityPointer - 1), this.measurementBufferSize)], vel);
+                this.velocityPointer = this.Mod(this.velocityPointer + 1, this.measurementBufferSize);
+                Vector3 vel = this.CalculateDeltaV(this.accelerations[this.Mod(this.measurementPointer - 1, this.measurementBufferSize)], this.accelerations[this.measurementPointer], this.timeStamps[this.Mod(this.measurementPointer - 1, this.measurementBufferSize)], this.timeStamps[this.measurementPointer]);
+                vel.Add(this.velocity[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)], vel);
                 this.velocity[this.velocityPointer] = vel;
                 if (this.velocitySize < this.measurementBufferSize)
                 {
@@ -223,7 +223,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
             for (int i = 0; i < this.measurementSize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
                     res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
@@ -243,7 +243,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
             for (int i = 0; i < this.measurementSize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 res.Add(new Measurement<Vector3>(this.accelerations[index], this.accelerationStd, this.timeStamps[index]));
             }
 
@@ -260,7 +260,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
             for (int i = 0; i < this.measurementSize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 res.Add(new Measurement<Vector3>(this.orientations[index], this.orientationStd, this.timeStamps[index]));
             }
 
@@ -364,7 +364,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.measurementPointer, this.measurementSize);
             for (int i = 0; i < this.measurementSize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
                     res.Add(new Measurement<Vector3>(this.orientations[index], this.orientationStd, this.timeStamps[index]));
@@ -424,7 +424,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.velocityPointer, this.velocitySize);
             for (int i = 0; i < this.velocitySize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
                     // TODO fix std of velocity
@@ -445,7 +445,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             int first = this.GetOldestMeasurementIndex(this.velocityPointer, this.velocitySize);
             for (int i = 0; i < this.velocitySize; i++)
             {
-                int index = mod((first + i), this.measurementBufferSize);
+                int index = this.Mod(first + i, this.measurementBufferSize);
                 //// TODO fix velocity std
                 res.Add(new Measurement<Vector3>(this.velocity[index], this.accelerationStd, this.timeStamps[index]));
             }
@@ -461,7 +461,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>The index of the oldest measurement.</returns>
         private int GetOldestMeasurementIndex(int pointer, int size)
         {
-            return mod((pointer - size + 1), this.measurementBufferSize);
+            return this.Mod(pointer - size + 1, this.measurementBufferSize);
         }
 
         /// <summary>
@@ -496,10 +496,10 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// </summary>
         /// <param name="a">The number to perform modulo on.</param>
         /// <param name="b">The number to divide by.</param>
-        /// <returns></returns>
-        private int mod(int a, int b)
+        /// <returns>The modulo result.</returns>
+        private int Mod(int a, int b)
         {
-            return (a % b + b) % b;
+            return ((a % b) + b) % b;
         }
     }
 }
