@@ -24,7 +24,7 @@ public class InitScript : MonoBehaviour
     /// <summary>
     /// Size of the used markers in meters
     /// </summary>
-    private float markerSize = 0.23f;
+    private float markerSize = 0.23f;   
 
     /// <summary>
     ///  Called when the game starts.
