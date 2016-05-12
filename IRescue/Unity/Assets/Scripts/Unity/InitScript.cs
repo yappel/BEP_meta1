@@ -36,6 +36,7 @@ public class InitScript : MonoBehaviour
         AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
         this.InitControllers(coupler);
         this.InitUser(coupler.Localizer);
+        this.InitMarker();
     }
 
     /// <summary>
@@ -84,5 +85,16 @@ public class InitScript : MonoBehaviour
     private void InitUser(AbstractUserLocalizer localizer)
     {
         gameObject.AddComponent<UserController>().Init(localizer);
+    }
+
+    /// <summary>
+    /// Create a cube with marker target behavior so that markers are tracked
+    /// </summary>
+    private void InitMarker()
+    {
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.AddComponent<Rigidbody>();
+        cube.transform.position = new Vector3(0, -10000, 0);
+        cube.AddComponent<Meta.MetaBody>().markerTarget = true;
     }
 }
