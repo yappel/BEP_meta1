@@ -487,6 +487,26 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// the correct results for get last velocity.
+        /// </summary>
+        [Test]
+        public void GetLastVelocityBufferLimitReached()
+        {
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
+            Vector3 v0 = new Vector3(0, 0, 0);
+            Vector3 v1 = new Vector3(1, 1, 1);
+            this.source.AddMeasurements(0, v0, this.zeroOrientation);
+            this.source.AddMeasurements(1000, v1, this.zeroOrientation);
+            this.source.AddMeasurements(2000, v0, this.zeroOrientation);
+            this.source.AddMeasurements(3000, v1, this.zeroOrientation);
+            this.source.AddMeasurements(4000, v0, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetLastVelocity();
+            this.AssertVectorAreEqual(new Vector3(2, 2, 2), res.Data);
+            Assert.AreEqual(4000, res.TimeStamp);
+        }
+
+        /// <summary>
         /// Assert that all elements in the vectors match with possible deviation 0.0001.
         /// </summary>
         /// <param name="expected">The expected vector.</param>
