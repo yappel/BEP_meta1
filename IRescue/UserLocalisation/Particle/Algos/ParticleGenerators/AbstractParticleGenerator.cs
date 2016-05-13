@@ -9,12 +9,12 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
     public abstract class AbstractParticleGenerator
     {
         /// <summary>
-        /// Generates a new set of particles.
+        /// Generates a new set of Particles.
         /// </summary>
-        /// <param name="amount"> The amount of particles to generate for every dimension</param>
-        /// <param name="dimensions">The amount of dimensions to generate particles for</param>
-        /// <param name="maxima">The maximum amount the particles can have in each dimension</param>
-        /// <returns></returns>
+        /// <param name="amount"> The amount of Particles to generate for every dimension</param>
+        /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
+        /// <param name="maxima">The maximum amount the Particles can have in each dimension</param>
+        /// <returns>List with generated particle values</returns>
         public abstract float[] Generate(int amount, int dimensions, double[] maxima);
     }
 }

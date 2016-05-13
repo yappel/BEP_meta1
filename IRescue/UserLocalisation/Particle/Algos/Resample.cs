@@ -2,18 +2,21 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-using MathNet.Numerics.LinearAlgebra;
-
-
 namespace IRescue.UserLocalisation.Particle.Algos
 {
+    using System;
+    using MathNet.Numerics.LinearAlgebra;
+
     /// <summary>
-    /// TODO
+    /// Class to resample Particles.
     /// </summary>
     public class Resample
     {
-
+        /// <summary>
+        /// Resamples Particles using a Multinomial algorithm
+        /// </summary>
+        /// <param name="particles">The Particles to resample</param>
+        /// <param name="weights">The Weights of the Particles</param>
         public static void Multinomial(Matrix<float> particles, Matrix<float> weights)
         {
             int j = 0;
@@ -28,12 +31,18 @@ namespace IRescue.UserLocalisation.Particle.Algos
                     newparticles[i] = particles[indexes[i], j];
                     newweights[i] = weights[indexes[i], j];
                 }
+
                 particles.SetColumn(j, newparticles);
                 weights.SetColumn(j, newweights);
                 j++;
             }
         }
 
+        /// <summary>
+        /// Selects a list of indexes of the Particles that will survive the resampling.
+        /// </summary>
+        /// <param name="weights">The Weights of the Particles in a certain dimension</param>
+        /// <returns>The list with indexes of the Particles that are chosen by the resample algorithm</returns>
         public static int[] Multinomial(Vector<float> weights)
         {
             int[] listout = new int[weights.Count];
@@ -49,13 +58,18 @@ namespace IRescue.UserLocalisation.Particle.Algos
                 {
                     j++;
                 }
+
                 listout[i] = j;
                 i++;
             }
+
             return listout;
         }
 
-
+        /// <summary>
+        /// Calculates the cumulative sum of the values in a vector.
+        /// </summary>
+        /// <param name="list">The values to calculate with.</param>
         public static void CumSum(Vector<float> list)
         {
             for (int i = 0; i < list.Count; i++)

@@ -2,24 +2,21 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
-using MathNet.Numerics.Random;
-
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
+    using System.Linq;
+    using Algos.ParticleGenerators;
+    using MathNet.Numerics.Random;
     using NUnit.Framework;
 
     /// <summary>
-    /// Tests for the random particle gerator class
+    /// Tests for the random particle generator class
     /// </summary>
     public class RandomGeneratorTest
     {
         /// <summary>
-        /// Test if the range of the generated particles is at least 90% of the maximum range.
+        /// Test if the range of the generated Particles is at least 90% of the maximum range.
         /// </summary>
         [Test]
         public void TestSpread()
@@ -33,7 +30,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test if  the generated particles are equally spread.
+        /// Test if  the generated Particles are equally spread.
         /// </summary>
         [Test]
         public void TestDistribution()
@@ -48,13 +45,10 @@ namespace IRescue.UserLocalisation.Particle
             {
                 diffs[i] = list[i + 1] - list[i];
             }
+
             Array.Sort(diffs);
             Assert.AreEqual(maxrange / (ptclamt + 1), diffs[0] - diffs[ptclamt - 2], maxrange / (ptclamt + 1) * 10);
             Assert.AreEqual(maxrange / (ptclamt + 1), diffs[(ptclamt - 2) / 2], maxrange / (ptclamt + 1));
         }
-
-
-
-
     }
 }

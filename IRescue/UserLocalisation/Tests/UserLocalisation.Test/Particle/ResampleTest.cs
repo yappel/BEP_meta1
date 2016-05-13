@@ -2,16 +2,15 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-using IRescue.UserLocalisation.Particle.Algos;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Single;
-
 namespace IRescue.UserLocalisation.Particle
 {
+    using Algos;
+    using MathNet.Numerics.LinearAlgebra;
+    using MathNet.Numerics.LinearAlgebra.Single;
     using NUnit.Framework;
 
     /// <summary>
-    /// TODO TODO
+    /// Test resampling using the Multinomial algorithm.
     /// </summary>
     public class ResampleTest
     {
@@ -25,15 +24,6 @@ namespace IRescue.UserLocalisation.Particle
             Resample.CumSum(vec);
             float[] expected = new float[] { 1, 2, 3, 4, 5, 6 };
             Assert.AreEqual(expected, vec.ToArray());
-        }
-
-        /// <summary>
-        /// Test if the amount of duplicate index is not to high in a situation with uniform weights.
-        /// </summary>
-        [Test]
-        public void TestIndexesDuplicates()
-        {
-
         }
     }
 }

@@ -17,7 +17,7 @@ namespace IRescue.UserLocalisation
         ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
         /// </summary>
         /// <param name="timeStamp">The timestamp of the point in time to calculate the <see cref="Pose"/> at.</param>
+        /// <returns>The calculated <see cref="Pose"/></returns>
         public abstract Pose CalculatePose(long timeStamp);
-
     }
 }
