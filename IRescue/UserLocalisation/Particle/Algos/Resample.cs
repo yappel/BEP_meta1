@@ -16,17 +16,17 @@ namespace IRescue.UserLocalisation.Particle.Algos
 
         public static void Multinomial(Matrix<float> particles, Matrix<float> weights)
         {
-            int[] indexes = new int[particles.RowCount];
             int j = 0;
             foreach (Vector<float> column in weights.EnumerateColumns())
             {
-                Multinomial(column, indexes);
+                int[] indexes = Multinomial(column);
                 float[] newparticles = new float[particles.RowCount];
                 float[] newweights = new float[particles.RowCount];
+
                 for (int i = 0; i < particles.RowCount; i++)
                 {
-                    newparticles[i] = particles[i, j];
-                    newweights[i] = weights[i, j];
+                    newparticles[i] = particles[indexes[i], j];
+                    newweights[i] = weights[indexes[i], j];
                 }
                 particles.SetColumn(j, newparticles);
                 weights.SetColumn(j, newweights);
@@ -34,8 +34,9 @@ namespace IRescue.UserLocalisation.Particle.Algos
             }
         }
 
-        private static void Multinomial(Vector<float> weights, int[] listout)
+        public static int[] Multinomial(Vector<float> weights)
         {
+            int[] listout = new int[weights.Count];
             CumSum(weights);
             Random random = new Random();
             weights[weights.Count - 1] = 1;
@@ -51,6 +52,7 @@ namespace IRescue.UserLocalisation.Particle.Algos
                 listout[i] = j;
                 i++;
             }
+            return listout;
         }
 
 

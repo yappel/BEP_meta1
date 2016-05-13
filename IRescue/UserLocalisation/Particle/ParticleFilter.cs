@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation.Particle.Algos;
+using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 using IRescue.UserLocalisation.Sensors;
 using MathNet.Numerics;
+using MathNet.Numerics.Distributions;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Single;
+using MathNet.Numerics.Random;
 using UserLocalisation.PositionPrediction;
 
 namespace IRescue.UserLocalisation.Particle
@@ -25,26 +28,29 @@ namespace IRescue.UserLocalisation.Particle
         public Matrix<float> measurementsori;
         public Matrix<float> measurementspos;
         private const int DIMENSIONSAMOUNT = 6;
-        private const int NOISESIZE = 5;
+        private const double NOISESIZE = 0.1;
         private List<IOrientationSource> orilist;
         private List<IPositionSource> poslist;
         private readonly double probabilityMargin;
         private long previousTS = 0;
         private LinearPredicter posePredictor;
         private double[] maxima;
+        private AbstractParticleGenerator particlegen;
 
 
 
         public ParticleFilter(double[] maxima, int particleamount, double probabilityMargin)
         {
+            this.particlegen = new RandomGenerator(new SystemRandomSource());
             this.posePredictor = new LinearPredicter();
             this.probabilityMargin = probabilityMargin;
             this.maxima = maxima;
             particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT,
-                InitParticles.RandomUniform(particleamount, DIMENSIONSAMOUNT, maxima));
+                this.particlegen.Generate(particleamount, DIMENSIONSAMOUNT, maxima));
             float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
             ParticleFilter.FillArray<float>(initweights, 1f);
             weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
+            normalizeWeightsAll(weights);
             poslist = new List<IPositionSource>();
             orilist = new List<IOrientationSource>();
         }
@@ -52,11 +58,11 @@ namespace IRescue.UserLocalisation.Particle
 
         public override Pose CalculatePose(long timeStamp)
         {
-            AddMeasurements(timeStamp);
-            previousTS = timeStamp;
+            RetrieveMeasurements(timeStamp);
             resample();
             predict(timeStamp);
             update();
+            previousTS = timeStamp;
             return getResult(timeStamp);
         }
 
@@ -78,18 +84,18 @@ namespace IRescue.UserLocalisation.Particle
         {
             if (measurementspos != null)
             {
-                Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 0, 3), measurementspos, weights.SubMatrix(0, particles.RowCount, 0, 3));
+                AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 0, 3), measurementspos, weights);
             }
             if (measurementsori != null)
             {
-                Feeder.AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights.SubMatrix(0, particles.RowCount, 3, 3));
+                AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights);
             }
             normalizeWeightsAll(this.weights);
         }
 
         private Pose getResult(long timeStamp)
         {
-            float[] averages = process(this.particles, this.weights);
+            float[] averages = WeightedAverage(this.particles, this.weights);
             Pose result = new Pose(new Vector3(averages[0], averages[1], averages[2]),
                 new Vector3(averages[3], averages[4], averages[5]));
             posePredictor.addPose(result, timeStamp);
@@ -98,29 +104,24 @@ namespace IRescue.UserLocalisation.Particle
 
         public void ContainParticles(Matrix<float> matrix, double[] doubles)
         {
-            for (int i = 0; i < matrix.ColumnCount; i++)
+            for (int i = 0; i < matrix.ColumnCount / 2; i++)
             {
-                Vector<float> column = matrix.Column(i);
-                column.Map(c =>
+                Vector<float> res = matrix.Column(i).Map(c =>
                 {
                     if (c > doubles[i])
                     {
-                        return doubles[i];
+                        return (float)doubles[i];
                     }
                     else if (c < 0)
                     {
-                        return 0;
+                        return 0f;
                     }
                     else
                     {
                         return c;
                     }
                 });
-                matrix.SetColumn(i, column.ToArray());
-            }
-            foreach (Vector<float> column in matrix.EnumerateColumns())
-            {
-                //column.Map(f)
+                matrix.SetColumn(i, res.ToArray());
             }
         }
 
@@ -134,27 +135,31 @@ namespace IRescue.UserLocalisation.Particle
             poslist.Add(source);
         }
 
-        public float[] process(Matrix<float> particles, Matrix<float> weights)
+        public float[] WeightedAverage(Matrix<float> particles, Matrix<float> weights)
         {
-            particles.PointwiseMultiply(weights, particles);
-            return particles.ColumnSums().ToArray();
+            Matrix<float> particlesdupe = particles.Clone();
+            particles.PointwiseMultiply(weights, particlesdupe);
+            return particlesdupe.ColumnSums().ToArray();
         }
 
         public void normalizeWeightsAll(Matrix<float> weights)
         {
+            int columncount = 0;
             foreach (Vector<float> dimension in weights.EnumerateColumns())
             {
                 normalizeWeights(dimension);
+                weights.SetColumn(columncount, dimension);
+                columncount++;
             }
         }
 
         public void normalizeWeights(Vector<float> list)
         {
             float sum = list.Sum();
-            list.Map(c => c / sum);
+            list.Divide(sum, list);
         }
 
-        public void AddMeasurements(long timeStamp)
+        public void RetrieveMeasurements(long timeStamp)
         {
             //If speedup needed change dimensions of matrices to remove need of temp storage lists
             var measx = new List<float>();
@@ -213,6 +218,26 @@ namespace IRescue.UserLocalisation.Particle
                 this.measurementsori = new DenseMatrix(std.Count, 4, measx.ToArray());
             }
 
+        }
+
+        public void AddWeights(double margin, Matrix<float> particles, Matrix<float> measurements, Matrix<float> weights)
+        {
+            for (int i = 0; i < particles.ColumnCount; i++)
+            {
+                for (int index = 0; index < particles.Column(i).Count; index++)
+                {
+                    float particle = particles.Column(i)[index];
+                    var p = 1d;
+                    for (int j = 0; j < measurements.Column(i).Count; j++)
+                    {
+                        float std = measurements[j, 3];
+                        float meas = measurements[j, i];
+                        p = p * (Normal.CDF(particle, std, meas + margin) -
+                                 Normal.CDF(particle, std, meas - margin));
+                    }
+                    weights[index, i] = (float)p;
+                }
+            }
         }
 
         public static void FillArray<T>(T[] arr, T value)

@@ -4,18 +4,23 @@
 
 using System.Collections.Generic;
 using MathNet.Numerics;
+using MathNet.Numerics.Random;
 
-namespace IRescue.UserLocalisation.Particle.Algos
+namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
     /// <summary>
     /// TODO
     /// </summary>
-    public class InitParticles
+    public class RandomGenerator : AbstractParticleGenerator
     {
 
-        public static float[] RandomUniform(int amount, int dimensions, double[] maxima)
+        private RandomSource rng;
+        public RandomGenerator(RandomSource rng)
         {
-            System.Random rng = new System.Random();
+            this.rng = rng;
+        }
+        public override float[] Generate(int amount, int dimensions, double[] maxima)
+        {
             float[] result = new float[amount * dimensions];
             for (int i = 0; i < dimensions; i++)
             {

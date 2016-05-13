@@ -19,7 +19,7 @@ namespace IRescue.UserLocalisation.Particle.Algos
         public static void Uniform(Matrix<float> particles, double range)
         {
             Random rng_uniform = new System.Random();
-            particles.Map(c => rng_uniform.NextDouble() * range + c);
+            particles.SetSubMatrix(0, 0, particles.Map(c => (float)((rng_uniform.NextDouble() * 2 - 1) * range + c)));
         }
     }
 }

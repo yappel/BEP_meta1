@@ -54,8 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
-    <Compile Include="Particle\Algos\InitParticles.cs" />
-    <Compile Include="Particle\Algos\Feeder.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\AbstractParticleGenerator.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\RandomGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerator.cs" />
     <Compile Include="Particle\Algos\Resample.cs" />
     <Compile Include="Particle\ParticleFilter.cs" />
