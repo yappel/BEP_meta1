@@ -88,7 +88,7 @@ namespace IRescue.UserLocalisation.Particle
             }
             if (measurementsori != null)
             {
-                AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights);
+                AddWeights(this.probabilityMargin, particles.SubMatrix(0, particles.RowCount, 3, 3), measurementsori, weights.SubMatrix(0, particles.RowCount, 3, 3));
             }
             normalizeWeightsAll(this.weights);
         }

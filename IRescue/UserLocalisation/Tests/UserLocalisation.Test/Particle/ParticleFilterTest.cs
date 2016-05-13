@@ -107,7 +107,7 @@ namespace IRescue.UserLocalisation.Particle
                 pose = filter.CalculatePose(i);
                 System.Diagnostics.Debug.WriteLine(pose.Position.X);
             }
-            Assert.AreEqual(2.5, pose.Position.X);
+            Assert.AreEqual(2.5, pose.Position.X, 0.5);
         }
 
         [Test]
