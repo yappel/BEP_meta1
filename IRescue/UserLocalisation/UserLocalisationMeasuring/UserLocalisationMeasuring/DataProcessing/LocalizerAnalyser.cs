@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using IRescue.Core.DataTypes;
+using IRescue.Core.Utils;
 using IRescue.UserLocalisation;
 
 namespace IRescue.UserLocalisationMeasuring.DataProcessing
@@ -43,12 +45,22 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
 
         private Result GenerateResult(int cycleamount, AbstractUserLocalizer filter)
         {
-            throw new NotImplementedException();
+            long begintime = StopwatchSingleton.Time;
+            Result res = new Result();
+            for (int time = 1; time < cycleamount; time++)
+            {
+                filter.CalculatePose(time);
+            }
+
+            res.Pose = filter.CalculatePose(cycleamount);
+            res.Runtime = StopwatchSingleton.Time - begintime;
+            return res;
         }
 
         private long CalculateAverageRuntime(List<Result> results)
         {
-            throw new NotImplementedException();
+            long sum = results.Sum(result => result.Runtime);
+            return sum / results.Count;
         }
 
         private double CalculatePrecision(List<Result> results)
@@ -69,9 +81,9 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             public long Runtime;
 
             /// <summary>
-            /// The location the localizer guessed.
+            /// The pose the localizer guessed.
             /// </summary>
-            public Pose Location;
+            public Pose Pose;
 
         }
     }
