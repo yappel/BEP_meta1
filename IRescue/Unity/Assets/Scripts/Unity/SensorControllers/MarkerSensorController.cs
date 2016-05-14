@@ -122,13 +122,10 @@ public class MarkerSensorController : AbstractSensorController
         {
             int markerId = visibleMarkers[i];
             this.markerDetector.SetMarkerTransform(markerId, ref this.markerTransform);
-            if (GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId) != null)
-            {
-                var marker = GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId).transform.eulerAngles;
-                Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
-                Vector3 rotation = new Vector3(marker.x, marker.y, marker.z);
-                visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
-            }
+            this.markerTransform.Rotate(UnityEngine.Vector3.right, 90f);
+            Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
+            Vector3 rotation = new Vector3(this.markerTransform.eulerAngles.x, this.markerTransform.eulerAngles.y, this.markerTransform.eulerAngles.z);
+            visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }
 
         return visibleMarkerTransforms;
