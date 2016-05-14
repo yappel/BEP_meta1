@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisation.Test", "IR
 		{E8D9CC15-D570-4524-84B6-BB049A355FC4} = {E8D9CC15-D570-4524-84B6-BB049A355FC4}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisationMeasuring", "IRescue\UserLocalisation\UserLocalisationMeasuring\UserLocalisationMeasuring\UserLocalisationMeasuring.csproj", "{50ACF44F-E650-4130-B05C-6ED69E85B755}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,12 @@ Global
 		{253320E8-BE33-4601-BCE0-AE1DAD1F151F}.No-unity|Any CPU.Build.0 = Release|Any CPU
 		{253320E8-BE33-4601-BCE0-AE1DAD1F151F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{253320E8-BE33-4601-BCE0-AE1DAD1F151F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.No-unity|Any CPU.ActiveCfg = Release|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.No-unity|Any CPU.Build.0 = Release|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
