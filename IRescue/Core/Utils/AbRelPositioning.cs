@@ -121,9 +121,9 @@ namespace IRescue.Core.Utils
         private static Vector3 CalculateOrientation(Vector3 absoluteRotation, Vector3 relativeRotation)
         {
             return new Vector3(
-                absoluteRotation.X + relativeRotation.X,
-                absoluteRotation.Y + relativeRotation.Y,
-                absoluteRotation.Z + relativeRotation.Z);
+                absoluteRotation.X - relativeRotation.X,
+                absoluteRotation.Y - relativeRotation.Y,
+                absoluteRotation.Z - relativeRotation.Z);
         }
     }
 }
