@@ -26,11 +26,6 @@ namespace IRescue.UserLocalisation.Particle
         private const int DIMENSIONSAMOUNT = 6;
 
         /// <summary>
-        /// TODO move
-        /// </summary>
-        private const double NOISESIZE = 0.1;
-
-        /// <summary>
         /// List containing the added <see cref="IOrientationSource"/>s
         /// </summary>
         private List<IOrientationSource> orilist;
@@ -61,9 +56,14 @@ namespace IRescue.UserLocalisation.Particle
         private double[] maxima;
 
         /// <summary>
-        /// The <see cref="Stopwatch"/> timestamp of the previous time a <see cref="Pose"/> was estimated
+        /// The System.Diagnostics.Stopwatch timestamp of the previous time a <see cref="Pose"/> was estimated
         /// </summary>
         private long previousTS = 0;
+
+        /// <summary>
+        /// The maximum amount of noise that can be added or subtracted to a particle.
+        /// </summary>
+        private double noiseamount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
@@ -71,9 +71,11 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="maxima">The maximum value of the particles in each dimension (minimum is 0)</param>
         /// <param name="particleamount">The amount of particles to generate in each dimension</param>
         /// <param name="probabilityMargin">The amount the X in the normal CDF calculation will be moved in both directions to calculate p(X)</param>
+        /// <param name="noiseamount">The maximum amount of noise that can be added or subtracted to a particle.</param>
         /// <param name="prtclgen">The particle generator used to generate particles</param>
-        public ParticleFilter(double[] maxima, int particleamount, double probabilityMargin, AbstractParticleGenerator prtclgen)
+        public ParticleFilter(double[] maxima, int particleamount, double probabilityMargin, double noiseamount, AbstractParticleGenerator prtclgen)
         {
+            this.noiseamount = noiseamount;
             this.particlegen = prtclgen;
             this.posePredictor = new LinearPredicter();
             this.probabilityMargin = probabilityMargin;
@@ -372,7 +374,7 @@ namespace IRescue.UserLocalisation.Particle
         private void Resample()
         {
             Algos.Resample.Multinomial(this.Particles, this.Weights);
-            NoiseGenerator.Uniform(this.Particles, NOISESIZE);
+            NoiseGenerator.Uniform(this.Particles, this.noiseamount);
             this.ContainParticles(this.Particles, this.maxima);
         }
 
