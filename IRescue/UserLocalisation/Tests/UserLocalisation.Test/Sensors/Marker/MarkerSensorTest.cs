@@ -40,12 +40,22 @@ namespace UserLocalisation.Test.Sensors.Marker
         private string savePath = TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml";
 
         /// <summary>
+        /// The default type of probability distribution belonging to the measurements of the position.
+        /// </summary>
+        private DistributionType posDistType = DistributionType.gaussian;
+
+        /// <summary>
+        /// The default type of probability distribution belonging to the measurements of the orientation.
+        /// </summary>
+        private DistributionType oriDistType = DistributionType.gaussian;
+
+        /// <summary>
         /// Setup the map
         /// </summary>
         [SetUp]
         public void Init()
         {
-            this.sensor = new MarkerSensor(this.std, this.savePath);
+            this.sensor = new MarkerSensor(this.std, this.savePath, this.posDistType, this.oriDistType);
         }
 
         /// <summary>

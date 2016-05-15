@@ -44,10 +44,11 @@ namespace Core.Test
         [Test]
         public void TestConstructor()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 20, 1);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 20, 1, DistributionType.gaussian);
             Assert.True(measurement.Data is Pose);
             Assert.True(measurement.Std == 20);
             Assert.True(measurement.TimeStamp == 1);
+            Assert.True(measurement.DistributionType == DistributionType.gaussian);
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Core.Test
         [Test]
         public void TestSetData()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441, DistributionType.gaussian);
             Pose newPose = new Pose(this.position, this.orientation);
             measurement.Data = newPose;
             Assert.AreEqual(measurement.Data, newPose);
@@ -69,7 +70,7 @@ namespace Core.Test
         [Test]
         public void TestSetDataNull()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441, DistributionType.gaussian);
             Assert.NotNull(measurement.Data);
             measurement.Data = null;
             Assert.Null(measurement.Data);
@@ -81,7 +82,7 @@ namespace Core.Test
         [Test]
         public void TestSetStd()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 52, 19);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 52, 19, DistributionType.gaussian);
             measurement.Std = 21;
             Assert.AreEqual(21, measurement.Std);
         }
@@ -92,9 +93,20 @@ namespace Core.Test
         [Test]
         public void TestSetTimestamp()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 12, 51);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 12, 51, DistributionType.gaussian);
             measurement.TimeStamp = 122;
             Assert.AreEqual(122, measurement.TimeStamp);
+        }
+
+        /// <summary>
+        /// Test SetTimestamp
+        /// </summary>
+        [Test]
+        public void TestSetSDistribution()
+        {
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 12, 51, DistributionType.gaussian);
+            measurement.DistributionType = DistributionType.uniform;
+            Assert.AreEqual(DistributionType.uniform, measurement.DistributionType);
         }
     }
 }

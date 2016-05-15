@@ -35,14 +35,28 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private MarkerLocations markerLocations;
 
         /// <summary>
+        /// The type of probability distribution belonging to the measurements of the position.
+        /// </summary>
+        private DistributionType posDistType;
+
+        /// <summary>
+        /// The type of probability distribution belonging to the measurements of the orientation.
+        /// </summary>
+        private DistributionType oriDistType;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
         /// <param name="standardDeviation">the standard deviation</param>
         /// <param name="path">url to the xml file</param>
-        public MarkerSensor(float standardDeviation, string path)
+        /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
+        /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
+        public MarkerSensor(float standardDeviation, string path, DistributionType posDistType, DistributionType oriDistType)
         {
             this.standardDeviation = standardDeviation;
             this.markerLocations = new MarkerLocations(path);
+            this.posDistType = posDistType;
+            this.oriDistType = oriDistType;
         }
 
         /// <summary>
@@ -60,8 +74,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 {
                     Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
-                    this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
+                    this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp, this.posDistType));
+                    this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp, this.oriDistType));
                 }
                 catch (UnallocatedMarkerException e)
                 {

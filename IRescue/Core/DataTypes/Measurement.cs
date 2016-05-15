@@ -4,6 +4,7 @@
 
 namespace IRescue.Core.DataTypes
 {
+
     /// <summary>
     /// Class which holds a measurement taken at a specific time with a standard deviation for the measurement.
     /// </summary>
@@ -16,11 +17,13 @@ namespace IRescue.Core.DataTypes
         /// <param name="data">The measurement.</param>
         /// <param name="std">The standard deviation of the measurement.</param>
         /// <param name="timeStamp">The time stamp at which the measurement was taken.</param>
-        public Measurement(T data, float std, long timeStamp)
+        /// <param name="disttype">The type of distribution that describes the spread of the measurement.</param>
+        public Measurement(T data, float std, long timeStamp, DistributionType disttype)
         {
             this.Data = data;
             this.Std = std;
             this.TimeStamp = timeStamp;
+            this.DistributionType = disttype;
         }
 
         /// <summary>
@@ -37,5 +40,10 @@ namespace IRescue.Core.DataTypes
         /// Gets or sets the actual measurement.
         /// </summary>
         public T Data { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of distribution that describes the spread of the measurement.
+        /// </summary>
+        public DistributionType DistributionType { get; set; }
     }
 }

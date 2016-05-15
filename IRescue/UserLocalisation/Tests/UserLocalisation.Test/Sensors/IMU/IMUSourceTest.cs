@@ -46,12 +46,22 @@ namespace UserLocalisation.Test.Sensors.IMU
         private int bufferSize = 5;
 
         /// <summary>
+        /// The default type of probability distribution belonging to the measurements of the acceleration.
+        /// </summary>
+        private DistributionType accDistType = DistributionType.gaussian;
+
+        /// <summary>
+        /// The default type of probability distribution belonging to the measurements of the orientation.
+        /// </summary>
+        private DistributionType oriDistType = DistributionType.gaussian;
+
+        /// <summary>
         /// Setup the source to test and the default values.
         /// </summary>
         [SetUp]
         public void SetUp()
         {
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.bufferSize, new Vector3(new float[] { 0, 0, 0 }));
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.accDistType, this.oriDistType, this.bufferSize, new Vector3(new float[] { 0, 0, 0 }));
             this.zeroOrientation = new Vector3(0, 0, 0);
             this.standardAcceleration = new Vector3(1, 2, 3);
         }
@@ -218,7 +228,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         public void GetLastVelocityNoDataTest()
         {
             Vector3 v0 = new Vector3(1, 2, 3);
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 5, new Vector3(0, 0, 0), v0);
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.accDistType, this.oriDistType, 5, new Vector3(0, 0, 0), v0);
             Measurement<Vector3> res = this.source.GetLastVelocity();
             this.AssertVectorAreEqual(v0, res.Data);
         }
@@ -447,7 +457,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         [Test]
         public void GetLastAccelerationBufferLimitReached()
         {
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.accDistType, this.oriDistType, 3, new Vector3(0, 0, 0));
             Vector3 v0 = new Vector3(0, 0, 0);
             Vector3 v1 = new Vector3(1, 1, 1);
             Vector3 v2 = new Vector3(2, 2, 2);
@@ -470,7 +480,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         [Test]
         public void GetLastOrientationBufferLimitReached()
         {
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.accDistType, this.oriDistType, 3, new Vector3(0, 0, 0));
             Vector3 v0 = new Vector3(0, 0, 0);
             Vector3 v1 = new Vector3(1, 1, 1);
             Vector3 v2 = new Vector3(2, 2, 2);
@@ -493,7 +503,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         [Test]
         public void GetLastVelocityBufferLimitReached()
         {
-            this.source = new IMUSource(this.accelerationStd, this.orientationStd, 3, new Vector3(0, 0, 0));
+            this.source = new IMUSource(this.accelerationStd, this.orientationStd, this.accDistType, this.oriDistType, 3, new Vector3(0, 0, 0));
             Vector3 v0 = new Vector3(0, 0, 0);
             Vector3 v1 = new Vector3(1, 1, 1);
             this.source.AddMeasurements(0, v0, this.zeroOrientation);

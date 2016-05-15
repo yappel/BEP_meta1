@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Datatypes\DistributionType.cs" />
     <Compile Include="Datatypes\RotationMatrix.cs" />
     <Compile Include="Datatypes\Vector3.cs" />
     <Compile Include="Datatypes\Pose.cs" />
