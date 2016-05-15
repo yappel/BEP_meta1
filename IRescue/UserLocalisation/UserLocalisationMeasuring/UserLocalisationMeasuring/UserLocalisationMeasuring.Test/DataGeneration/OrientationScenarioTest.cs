@@ -56,7 +56,7 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestMethod()
         {
-            OrientationScenario scena = new OrientationScenario(this.posnochange);
+
         }
     }
 }

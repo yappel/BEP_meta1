@@ -31,7 +31,7 @@ namespace IRescue.UserLocalisation.Particle
         [SetUp]
         public void Init()
         {
-            this.filter = new ParticleFilter(new double[6] { 2, 2, 2, 360, 360, 360 }, 30, 0.005, new RandomGenerator(new SystemRandomSource()));
+            this.filter = new ParticleFilter(new double[6] { 2, 2, 2, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>
             {
@@ -89,7 +89,7 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestParticleFilterRun()
         {
-            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, new RandomGenerator(new SystemRandomSource()));
+            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
             returnlist.Add(new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0));
@@ -117,7 +117,7 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void ParticleFilterUnits()
         {
-            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, new RandomGenerator(new SystemRandomSource()));
+            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
             returnlist.Add(new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0));
