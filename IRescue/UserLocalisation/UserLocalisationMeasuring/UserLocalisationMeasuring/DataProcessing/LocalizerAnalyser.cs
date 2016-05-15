@@ -28,7 +28,7 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
         public double Precision { get; private set; }
 
         /// <summary>
-        /// The accuracy of the localizer, the deviation of the average result.
+        /// The accuracy of the localizer, the absolute deviation of the average result.
         /// </summary>
         public double Accuracy { get; private set; }
 
@@ -37,8 +37,8 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             List<Result> results = GenerateResults(repititions, cycleamount, filter);
             Pose averageResult = CalculateAverageResult(results);
             this.AverageRuntime = CalculateAverageRuntime(results);
-            this.Precision = CalculatePrecision(averageResult);
-            this.Accuracy = CalculateAccuracy(averageResult);
+            this.Precision = CalculatePrecision(results, averageResult);
+            this.Accuracy = CalculateAccuracy(results, averageResult);
         }
 
         private List<Result> GenerateResults(int repititions, int cycleamount, AbstractUserLocalizer filter)
@@ -85,12 +85,21 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             return sum / results.Count;
         }
 
-        private double CalculatePrecision(Pose average)
+        private double CalculatePrecision(List<Result> results, Pose average)
         {
-            throw new NotImplementedException();
+            float sum = 0;
+            foreach (Result result in results)
+            {
+                sum += Math.Abs(result.Pose.Orientation.X - average.Orientation.X) / ;
+                sum += Math.Abs(result.Pose.Orientation.Y - average.Orientation.Y);
+                sum += Math.Abs(result.Pose.Orientation.Z - average.Orientation.Z);
+                sum += Math.Abs(result.Pose.Position.X - average.Position.X);
+                sum += Math.Abs(result.Pose.Position.Y - average.Position.Y);
+                sum += Math.Abs(result.Pose.Position.Z - average.Position.Z);
+            }
         }
 
-        private float CalculateAccuracy(Pose average)
+        private float CalculateAccuracy(List<Result> results, Pose average)
         {
             throw new NotImplementedException();
         }
