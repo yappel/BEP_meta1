@@ -4,8 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
 using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation.Sensors;
 
@@ -24,31 +22,47 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
             Func<long, float> realy,
             Func<long, float> realz,
             long[] timestamps,
-            Func<float> noisex,
-            Func<float> noisey,
-            Func<float> noisez) : base(realx, realy, realz, timestamps, noisex, noisey, noisez)
+            Func<float> noise,
+            float stddev) : base(realx, realy, realz, timestamps, noise, stddev)
         {
-
         }
 
         public Measurement<Vector3> GetLastOrientation()
         {
-            throw new System.NotImplementedException();
+            return this.Dataset[this.Dataset.Count];
         }
 
         public Measurement<Vector3> GetOrientation(long timeStamp)
         {
-            throw new System.NotImplementedException();
+            Measurement<Vector3> meas;
+            if (this.Dataset.TryGetValue(timeStamp, out meas))
+            {
+                return meas;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
         {
-            throw new System.NotImplementedException();
+            List<Measurement<Vector3>> measurments = new List<Measurement<Vector3>>();
+            for (long i = startTimeStamp; i <= startTimeStamp; i++)
+            {
+                measurments.Add(this.GetOrientation(i));
+            }
+            return measurments;
         }
 
         public List<Measurement<Vector3>> GetAllOrientations()
         {
-            throw new System.NotImplementedException();
+            List<Measurement<Vector3>> measurments = new List<Measurement<Vector3>>();
+            foreach (KeyValuePair<long, Measurement<Vector3>> keyValuePair in this.Dataset)
+            {
+                measurments.Add(keyValuePair.Value);
+            }
+            return measurments;
         }
     }
 }

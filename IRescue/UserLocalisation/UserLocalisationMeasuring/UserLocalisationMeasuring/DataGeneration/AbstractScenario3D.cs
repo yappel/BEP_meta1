@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using IRescue.Core.DataTypes;
 
 namespace IRescue.UserLocalisationMeasuring.DataGeneration
@@ -19,9 +18,8 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
             Func<long, float> realy,
             Func<long, float> realz,
             long[] timestamps,
-            Func<float> noisex,
-            Func<float> noisey,
-            Func<float> noisez)
+            Func<float> noise,
+            float stddev)
         {
             this.Dataset = new SortedDictionary<long, Measurement<Vector3>>();
             this.RealX = realx;
@@ -29,14 +27,12 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
             this.RealZ = realz;
             foreach (long timestamp in timestamps)
             {
-                float x = realx(timestamp) + noisex();
-                float y = realy(timestamp) + noisey();
-                float z = realz(timestamp) + noisez();
+                float x = realx(timestamp) + noise();
+                float y = realy(timestamp) + noise();
+                float z = realz(timestamp) + noise();
                 Vector3 data = new Vector3(x, y, z);
-                float std = 0.1f;
                 long timeStamp = timestamp;
-
-                Measurement<Vector3> meas = new Measurement<Vector3>(data, std, timeStamp);
+                Measurement<Vector3> meas = new Measurement<Vector3>(data, stddev, timeStamp);
                 this.Dataset.Add(timestamp, meas);
             }
         }
@@ -60,20 +56,5 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
         /// Function describing the real Z value at a time certain timestamp
         /// </summary>
         public Func<long, float> RealZ { get; }
-
-        /// <summary>
-        /// Function describing the real X value at a time certain timestamp
-        /// </summary>
-        public Func<long, float> NoiseX { get; }
-
-        /// <summary>
-        /// Function describing the real Y value at a time certain timestamp
-        /// </summary>
-        public Func<long, float> NoiseY { get; }
-
-        /// <summary>
-        /// Function describing the real Z value at a time certain timestamp
-        /// </summary>
-        public Func<long, float> NoiseZ { get; }
     }
 }
