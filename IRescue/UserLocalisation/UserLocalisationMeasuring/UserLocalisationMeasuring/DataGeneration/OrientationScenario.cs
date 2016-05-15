@@ -20,7 +20,12 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
         /// <summary>
         /// Dataset containing all the <see cref="Measurement{T}"/>
         /// </summary>
-        private SortedDictionary<int, Measurement<Vector3>> dataset;
+        public SortedDictionary<int, Measurement<Vector3>> dataset { get; }
+
+        /// <summary>
+        /// Dataset containig the real orientations of the scenario.
+        /// </summary>
+        public SortedDictionary<int, Vector3> rawdataset { get; }
 
 
 
@@ -29,9 +34,10 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
         /// </summary>
         /// <param name="xmlfile">A <see cref="XDocument"/> containing information to derive <see cref="Measurement{T}"/>s from.</param>
         /// <param name="frequency">The amount of <see cref="Measurement{T}"/>s should be able to provide per second</param>
-        public OrientationScenario(XDocument xmlfile, int frequency)
+        public OrientationScenario(XDocument xmlfile)
         {
             this.dataset = new SortedDictionary<int, Measurement<Vector3>>();
+            this.rawdataset = new SortedDictionary<int, Vector3>();
             var rootNodes = xmlfile.Root.DescendantNodes().OfType<XElement>();
             foreach (var node in (from xml in xmlfile.Descendants("Measurement") select xml))
             {
@@ -45,8 +51,9 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
 
                 Measurement<Vector3> meas = new Measurement<Vector3>(data, std, timeStamp);
                 this.dataset.Add(timeStamp, meas);
+                this.rawdataset.Add(timeStamp, data);
             }
-            //TODO interpolate measurements so the list this.dataset contains "frequency" amount of measurements per second
+            //TODO add noise to all measurements
         }
 
         public Measurement<Vector3> GetLastOrientation()

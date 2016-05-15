@@ -89,19 +89,19 @@ namespace UserLocalisationMeasuring
                         ParticleFilter filter3 = new ParticleFilter(maxima, particles, cdfmargin, noise, pgen);
                         filter3.AddOrientationSource(oriscen3);
                         filter3.AddPositionSource(posscen3);
-                        LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filter1);
+                        LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filter1, posscen1, oriscen1);
                         if (bestprecision1 < locanal1.Precision)
                         {
                             bestprecision1 = locanal1.Precision;
                             Console.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
                         }
-                        LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2);
+                        LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2, posscen2, oriscen2);
                         if (bestprecision2 < locanal2.Precision)
                         {
                             bestprecision1 = locanal1.Precision;
                             Console.WriteLine("2" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
                         }
-                        LocalizerAnalyser locanal3 = new LocalizerAnalyser(10, 10, filter3);
+                        LocalizerAnalyser locanal3 = new LocalizerAnalyser(10, 10, filter3, posscen3, oriscen3);
                         if (bestprecision3 < locanal3.Precision)
                         {
                             bestprecision1 = locanal1.Precision;

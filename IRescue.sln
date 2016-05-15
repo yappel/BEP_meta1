@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisation.Test", "IR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisationMeasuring", "IRescue\UserLocalisation\UserLocalisationMeasuring\UserLocalisationMeasuring\UserLocalisationMeasuring.csproj", "{50ACF44F-E650-4130-B05C-6ED69E85B755}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisationMeasuring.Test", "IRescue\UserLocalisation\UserLocalisationMeasuring\UserLocalisationMeasuring\UserLocalisationMeasuring.Test\UserLocalisationMeasuring.Test.csproj", "{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,12 @@ Global
 		{50ACF44F-E650-4130-B05C-6ED69E85B755}.No-unity|Any CPU.Build.0 = Release|Any CPU
 		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50ACF44F-E650-4130-B05C-6ED69E85B755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.No-unity|Any CPU.ActiveCfg = Release|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.No-unity|Any CPU.Build.0 = Release|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE6FCD53-91D1-4D1E-AB01-E7F4C1A8E860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
