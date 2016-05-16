@@ -6,8 +6,9 @@ namespace IRescue.UserLocalisation.Particle
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Algos;
+    using Algos.NoiseGenerators;
     using Algos.ParticleGenerators;
+    using Algos.Resamplers;
     using Core.DataTypes;
     using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
@@ -26,6 +27,11 @@ namespace IRescue.UserLocalisation.Particle
         private const int DIMENSIONSAMOUNT = 6;
 
         /// <summary>
+        /// The amount of degrees in a circle.
+        /// </summary>
+        private const double ORIENTATIONMAX = 360;
+
+        /// <summary>
         /// List containing the added <see cref="IOrientationSource"/>s
         /// </summary>
         private List<IOrientationSource> orilist;
@@ -36,60 +42,69 @@ namespace IRescue.UserLocalisation.Particle
         private List<IPositionSource> poslist;
 
         /// <summary>
-        /// The generator that is used generate a new set of Particles 
-        /// </summary>
-        private AbstractParticleGenerator particlegen;
-
-        /// <summary>
-        /// The class that is used to Predict the next <see cref="Pose"/>
-        /// </summary>
-        private LinearPredicter posePredictor;
-
-        /// <summary>
         /// The amount of margin that will be used in on direction by calculating the Weights of the Particles using the normal cumulative density function
         /// </summary>
         private double probabilityMargin;
 
         /// <summary>
-        /// The maximum value of the Particles for every dimension
-        /// </summary>
-        private double[] maxima;
-
-        /// <summary>
-        /// The System.Diagnostics.Stopwatch timestamp of the previous time a <see cref="Pose"/> was estimated
+        /// The Stopwatch timestamp of the previous time a <see cref="Pose"/> was estimated
         /// </summary>
         private long previousTS = 0;
 
         /// <summary>
-        /// The maximum amount of noise that can be added or subtracted to a particle.
+        /// The size of the playfield where to locate the user in.
         /// </summary>
-        private double noiseamount;
+        private FieldSize fieldsize;
+
+        /// <summary>
+        /// The maximum amount that can be added or subtracted from the value of a particle by the <see cref="INoiseGenerator"/>.
+        /// </summary>
+        private float noisesize;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
         /// </summary>
-        /// <param name="maxima">The maximum value of the particles in each dimension (minimum is 0)</param>
+        /// <param name="fieldsize">The maximum and minimum values of the positions</param>
         /// <param name="particleamount">The amount of particles to generate in each dimension</param>
         /// <param name="probabilityMargin">The amount the X in the normal CDF calculation will be moved in both directions to calculate p(X)</param>
-        /// <param name="noiseamount">The maximum amount of noise that can be added or subtracted to a particle.</param>
+        /// <param name="noisesize"> The maximum amount that can be added or subtracted from the value of a particle by the <see cref="INoiseGenerator"/>.</param>
         /// <param name="prtclgen">The particle generator used to generate particles</param>
-        public ParticleFilter(double[] maxima, int particleamount, double probabilityMargin, double noiseamount, AbstractParticleGenerator prtclgen)
+        /// <param name="posePredictor">The class that predicts the next Pose, which is used to move the particles</param>
+        /// <param name="noisegen">The noise generator the generate the noise that is added to the particles</param>
+        /// <param name="resampler">The resample class that eliminates the particles with small weights</param>
+        public ParticleFilter(
+            FieldSize fieldsize,
+            int particleamount,
+            double probabilityMargin,
+            float noisesize,
+            IParticleGenerator prtclgen,
+            IPosePredictor posePredictor,
+            INoiseGenerator noisegen,
+            IResampler resampler)
         {
-            this.noiseamount = noiseamount;
-            this.particlegen = prtclgen;
-            this.posePredictor = new LinearPredicter();
+            this.poslist = new List<IPositionSource>();
+            this.orilist = new List<IOrientationSource>();
+            this.Particlegen = prtclgen;
+            this.PosePredictor = posePredictor;
+            this.Resampler = resampler;
+            this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
-            this.maxima = maxima;
-            this.Particles = new DenseMatrix(
+            this.fieldsize = fieldsize;
+            this.noisesize = noisesize;
+
+            // Create particle matrix
+            var particlearray = this.Particlegen.Generate(
                 particleamount,
                 DIMENSIONSAMOUNT,
-                this.particlegen.Generate(particleamount, DIMENSIONSAMOUNT, maxima));
+                new double[] { this.fieldsize.Xmin, this.fieldsize.Ymin, this.fieldsize.Zmin, 0d, 0d, 0d },
+                new double[] { this.fieldsize.Xmax, this.fieldsize.Ymax, this.fieldsize.Zmax, ORIENTATIONMAX, ORIENTATIONMAX, ORIENTATIONMAX });
+            this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
+
+            // Create weights matrix
             float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
             FillArray(initweights, 1f);
             this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
             this.NormalizeWeightsAll(this.Weights);
-            this.poslist = new List<IPositionSource>();
-            this.orilist = new List<IOrientationSource>();
         }
 
         /// <summary>
@@ -111,6 +126,26 @@ namespace IRescue.UserLocalisation.Particle
         /// Gets or sets list containing all the measurements from the <see cref="IPositionSource"/>s
         /// </summary>
         public Matrix<float> Measurementspos { get; set; }
+
+        /// <summary>
+        /// Gets or sets the generator that is used generate a new set of Particles 
+        /// </summary>
+        private IParticleGenerator Particlegen { get; set; }
+
+        /// <summary>
+        /// Gets or sets the class that is used to Predict the next <see cref="Pose"/>
+        /// </summary>
+        private IPosePredictor PosePredictor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the generator that generates the noise
+        /// </summary>
+        private INoiseGenerator Noisegen { get; set; }
+
+        /// <summary>
+        /// Gets or sets the class that resamples the particles
+        /// </summary>
+        private IResampler Resampler { get; set; }
 
         /// <summary>
         ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
@@ -149,28 +184,11 @@ namespace IRescue.UserLocalisation.Particle
         /// Maps all values in the matrix that are bigger than the maximum to the maximum and the values that are lower than 0 to 0;
         /// </summary>
         /// <param name="matrix">The matrix containing the values to perform the action on.</param>
-        /// <param name="maxima">The maximum allowed value for ever column of the matrix</param>
-        public void ContainParticles(Matrix<float> matrix, double[] maxima)
+        public void ContainParticles(Matrix<float> matrix)
         {
-            for (int i = 0; i < matrix.ColumnCount / 2; i++)
-            {
-                Vector<float> res = matrix.Column(i).Map(c =>
-                {
-                    if (maxima.Length > i && c > maxima[i])
-                    {
-                        return (float)maxima[i];
-                    }
-                    else if (c < 0)
-                    {
-                        return 0f;
-                    }
-                    else
-                    {
-                        return c;
-                    }
-                });
-                matrix.SetColumn(i, res.ToArray());
-            }
+            this.ContainParticles(matrix, 0, this.fieldsize.Xmin, this.fieldsize.Xmax);
+            this.ContainParticles(matrix, 1, this.fieldsize.Ymin, this.fieldsize.Ymax);
+            this.ContainParticles(matrix, 2, this.fieldsize.Zmin, this.fieldsize.Zmax);
         }
 
         /// <summary>
@@ -288,10 +306,10 @@ namespace IRescue.UserLocalisation.Particle
                 {
                     float particle = particles.Column(i)[index];
                     var p = 1d;
-                    for (int j = 0; j < measurements.Column(i).Count; j++)
+                    for (int j = 0; j < measurements.Column(colto - colfrom).Count; j++)
                     {
                         float std = measurements[j, 3];
-                        float meas = measurements[j, i];
+                        float meas = measurements[j, i - colfrom];
                         p = p * (Normal.CDF(particle, std, meas + margin) -
                                Normal.CDF(particle, std, meas - margin));
                     }
@@ -313,6 +331,34 @@ namespace IRescue.UserLocalisation.Particle
             {
                 arr[i] = value;
             }
+        }
+
+        /// <summary>
+        /// Makes sure all values are between the minimum and maximum values.
+        /// </summary>
+        /// <param name="matrix">THe matrix to check the values from</param>
+        /// <param name="columnindex">What column to check</param>
+        /// <param name="min">The minimum value</param>
+        /// <param name="max">THe maximum value</param>
+        private void ContainParticles(Matrix<float> matrix, int columnindex, float min, float max)
+        {
+            Vector<float> particles = matrix.Column(columnindex);
+            particles.Map(p =>
+            {
+                if (p > max)
+                {
+                    return max;
+                }
+                else if (p < 0)
+                {
+                    return min;
+                }
+                else
+                {
+                    return p;
+                }
+            });
+            matrix.SetColumn(0, particles.ToArray());
         }
 
         /// <summary>
@@ -373,9 +419,9 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         private void Resample()
         {
-            Algos.Resample.Multinomial(this.Particles, this.Weights);
-            NoiseGenerator.Uniform(this.Particles, this.noiseamount);
-            this.ContainParticles(this.Particles, this.maxima);
+            this.Resampler.Resample(this.Particles, this.Weights);
+            this.Noisegen.GenerateNoise(-1 * this.noisesize, this.noisesize, this.Particles);
+            this.ContainParticles(this.Particles);
         }
 
         /// <summary>
@@ -384,7 +430,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="timeStamp">the current timestamp</param>
         private void Predict(long timeStamp)
         {
-            float[] translation = this.posePredictor.PredictPositionAt(timeStamp);
+            float[] translation = this.PosePredictor.PredictPoseAt(timeStamp);
             float[] transmatrixarray = new float[this.Particles.RowCount * this.Particles.ColumnCount];
             for (int c = 0; c < this.Particles.ColumnCount; c++)
             {
@@ -419,7 +465,7 @@ namespace IRescue.UserLocalisation.Particle
             Pose result = new Pose(
                 new Vector3(averages[0], averages[1], averages[2]),
                 new Vector3(averages[3], averages[4], averages[5]));
-            this.posePredictor.AddPose(result, timeStamp);
+            this.PosePredictor.AddPoseData(timeStamp, result);
             return result;
         }
     }

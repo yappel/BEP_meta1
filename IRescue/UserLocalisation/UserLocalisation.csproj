@@ -54,12 +54,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
-    <Compile Include="Particle\Algos\ParticleGenerators\AbstractParticleGenerator.cs" />
-    <Compile Include="Particle\Algos\ParticleGenerators\RandomGenerator.cs" />
-    <Compile Include="Particle\Algos\NoiseGenerator.cs" />
-    <Compile Include="Particle\Algos\Resample.cs" />
+    <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
+    <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\RandomParticleGenerator.cs" />
+    <Compile Include="Particle\Algos\Resamplers\MultinomialResampler.cs" />
+    <Compile Include="Particle\Algos\Resamplers\IResampler.cs" />
     <Compile Include="Particle\ParticleFilter.cs" />
-    <Compile Include="PosePrediction\LinearPredicter.cs" />
+    <Compile Include="PosePrediction\IPosePredictor.cs" />
+    <Compile Include="PosePrediction\LinearPosePredicter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IAccelerationReceiver.cs" />
     <Compile Include="Sensors\IAccelerationSource.cs" />

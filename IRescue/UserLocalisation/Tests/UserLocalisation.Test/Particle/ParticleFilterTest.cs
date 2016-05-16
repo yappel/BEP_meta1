@@ -5,18 +5,20 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using System.Collections.Generic;
-    using Algos;
+    using System.Linq;
+    using Algos.NoiseGenerators;
     using Algos.ParticleGenerators;
+    using Algos.Resamplers;
     using Core.DataTypes;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
-    using MathNet.Numerics.Random;
     using Moq;
     using NUnit.Framework;
+    using PosePrediction;
     using Sensors;
 
     /// <summary>
-    /// TODO TODO
+    /// Test for the particles
     /// </summary>
     public class ParticleFilterTest
     {
@@ -26,19 +28,77 @@ namespace IRescue.UserLocalisation.Particle
         private ParticleFilter filter;
 
         /// <summary>
+        /// Particle generator mock
+        /// </summary>
+        private Mock<IParticleGenerator> ptclgen;
+
+        /// <summary>
+        /// Noise generator mock
+        /// </summary>
+        private Mock<INoiseGenerator> noisegen;
+
+        /// <summary>
+        /// Pose predictor mock
+        /// </summary>
+        private Mock<IPosePredictor> posepredictor;
+
+        /// <summary>
+        /// Resample mock
+        /// </summary>
+        private Mock<IResampler> resampler;
+
+        /// <summary>
+        /// Size of the field
+        /// </summary>
+        private FieldSize fieldsize;
+
+        /// <summary>
+        /// Particle list
+        /// </summary>
+        private float[] particles;
+
+        /// <summary>
         /// Initialization method
         /// </summary>
         [SetUp]
         public void Init()
         {
-            this.filter = new ParticleFilter(new double[6] { 2, 2, 2, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
+            this.ptclgen = new Mock<IParticleGenerator>();
+            this.noisegen = new Mock<INoiseGenerator>();
+            this.posepredictor = new Mock<IPosePredictor>();
+            this.resampler = new Mock<IResampler>();
+            this.fieldsize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
+            var particleamount = 30;
+
+            float[] particles = new float[particleamount * 6];
+            for (int i = 0; i < particleamount * 6; i++)
+            {
+                particles[i] = 1;
+            }
+
+            this.particles = particles;
+
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(particles);
+            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
+
+            this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
+
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>
             {
-                new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0)
+                new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 0.1f, 0)
             };
             possourcemock.Setup(foo => foo.GetPositions(It.IsAny<long>(), It.IsAny<long>()))
                .Returns(returnlist);
+            Mock<IOrientationSource> orisourcemock = new Mock<IOrientationSource>();
+            List<Measurement<Vector3>> returnlist2 = new List<Measurement<Vector3>>
+            {
+                new Measurement<Vector3>(new Vector3(40f, 40f, 40f), 0.1f, 0)
+            };
+            orisourcemock.Setup(foo => foo.GetOrientations(It.IsAny<long>(), It.IsAny<long>()))
+               .Returns(returnlist2);
+            this.filter.AddPositionSource(possourcemock.Object);
+            this.filter.AddOrientationSource(orisourcemock.Object);
         }
 
         /// <summary>
@@ -84,31 +144,34 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test the average accuracy of the filter is within an acceptable range.
+        /// Test if the filter doesn't crash.
         /// </summary>
         [Test]
         public void TestParticleFilterRun()
         {
-            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
-            Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
-            List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
-            returnlist.Add(new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0));
-            possourcemock.Setup(foo => foo.GetPositions(It.IsAny<long>(), It.IsAny<long>()))
-               .Returns(returnlist);
-            filter.AddPositionSource(possourcemock.Object);
-            Pose pose = null;
-            float x = 0;
+            this.filter.Particles[0, 0] = this.fieldsize.Xmax + 1000;
+            this.filter.Particles[1, 0] = this.fieldsize.Xmin - 1000;
+            this.filter.CalculatePose(0);
+            float[] parts = this.filter.Particles.Column(0).ToArray();
+            Assert.IsTrue(parts.Max() <= this.fieldsize.Xmax);
+            Assert.IsTrue(parts.Min() >= this.fieldsize.Xmin);
+        }
+
+        /// <summary>
+        /// Test if the filter doesn't crash when there are no sources.
+        /// </summary>
+        [Test]
+        public void TestParticleFilterRunWithoutSources()
+        {
+            ParticleFilter filterr = new ParticleFilter(this.fieldsize, 30, 0.001, 0.01f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(this.particles);
+            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
             for (int i = 0; i < 1000; i++)
             {
-                pose = filter.CalculatePose(i);
-                System.Diagnostics.Debug.WriteLine(pose.Position.X);
-                if (i % 50 == 0)
-                {
-                    x += pose.Position.X;
-                }
+                filterr.CalculatePose(i);
             }
 
-            Assert.AreEqual(2.5, x / 20, 0.5);
+            Assert.Pass();
         }
 
         /// <summary>
@@ -117,77 +180,17 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void ParticleFilterUnits()
         {
-            ParticleFilter filter = new ParticleFilter(new double[] { 5, 2, 5, 360, 360, 360 }, 30, 0.005, 0.1, new RandomGenerator(new SystemRandomSource()));
-            Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
-            List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>();
-            returnlist.Add(new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0));
-            possourcemock.Setup(foo => foo.GetPosition(It.IsAny<long>()))
-                .Returns(new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 1, 0));
-            possourcemock.Setup(foo => foo.GetPositions(It.IsAny<long>(), It.IsAny<long>()))
-               .Returns(returnlist);
-            filter.AddPositionSource(possourcemock.Object);
-
-            Assert.AreEqual(30, filter.Particles.RowCount);
-            Resample.Multinomial(filter.Particles, filter.Weights);
-            Assert.AreEqual(30, filter.Particles.RowCount);
-            Assert.AreEqual(6, filter.Particles.ColumnCount);
-            filter.RetrieveMeasurements(1);
-            Assert.AreEqual(30, filter.Particles.RowCount);
-            filter.AddWeights(
-                20, filter.Particles, 0, 3, filter.Measurementspos, filter.Weights);
-            Assert.AreEqual(30, filter.Particles.RowCount);
-            Assert.AreEqual(6, filter.Particles.ColumnCount);
-            filter.NormalizeWeightsAll(filter.Weights);
-            Assert.AreEqual(30, filter.Particles.RowCount);
-            Assert.AreEqual(6, filter.Particles.ColumnCount);
-        }
-
-        /// <summary>
-        /// Test if adding noise actually increases the range of values of the Particles.
-        /// </summary>
-        [Test]
-        public void NoiseTest()
-        {
-            float[] list = new float[30];
-            for (int i = 0; i < 30; i++)
-            {
-                list[i] = 1 / 30f;
-            }
-
-            float min = 500;
-            float max = 0;
-            foreach (float f in list)
-            {
-                if (f < min)
-                {
-                    min = f;
-                }
-
-                if (f > max)
-                {
-                    max = f;
-                }
-            }
-
-            Assert.AreEqual(0, max - min);
-            Matrix<float> locparts = new DenseMatrix(1, 30, list);
-            NoiseGenerator.Uniform(locparts, 1);
-            min = 500;
-            max = 0;
-            foreach (float f in locparts.ToArray())
-            {
-                if (f < min)
-                {
-                    min = f;
-                }
-
-                if (f > max)
-                {
-                    max = f;
-                }
-            }
-
-            Assert.AreNotEqual(0, max - min);
+            Assert.AreEqual(30, this.filter.Particles.RowCount);
+            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
+            this.filter.RetrieveMeasurements(1);
+            Assert.AreEqual(30, this.filter.Particles.RowCount);
+            this.filter.AddWeights(
+                20, this.filter.Particles, 0, 3, this.filter.Measurementspos, this.filter.Weights);
+            Assert.AreEqual(30, this.filter.Particles.RowCount);
+            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
+            this.filter.NormalizeWeightsAll(this.filter.Weights);
+            Assert.AreEqual(30, this.filter.Particles.RowCount);
+            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
         }
     }
 }
