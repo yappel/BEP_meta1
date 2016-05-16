@@ -90,7 +90,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                     this.positions[this.pointer] = new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp);
                     this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp);
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
-                    this.Measurements++;
+                    this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }
                 catch (UnallocatedMarkerException e)
                 {
