@@ -71,8 +71,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Particle\ResampleTest.cs" />
-    <Compile Include="Particle\RandomGeneratorTest.cs" />
+    <Compile Include="Particle\NoiseGenerators\RandomNoiseGeneratorTest.cs" />
+    <Compile Include="Particle\Resamplers\MultinomialResamplerTest.cs" />
+    <Compile Include="Particle\ParticleGenerators\RandomGeneratorTest.cs" />
     <Compile Include="Particle\ParticleFilterTest.cs" />
     <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,6 +104,7 @@
       <Name>UserLocalisation</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)IRescue\UserLocalisation\Tests\UserLocalisation.Test\Resources\*" "$(ProjectDir)$(OutDir)"</PostBuildEvent>

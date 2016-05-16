@@ -1,23 +1,23 @@
-﻿// <copyright file="Resample.cs" company="Delft University of Technology">
+﻿// <copyright file="MultinomialResampler.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.UserLocalisation.Particle.Algos
+namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
 {
     using System;
     using MathNet.Numerics.LinearAlgebra;
 
     /// <summary>
-    /// Class to resample Particles.
+    /// Resamples particles using the multinomial algorithm.
     /// </summary>
-    public class Resample
+    public class MultinomialResampler : IResampler
     {
         /// <summary>
         /// Resamples Particles using a Multinomial algorithm
         /// </summary>
         /// <param name="particles">The Particles to resample</param>
         /// <param name="weights">The Weights of the Particles</param>
-        public static void Multinomial(Matrix<float> particles, Matrix<float> weights)
+        public void Resample(Matrix<float> particles, Matrix<float> weights)
         {
             int j = 0;
             foreach (Vector<float> column in weights.EnumerateColumns())
@@ -43,7 +43,7 @@ namespace IRescue.UserLocalisation.Particle.Algos
         /// </summary>
         /// <param name="weights">The Weights of the Particles in a certain dimension</param>
         /// <returns>The list with indexes of the Particles that are chosen by the resample algorithm</returns>
-        public static int[] Multinomial(Vector<float> weights)
+        private static int[] Multinomial(Vector<float> weights)
         {
             int[] listout = new int[weights.Count];
             CumSum(weights);
@@ -70,7 +70,7 @@ namespace IRescue.UserLocalisation.Particle.Algos
         /// Calculates the cumulative sum of the values in a vector.
         /// </summary>
         /// <param name="list">The values to calculate with.</param>
-        public static void CumSum(Vector<float> list)
+        private static void CumSum(Vector<float> list)
         {
             for (int i = 0; i < list.Count; i++)
             {

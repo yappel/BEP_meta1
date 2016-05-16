@@ -43,6 +43,17 @@ namespace Core.Test
         }
 
         /// <summary>
+        /// Test the constructor with no arguments
+        /// </summary>
+        [Test]
+        public void TestConstructor2()
+        {
+            Pose pose = new Pose();
+            Assert.AreEqual(new Vector3(0, 0, 0), pose.Position);
+            Assert.AreEqual(new Vector3(0, 0, 0), pose.Orientation);
+        }
+
+        /// <summary>
         /// Test SetPosition
         /// </summary>
         [Test]

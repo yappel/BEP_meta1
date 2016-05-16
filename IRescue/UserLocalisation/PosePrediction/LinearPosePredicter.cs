@@ -1,4 +1,4 @@
-﻿// <copyright file="LinearPredicter.cs" company="Delft University of Technology">
+﻿// <copyright file="LinearPosePredicter.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
@@ -11,7 +11,7 @@ namespace IRescue.UserLocalisation.PosePrediction
     /// <summary>
     /// Predicts the next <see cref="Pose"/> based on previous poses
     /// </summary>
-    public class LinearPredicter
+    public class LinearPosePredicter : IPosePredictor
     {
         /// <summary>
         /// The <see cref="Pose"/> before the last <see cref="Pose"/>
@@ -26,24 +26,29 @@ namespace IRescue.UserLocalisation.PosePrediction
         /// <summary>
         /// The timestamp of <see cref="prevprevpose"/>
         /// </summary>
-        private long prevprevtime;
+        private long prevprevtime = -1;
 
         /// <summary>
         /// The timestamp of <see cref="prevpose"/>
         /// </summary>
-        private long prevtime;
+        private long prevtime = -1;
 
         /// <summary>
-        /// Registers a new <see cref="Pose"/> with a given timestamp.
+        /// Tells the predictor what the pose at was at a certain time stamp.
         /// </summary>
-        /// <param name="xyz">The <see cref="Pose"/> to register</param>
-        /// <param name="timestamp">The timestamp of the <see cref="Pose"/></param>
-        public void AddPose(Pose xyz, long timestamp)
+        /// <param name="timeStamp">The time stamp of the given pose</param>
+        /// <param name="pose">The given pose</param>
+        public void AddPoseData(long timeStamp, Pose pose)
         {
+            if (timeStamp <= this.prevtime)
+            {
+                throw new ArgumentException("The timestamp has to be larger then the timestamp of the last known position");
+            }
+
             this.prevprevpose = this.prevpose;
             this.prevprevtime = this.prevtime;
-            this.prevpose = xyz;
-            this.prevtime = timestamp;
+            this.prevpose = pose;
+            this.prevtime = timeStamp;
         }
 
         /// <summary>
@@ -51,7 +56,7 @@ namespace IRescue.UserLocalisation.PosePrediction
         /// </summary>
         /// <param name="timestamp">The timestamp to predict the <see cref="Pose"/> at</param>
         /// <returns>returns the position XYZ and orientation XYZ values in an array</returns>
-        public float[] PredictPositionAt(long timestamp)
+        public float[] PredictPoseAt(long timestamp)
         {
             if (this.prevpose == null || this.prevprevpose == null)
             {
@@ -81,7 +86,7 @@ namespace IRescue.UserLocalisation.PosePrediction
         /// <param name="dt1">The timestamp of the first location</param>
         /// <param name="dt2">The timestamp of the second location</param>
         /// <returns>The linear difference per time unit</returns>
-        public float[] Predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
+        private float[] Predict(Vector3 prev, Vector3 prevprev, long dt1, long dt2)
         {
             Vector<float> temp = prev.Add(prevprev.Negate()).Multiply((float)dt1 / (float)dt2);
             return temp.ToArray();
