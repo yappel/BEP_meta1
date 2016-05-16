@@ -37,8 +37,8 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             List<Result> results = GenerateResults(repititions, cycleamount, filter);
             Pose averageResult = CalculateAverageResult(results);
             this.AverageRuntime = CalculateAverageRuntime(results);
-            this.Precision = CalculatePrecision(results, averageResult);
-            this.Accuracy = CalculateAccuracy(results, averageResult);
+            this.Precision = CalculatePrecision(results, posscen, oriscen, filter.Fieldsize, cycleamount);
+            this.Accuracy = CalculateAccuracy(averageResult, posscen, oriscen, filter.Fieldsize, cycleamount);
         }
 
         private List<Result> GenerateResults(int repititions, int cycleamount, AbstractUserLocalizer filter)
@@ -85,23 +85,31 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             return sum / results.Count;
         }
 
-        private double CalculatePrecision(List<Result> results, Pose average)
+        private double CalculatePrecision(List<Result> results, PositionScenario posscen, OrientationScenario oriscen, FieldSize fieldsize, long cycleamount)
         {
             float sum = 0;
             foreach (Result result in results)
             {
-                sum += Math.Abs(result.Pose.Orientation.X - average.Orientation.X) / ;
-                sum += Math.Abs(result.Pose.Orientation.Y - average.Orientation.Y);
-                sum += Math.Abs(result.Pose.Orientation.Z - average.Orientation.Z);
-                sum += Math.Abs(result.Pose.Position.X - average.Position.X);
-                sum += Math.Abs(result.Pose.Position.Y - average.Position.Y);
-                sum += Math.Abs(result.Pose.Position.Z - average.Position.Z);
+                sum += Math.Abs(result.Pose.Orientation.X - posscen.RealX(cycleamount - 1)) / fieldsize.Xmax;
+                sum += Math.Abs(result.Pose.Orientation.Y - posscen.RealY(cycleamount - 1)) / fieldsize.Ymax;
+                sum += Math.Abs(result.Pose.Orientation.Z - posscen.RealZ(cycleamount - 1)) / fieldsize.Zmax;
+                sum += Math.Abs(result.Pose.Position.X - oriscen.RealX(cycleamount - 1)) / 360;
+                sum += Math.Abs(result.Pose.Position.Y - oriscen.RealY(cycleamount - 1)) / 360;
+                sum += Math.Abs(result.Pose.Position.Z - oriscen.RealZ(cycleamount - 1)) / 360;
             }
+            return sum;
         }
 
-        private float CalculateAccuracy(List<Result> results, Pose average)
+        private float CalculateAccuracy(Pose average, PositionScenario posscen, OrientationScenario oriscen, FieldSize fieldsize, long cycleamount)
         {
-            throw new NotImplementedException();
+            float sum = 0;
+            sum += Math.Abs(average.Orientation.X - posscen.RealX(cycleamount - 1)) / fieldsize.Xmax;
+            sum += Math.Abs(average.Orientation.Y - posscen.RealY(cycleamount - 1)) / fieldsize.Ymax;
+            sum += Math.Abs(average.Orientation.Z - posscen.RealZ(cycleamount - 1)) / fieldsize.Zmax;
+            sum += Math.Abs(average.Position.X - oriscen.RealX(cycleamount - 1)) / 360;
+            sum += Math.Abs(average.Position.Y - oriscen.RealY(cycleamount - 1)) / 360;
+            sum += Math.Abs(average.Position.Z - oriscen.RealZ(cycleamount - 1)) / 360;
+            return sum;
         }
 
         private struct Result

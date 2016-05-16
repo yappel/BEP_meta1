@@ -52,11 +52,6 @@ namespace IRescue.UserLocalisation.Particle
         private long previousTS = 0;
 
         /// <summary>
-        /// The size of the playfield where to locate the user in.
-        /// </summary>
-        private FieldSize fieldsize;
-
-        /// <summary>
         /// The maximum amount that can be added or subtracted from the value of a particle by the <see cref="INoiseGenerator"/>.
         /// </summary>
         private float noisesize;
@@ -80,7 +75,7 @@ namespace IRescue.UserLocalisation.Particle
             IParticleGenerator prtclgen,
             IPosePredictor posePredictor,
             INoiseGenerator noisegen,
-            IResampler resampler)
+            IResampler resampler) : base(fieldsize)
         {
             this.poslist = new List<IPositionSource>();
             this.orilist = new List<IOrientationSource>();
@@ -89,15 +84,14 @@ namespace IRescue.UserLocalisation.Particle
             this.Resampler = resampler;
             this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
-            this.fieldsize = fieldsize;
             this.noisesize = noisesize;
 
             // Create particle matrix
             var particlearray = this.Particlegen.Generate(
                 particleamount,
                 DIMENSIONSAMOUNT,
-                new double[] { this.fieldsize.Xmin, this.fieldsize.Ymin, this.fieldsize.Zmin, 0d, 0d, 0d },
-                new double[] { this.fieldsize.Xmax, this.fieldsize.Ymax, this.fieldsize.Zmax, ORIENTATIONMAX, ORIENTATIONMAX, ORIENTATIONMAX });
+                new[] { this.Fieldsize.Xmin, this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0d, 0d, 0d },
+                new[] { this.Fieldsize.Xmax, this.Fieldsize.Ymax, this.Fieldsize.Zmax, ORIENTATIONMAX, ORIENTATIONMAX, ORIENTATIONMAX });
             this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
 
             // Create weights matrix
@@ -186,9 +180,9 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="matrix">The matrix containing the values to perform the action on.</param>
         public void ContainParticles(Matrix<float> matrix)
         {
-            this.ContainParticles(matrix, 0, this.fieldsize.Xmin, this.fieldsize.Xmax);
-            this.ContainParticles(matrix, 1, this.fieldsize.Ymin, this.fieldsize.Ymax);
-            this.ContainParticles(matrix, 2, this.fieldsize.Zmin, this.fieldsize.Zmax);
+            this.ContainParticles(matrix, 0, this.Fieldsize.Xmin, this.Fieldsize.Xmax);
+            this.ContainParticles(matrix, 1, this.Fieldsize.Ymin, this.Fieldsize.Ymax);
+            this.ContainParticles(matrix, 2, this.Fieldsize.Zmin, this.Fieldsize.Zmax);
         }
 
         /// <summary>
