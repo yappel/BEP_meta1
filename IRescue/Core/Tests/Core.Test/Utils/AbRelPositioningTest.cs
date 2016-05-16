@@ -7,7 +7,7 @@ namespace Core.Test
     using IRescue.Core.DataTypes;
     using IRescue.Core.Utils;
     using NUnit.Framework;
-    using System;
+
     /// <summary>
     /// Test for Vector3
     /// </summary>

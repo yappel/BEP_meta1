@@ -39,19 +39,19 @@ public class MarkerSensorController : AbstractSensorController
     /// <summary>
     ///   The standard deviation of the meta sensor for markers.
     /// </summary>
-    private float positionStd = 0.0f;
+    private float positionStd = 0.00945f;
 
     /// <summary>
     /// standard deviation for orientation
     /// </summary>
-    private float orientationStd = 2;
+    private float orientationStd = 0.264f;
 
     /// <summary>
     ///   Method called when creating a UserController.
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor(this.positionStd, Path);
+        this.markerSensor = new MarkerSensor(this.orientationStd, this.positionStd, Path);
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }

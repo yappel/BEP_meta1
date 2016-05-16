@@ -45,7 +45,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [SetUp]
         public void Init()
         {
-            this.sensor = new MarkerSensor(this.std, this.savePath);
+            this.sensor = new MarkerSensor(this.std, this.std, this.savePath);
         }
 
         /// <summary>

@@ -15,9 +15,24 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     public class MarkerSensor : IPositionSource, IOrientationSource
     {
         /// <summary>
+        /// Error or the orientation in aprilTags
+        /// </summary>
+        private const float AprilTagsErrorOrientation = 2.0f;
+
+        /// <summary>
+        /// Error of the position in aprilTags.
+        /// </summary>
+        private const float AprilTagsErrorPosition = 0.1f;
+
+        /// <summary>
         ///   Standard deviation of marker tracking.
         /// </summary>
-        private readonly float standardDeviation;
+        private readonly float standardDeviationOrientation;
+
+        /// <summary>
+        /// Standard deviation of the marker position tracking.
+        /// </summary>
+        private readonly float standardDeviationPosition;
 
         /// <summary>
         ///   The predicted locations.
@@ -37,11 +52,13 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="standardDeviation">the standard deviation</param>
+        /// <param name="standardDeviationOrientation">the standard deviation of the orientation</param>
+        /// <param name="standardDeviationPosition">The standard deviation of the position</param>
         /// <param name="path">url to the xml file</param>
-        public MarkerSensor(float standardDeviation, string path)
+        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition,  string path)
         {
-            this.standardDeviation = standardDeviation;
+            this.standardDeviationOrientation = standardDeviationOrientation + AprilTagsErrorOrientation;
+            this.standardDeviationPosition = standardDeviationPosition + AprilTagsErrorPosition;
             this.markerLocations = new MarkerLocations(path);
         }
 
@@ -60,8 +77,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 {
                     Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp));
-                    this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp));
+                    this.positions.Add(new Measurement<Vector3>(location.Position, this.standardDeviationOrientation, timeStamp));
+                    this.orientations.Add(new Measurement<Vector3>(location.Orientation, this.standardDeviationOrientation, timeStamp));
                 }
                 catch (UnallocatedMarkerException e)
                 {
