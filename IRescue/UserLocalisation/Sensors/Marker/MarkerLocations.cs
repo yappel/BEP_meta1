@@ -6,6 +6,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Xml;
     using Core.DataTypes;
@@ -98,13 +99,13 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             XmlNode xmlPosition = node.SelectSingleNode("position");
             XmlNode xmlRotation = node.SelectSingleNode("rotation");
             Vector3 position = new Vector3(
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("x").InnerText),
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("y").InnerText),
-                XmlConvert.ToInt32(xmlPosition.SelectSingleNode("z").InnerText));
+                float.Parse(xmlPosition.SelectSingleNode("x").InnerText, CultureInfo.InvariantCulture),
+                float.Parse(xmlPosition.SelectSingleNode("y").InnerText, CultureInfo.InvariantCulture),
+                float.Parse(xmlPosition.SelectSingleNode("z").InnerText, CultureInfo.InvariantCulture));
             Vector3 rotation = new Vector3(
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("x").InnerText),
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("y").InnerText),
-                XmlConvert.ToInt32(xmlRotation.SelectSingleNode("z").InnerText));
+                float.Parse(xmlRotation.SelectSingleNode("x").InnerText, CultureInfo.InvariantCulture),
+                float.Parse(xmlRotation.SelectSingleNode("y").InnerText, CultureInfo.InvariantCulture),
+                float.Parse(xmlRotation.SelectSingleNode("z").InnerText, CultureInfo.InvariantCulture));
       
             return new Pose(position, rotation);
         }
