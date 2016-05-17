@@ -124,7 +124,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The orientation <see cref="Measurement{T}"/> with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastOrientation()
         {
-            return this.orientations.Length > 0 ? this.orientations[(this.pointer - 1) % this.bufferLength] : null;
+            return this.Measurements > 0 ? this.orientations[(((this.pointer - 1) % this.bufferLength) + this.bufferLength) % this.bufferLength] : null;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastPosition()
         {
-            return this.positions.Length > 0 ? this.positions[(this.pointer - 1) % this.bufferLength] : null;
+            return this.Measurements > 0 ? this.positions[(((this.pointer - 1) % this.bufferLength) + this.bufferLength) % this.bufferLength] : null;
         }
 
         /// <summary>
