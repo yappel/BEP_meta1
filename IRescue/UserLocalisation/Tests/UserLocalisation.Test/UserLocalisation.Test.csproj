@@ -39,6 +39,10 @@
       <HintPath>..\..\..\..\packages\NUnit3TestAdapter.3.0.10\lib\Mono.Cecil.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Moq.4.2.1510.2205\lib\net35\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.engine, Version=3.0.5813.39036, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\NUnit3TestAdapter.3.0.10\lib\nunit.engine.dll</HintPath>
       <Private>True</Private>
@@ -67,6 +71,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Particle\NoiseGenerators\RandomNoiseGeneratorTest.cs" />
+    <Compile Include="Particle\Resamplers\MultinomialResamplerTest.cs" />
+    <Compile Include="Particle\ParticleGenerators\RandomGeneratorTest.cs" />
+    <Compile Include="Particle\ParticleFilterTest.cs" />
+    <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IMU\IMUSourceTest.cs" />
     <Compile Include="Sensors\Marker\MarkerLocationsTest.cs" />
@@ -79,9 +88,11 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\MarkerMapRealistic.xml" />
     <Content Include="Resources\MarkerMap01.xml" />
     <Content Include="Resources\MarkerMapFail.xml" />
     <Content Include="Resources\MarkerMapFailFormat.xml" />
+    <Content Include="Resources\P1OR180.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Core.csproj">
@@ -93,11 +104,12 @@
       <Name>UserLocalisation</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(SolutionDir)IRescue\UserLocalisation\Tests\UserLocalisation.Test\Resources\*" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

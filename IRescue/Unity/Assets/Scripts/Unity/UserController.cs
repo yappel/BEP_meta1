@@ -2,6 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation;
 using UnityEngine;
 
@@ -29,8 +30,9 @@ public class UserController : MonoBehaviour
     /// </summary>
     public void LateUpdate()
     {
-        this.transform.position = this.TransformVector(this.localizer.GetPosition());
-        this.transform.GetChild(0).eulerAngles = this.TransformVector(this.localizer.GetRotation());
+        Pose pose = this.localizer.CalculatePose(IRescue.Core.Utils.StopwatchSingleton.Time);
+        this.transform.position = this.TransformVector(pose.Position);
+        this.transform.GetChild(0).eulerAngles = this.TransformVector(pose.Orientation); 
     }
 
     /// <summary>
@@ -38,8 +40,8 @@ public class UserController : MonoBehaviour
     /// </summary>
     /// <param name="vector">The IRescue.Core.DataTypes.Vector3</param>
     /// <returns>Unity.Vector3 instance</returns>
-    private Vector3 TransformVector(IRescue.Core.DataTypes.Vector3 vector)
+    private UnityEngine.Vector3 TransformVector(IRescue.Core.DataTypes.Vector3 vector)
     {
-        return new Vector3(vector.X, vector.Y, vector.Z);
+        return new UnityEngine.Vector3(vector.X, vector.Y, vector.Z);
     }
 }

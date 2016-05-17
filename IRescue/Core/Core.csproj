@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)IRescue\Unity\Assets\Plugins\x64\</OutputPath>
+    <OutputPath>..\Unity\Assets\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Datatypes\DistributionType.cs" />
+    <Compile Include="Datatypes\FieldSize.cs" />
     <Compile Include="Datatypes\RotationMatrix.cs" />
     <Compile Include="Datatypes\Vector3.cs" />
     <Compile Include="Datatypes\Pose.cs" />

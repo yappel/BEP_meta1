@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Unity\Assets\Plugins\x64\</OutputPath>
+    <OutputPath>..\Unity\Assets\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -54,7 +54,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
-    <Compile Include="Particle\MonteCarloLocalizer.cs" />
+    <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
+    <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />
+    <Compile Include="Particle\Algos\ParticleGenerators\RandomParticleGenerator.cs" />
+    <Compile Include="Particle\Algos\Resamplers\MultinomialResampler.cs" />
+    <Compile Include="Particle\Algos\Resamplers\IResampler.cs" />
+    <Compile Include="Particle\ParticleFilter.cs" />
+    <Compile Include="PosePrediction\IPosePredictor.cs" />
+    <Compile Include="PosePrediction\LinearPosePredicter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IAccelerationReceiver.cs" />
     <Compile Include="Sensors\IAccelerationSource.cs" />
@@ -84,7 +92,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

@@ -35,7 +35,7 @@ public class InitScript : MonoBehaviour
         this.AddControllers();
         AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
         this.InitControllers(coupler);
-        this.InitUser(coupler.Localizer);
+        this.InitUser(coupler.getLocalizer());
         this.InitMarker();
     }
 
