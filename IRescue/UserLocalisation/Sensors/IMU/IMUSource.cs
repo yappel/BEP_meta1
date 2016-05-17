@@ -35,9 +35,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         private int velocitySize = 0;
 
         /// <summary>
-        /// The size of the buffer in which data can be stored.
+        /// The size of the buffer in which data can be stored, default value 10;
         /// </summary>
-        private int measurementBufferSize;
+        private int measurementBufferSize = 10;
 
         /// <summary>
         /// Array storing the acceleration measurements with size of <see cref="measurementBufferSize"/>.
@@ -85,13 +85,16 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
         public IMUSource(float accelerationStd, float orientationStd, int measurementBufferSize)
         {
+            if (measurementBufferSize > 0)
+            {
+                this.measurementBufferSize = measurementBufferSize;
+            }
             //// Create measurement buffers
-            this.accelerations = new Vector3[measurementBufferSize];
-            this.orientations = new Vector3[measurementBufferSize];
-            this.velocity = new Vector3[measurementBufferSize];
-            this.timeStamps = new long[measurementBufferSize];
+            this.accelerations = new Vector3[this.measurementBufferSize];
+            this.orientations = new Vector3[this.measurementBufferSize];
+            this.velocity = new Vector3[this.measurementBufferSize];
+            this.timeStamps = new long[this.measurementBufferSize];
             //// Set parameters
-            this.measurementBufferSize = measurementBufferSize;
             this.accelerationStd = accelerationStd;
             this.orientationStd = orientationStd;
             //// No starting velocity specified, init on 0
@@ -423,6 +426,15 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
 
             return res;
+        }
+
+        /// <summary>
+        /// Return the buffer size where the measurements can be stored.
+        /// </summary>
+        /// <returns>Integer of the buffer size.</returns>
+        public int GetMeasurementBufferSize()
+        {
+            return this.measurementBufferSize;
         }
 
         /// <summary>
