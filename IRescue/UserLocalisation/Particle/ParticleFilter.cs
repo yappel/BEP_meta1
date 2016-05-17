@@ -274,7 +274,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < measurements.RowCount; r++)
                 {
-                    measurements[r, c] = measurements[r, c] % 360;
+                    measurements[r, c] = this.Mod(measurements[r, c], 360);
                 }
             }
 
@@ -282,7 +282,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < particles.RowCount; r++)
                 {
-                    particles[r, c] = particles[r, c] % 360;
+                    particles[r, c] = this.Mod(particles[r, c], 360);
                 }
             }
 
@@ -468,5 +468,16 @@ namespace IRescue.UserLocalisation.Particle
             this.PosePredictor.AddPoseData(timeStamp, result);
             return result;
         }
+
+        /// <summary>
+        /// Perform the modulo operation returning a value between 0 and b-1.
+        /// </summary>
+        /// <param name="a">The number to perform modulo on.</param>
+        /// <param name="b">The number to divide by.</param>
+        /// <returns>The modulo result.</returns>
+        private float Mod(float a, float b)
+        {
+            return ((a % b) + b) % b;
+        }
     }
-}
+}   
