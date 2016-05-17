@@ -76,14 +76,24 @@ namespace IRescue.Core.Utils
             if (distanceXZ > epsilon && distanceYZ > epsilon)
             {
                 return new Vector3(
-                    rotation.X - 180 - (float)Math.Acos(relativePosition.Z / distanceYZ),
-                    rotation.Y - 180 - (float)Math.Acos(relativePosition.Z / distanceXZ), 
-                    rotation.Z);
+                    Mod360(rotation.X - (float)Math.Asin(relativePosition.Y / distanceYZ)),
+                    Mod360(rotation.Y - 180 - (float)Math.Acos(relativePosition.Z / distanceXZ)),
+                    Mod360(rotation.Z));
             }
             else
             {
                 return new Vector3(rotation.X - 180, rotation.Y - 180, rotation.Z);
             }
+        }
+
+        /// <summary>
+        /// Module of 360 degrees
+        /// </summary>
+        /// <param name="i">number to modulo</param>
+        /// <returns>i mod 360</returns>
+        private static float Mod360(float i)
+        {
+            return ((i % 360) + 360) % 360;
         }
 
         /// <summary>
