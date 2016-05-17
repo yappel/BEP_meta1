@@ -6,10 +6,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Xml;
     using Core.DataTypes;
-    using System.Globalization;
+
     /// <summary>
     ///   Class that knows the location of every marker and can give their attributes.
     /// </summary>

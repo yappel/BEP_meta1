@@ -91,7 +91,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         {
             this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml");
             Assert.AreEqual(this.markerLocations.GetMarker(0).Position.X, 25);
-            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13.52f);
         }
 
         /// <summary>
