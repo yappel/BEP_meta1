@@ -2,7 +2,9 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System;
 using Assets.Scripts.Unity.SensorControllers;
+using IRescue.UserLocalisation;
 using IRescue.UserLocalisation.Particle;
 using IRescue.UserLocalisation.Sensors;
 
@@ -15,10 +17,15 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     /// Initializes a new instance of the <see cref="MonteCarloCoupler"/> class
     /// </summary>
     /// <param name="localizer">The used localizer</param>
-    public MonteCarloCoupler(MonteCarloLocalizer localizer)
+    public MonteCarloCoupler(ParticleFilter localizer)
     {
         this.Localizer = localizer;
     }
+
+    /// <summary>
+    ///  Gets or sets the Localizer of the coupler.
+    /// </summary>
+    public ParticleFilter Localizer { get; set; }
 
     /// <summary>
     /// Register the sensor sources to the localizer.
@@ -43,7 +50,6 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     {
         if (source != null)
         {
-            // TODO
             return true;
         }
 
@@ -75,7 +81,7 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     {
         if (source != null)
         {
-            // TODO
+            this.Localizer.AddOrientationSource(source);
             return true;
         }
 
@@ -91,7 +97,7 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
     {
         if (source != null)
         {
-            // TODO
+            this.Localizer.AddPositionSource(source);
             return true;
         }
 
@@ -112,5 +118,10 @@ public class MonteCarloCoupler : AbstractLocalizerCoupler
         }
 
         return false;
+    }
+
+    public override AbstractUserLocalizer getLocalizer()
+    {
+        return this.Localizer;
     }
 }

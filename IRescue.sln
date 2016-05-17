@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Test", "IRescue\Core\Tests\Core.Test\Core.Test.csproj", "{B132AFBF-F55E-4F5D-B01B-674431831009}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserLocalisation.Test", "IRescue\UserLocalisation\Tests\UserLocalisation.Test\UserLocalisation.Test.csproj", "{253320E8-BE33-4601-BCE0-AE1DAD1F151F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD3DEE0C-18EA-44DC-A8E5-01237B1D05DA} = {DD3DEE0C-18EA-44DC-A8E5-01237B1D05DA}
+		{E8D9CC15-D570-4524-84B6-BB049A355FC4} = {E8D9CC15-D570-4524-84B6-BB049A355FC4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

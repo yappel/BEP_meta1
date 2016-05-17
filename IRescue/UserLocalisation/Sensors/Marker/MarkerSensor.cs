@@ -65,7 +65,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 }
                 catch (UnallocatedMarkerException e)
                 {
-                    Console.WriteLine("ERROR: ", e.Message);
+                    Console.Error.WriteLine("ERROR: ", e.Message);
                 }
             }
         }

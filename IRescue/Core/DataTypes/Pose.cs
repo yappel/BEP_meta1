@@ -21,6 +21,15 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Pose"/> class with all the values set to 0.
+        /// </summary>
+        public Pose()
+        {
+            this.Position = new Vector3(0, 0, 0);
+            this.Orientation = new Vector3(0, 0, 0);
+        }
+
+        /// <summary>
         /// Gets or sets the position of the pose.
         /// </summary>
         public Vector3 Position { get; set; }
