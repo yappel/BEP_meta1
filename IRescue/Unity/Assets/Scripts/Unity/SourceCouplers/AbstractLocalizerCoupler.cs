@@ -12,11 +12,6 @@ using IRescue.UserLocalisation.Sensors;
 public abstract class AbstractLocalizerCoupler
 {
     /// <summary>
-    /// The used localizer filter.
-    /// </summary>
-    private AbstractUserLocalizer localizer;
-
-    /// <summary>
     /// Register the sensor sources to the localizer.
     /// </summary>
     /// <param name="sensor">the sensor controller</param>
@@ -34,19 +29,7 @@ public abstract class AbstractLocalizerCoupler
     /// Return the localizer filter
     /// </summary>
     /// <returns>the localizer</returns>
-    public AbstractUserLocalizer GetLocalizer()
-    {
-        return this.localizer;
-    }
-
-    /// <summary>
-    /// Sets the localizer filter
-    /// </summary>
-    /// <param name="localizer">new filter</param>
-    public void SetLocalizer(AbstractUserLocalizer localizer)
-    {
-        this.localizer = localizer;
-    }
+    public abstract AbstractUserLocalizer GetLocalizer();
 
     /// <summary>
     /// Register a acceleration source

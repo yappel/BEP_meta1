@@ -1,0 +1,15 @@
+<markers>
+  <marker>
+    <id>0</id>
+    <position>
+      <x>1</x>
+      <y>1</y>
+      <z>2</z>
+    </position>
+    <rotation>
+      <x>0</x>
+      <y>270</y>
+      <z>0</z>
+    </rotation>
+  </marker>
+</markers>

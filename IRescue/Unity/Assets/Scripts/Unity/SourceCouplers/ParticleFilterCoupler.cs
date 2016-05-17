@@ -2,6 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.UserLocalisation;
+using IRescue.UserLocalisation.Particle;
 using IRescue.UserLocalisation.Sensors;
 
 /// <summary>
@@ -10,11 +12,25 @@ using IRescue.UserLocalisation.Sensors;
 public class ParticleFilterCoupler : AbstractLocalizerCoupler
 {
     /// <summary>
+    /// The used filter.
+    /// </summary>
+    private ParticleFilter localizer;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ParticleFilterCoupler"/> class
     /// </summary>
     public ParticleFilterCoupler()
     {
-        this.SetLocalizer(new ParticleFilter(new double[] { 300, 200, 300, 360, 360, 360 }, 40, 0.5));
+        this.localizer = new ParticleFilter(new double[] { 300, 200, 300, 360, 360, 360 }, 40, 0.5);
+    }
+
+    /// <summary>
+    /// Return the localizer filter
+    /// </summary>
+    /// <returns>the localizer</returns>
+    public override AbstractUserLocalizer GetLocalizer()
+    {
+        return this.localizer;
     }
 
     /// <summary>
@@ -46,7 +62,7 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     {
         if (source != null)
         {
-            // TODO
+            this.localizer.AddOrientationSource(source);
             return true;
         }
 
@@ -62,7 +78,7 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     {
         if (source != null)
         {
-            // TODO
+            this.localizer.AddPositionSource(source);
             return true;
         }
 

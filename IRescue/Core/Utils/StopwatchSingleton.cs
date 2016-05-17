@@ -33,6 +33,7 @@ namespace IRescue.Core.Utils
                 if (instance == null)
                 {
                     instance = new Stopwatch();
+                    instance.Start();
                 }
 
                 return instance.ElapsedMilliseconds;
