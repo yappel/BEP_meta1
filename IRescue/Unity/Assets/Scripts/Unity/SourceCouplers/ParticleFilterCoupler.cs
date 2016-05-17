@@ -2,9 +2,15 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation;
 using IRescue.UserLocalisation.Particle;
+using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
+using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+using IRescue.UserLocalisation.PosePrediction;
 using IRescue.UserLocalisation.Sensors;
+using MathNet.Numerics.Random;
 
 /// <summary>
 ///  This class couples sources to a localizer.
@@ -21,7 +27,13 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// </summary>
     public ParticleFilterCoupler()
     {
-        this.localizer = new ParticleFilter(new double[] { 300, 200, 300, 360, 360, 360 }, 40, 0.5);
+        FieldSize fieldSize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
+        int particleamount = 30;
+        RandomParticleGenerator prtclgen = new RandomParticleGenerator(new SystemRandomSource());
+        LinearPosePredicter posePredictor = new LinearPosePredicter();
+        RandomNoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
+        MultinomialResampler resampler = new MultinomialResampler();
+        this.localizer = new ParticleFilter(fieldSize, particleamount, 0.005f, 0.0f, prtclgen, posePredictor, noisegen, resampler);
     }
 
     /// <summary>
