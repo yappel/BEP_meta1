@@ -12,6 +12,7 @@ using IRescue.UserLocalisation.PosePrediction;
 using IRescue.UserLocalisationMeasuring.DataGeneration;
 using IRescue.UserLocalisationMeasuring.DataProcessing;
 using MathNet.Numerics.Random;
+using UserLocalisationMeasuring;
 
 namespace IRescue.UserLocalisationMeasuring
 {
@@ -31,7 +32,8 @@ namespace IRescue.UserLocalisationMeasuring
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
-            //CalcBestParticleSettings();
+            Console.WriteLine("  s  ");
+            CalcBestParticleSettings();
 
         }
 
@@ -65,14 +67,17 @@ namespace IRescue.UserLocalisationMeasuring
 
         public static void CalcBestParticleSettings()
         {
+            RandomSource random = new SystemRandomSource();
             //TODO create scenarios
             FieldSize fieldSize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
-            OrientationScenario oriscen1 = null;
+            OrientationScenario oriscen1 = new OrientationScenario(
+                (p => (float)Math.Sin(p)), (p => (float)Math.Sin(p)), (p => (float)Math.Cos(p)), new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, (() => (float)((random.NextDouble() * 6) - 3)), 2f);
             OrientationScenario oriscen2 = null;
             OrientationScenario oriscen3 = null;
-            PositionScenario posscen1 = null;
-            PositionScenario posscen2 = null;
             PositionScenario posscen3 = null;
+            PositionScenario posscen2 = null;
+            PositionScenario posscen1 = new PositionScenario(
+                (p => (float)Math.Sin(p)), (p => (float)Math.Sin(p)), (p => (float)Math.Cos(p)), new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, (() => (float)((random.NextDouble() * 6) - 3)), 2f);
             IParticleGenerator particlegen = new RandomParticleGenerator(new SystemRandomSource());
             INoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
             IResampler resampler = new MultinomialResampler();
@@ -92,32 +97,32 @@ namespace IRescue.UserLocalisationMeasuring
                             posepredictor, noisegen, resampler);
                         filter1.AddOrientationSource(oriscen1);
                         filter1.AddPositionSource(posscen1);
-                        ParticleFilter filter2 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
-                            posepredictor, noisegen, resampler);
-                        filter2.AddOrientationSource(oriscen2);
-                        filter2.AddPositionSource(posscen2);
-                        ParticleFilter filter3 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
-                            posepredictor, noisegen, resampler);
-                        filter3.AddOrientationSource(oriscen3);
-                        filter3.AddPositionSource(posscen3);
+                        //ParticleFilter filter2 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
+                        //    posepredictor, noisegen, resampler);
+                        //filter2.AddOrientationSource(oriscen2);
+                        //filter2.AddPositionSource(posscen2);
+                        //ParticleFilter filter3 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
+                        //    posepredictor, noisegen, resampler);
+                        //filter3.AddOrientationSource(oriscen3);
+                        //filter3.AddPositionSource(posscen3);
                         LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filter1, posscen1, oriscen1);
                         if (bestprecision1 < locanal1.Precision)
                         {
                             bestprecision1 = locanal1.Precision;
                             Console.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
                         }
-                        LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2, posscen2, oriscen2);
-                        if (bestprecision2 < locanal2.Precision)
-                        {
-                            bestprecision1 = locanal1.Precision;
-                            Console.WriteLine("2" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
-                        }
-                        LocalizerAnalyser locanal3 = new LocalizerAnalyser(10, 10, filter3, posscen3, oriscen3);
-                        if (bestprecision3 < locanal3.Precision)
-                        {
-                            bestprecision1 = locanal1.Precision;
-                            Console.WriteLine("3" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
-                        }
+                        //LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2, posscen2, oriscen2);
+                        //if (bestprecision2 < locanal2.Precision)
+                        //{
+                        //    bestprecision1 = locanal1.Precision;
+                        //    Console.WriteLine("2" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
+                        //}
+                        //LocalizerAnalyser locanal3 = new LocalizerAnalyser(10, 10, filter3, posscen3, oriscen3);
+                        //if (bestprecision3 < locanal3.Precision)
+                        //{
+                        //    bestprecision1 = locanal1.Precision;
+                        //    Console.WriteLine("3" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
+                        //}
                     }
                 }
             }
