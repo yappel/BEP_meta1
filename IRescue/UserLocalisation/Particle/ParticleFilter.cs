@@ -179,7 +179,7 @@ namespace IRescue.UserLocalisation.Particle
             this.Resample();
 
             //testprint();
-            this.Predict(timeStamp);
+            //this.Predict(timeStamp);
             //testprint();
             this.Update();
             this.previousTS = timeStamp;
