@@ -12,17 +12,15 @@ namespace Assets.Scripts.Unity
     public class GroundPlane : MonoBehaviour
     {
         /// <summary>
-        /// Use this for initialization
+        /// Initializes the ground plane
         /// </summary>
-        public void Start()
+        /// <param name="x">width of the ground plane</param>
+        /// <param name="z">depth of the ground plane</param>
+        public void Init(float x, float z)
         {
-        }
-
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
-        public void Update()
-        {
+            this.gameObject.transform.position = new Vector3(x, -1, z);
+            this.gameObject.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
         }
     }
 }

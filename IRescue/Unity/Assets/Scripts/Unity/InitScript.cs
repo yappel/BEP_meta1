@@ -40,6 +40,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.getLocalizer());
             this.InitMarker();
+            this.InitPlanes(5, 5);
         }
 
         /// <summary>
@@ -100,6 +101,19 @@ namespace Assets.Scripts.Unity
             cube.AddComponent<Rigidbody>();
             cube.transform.position = new Vector3(0, -10000, 0);
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
+        }
+
+        /// <summary>
+        /// Create the ground and water plane
+        /// </summary>
+        /// <param name="width">width of the plane, or x</param>
+        /// <param name="depth">depth of the plane, or z</param>
+        private void InitPlanes(float width, float depth)
+        {
+            GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            groundPlane.AddComponent<GroundPlane>().Init(width, depth);
+            GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            waterPlane.AddComponent<WaterLevelController>().Init(width, depth);
         }
     }
 }

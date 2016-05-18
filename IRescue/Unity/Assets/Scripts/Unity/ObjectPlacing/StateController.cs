@@ -19,6 +19,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private StateContext stateContext;
 
         /// <summary>
+        /// Check if left hand is valid
+        /// </summary>
+        private bool validLeftHand;
+
+        /// <summary>
+        /// Check if right hand is valid
+        /// </summary>
+        private bool validRightHand;
+
+        /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
         public void Start()
@@ -116,21 +126,32 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         private void PointEvent()
         {
-            Vector3 cameraPosition = Meta.IMULocalizer.Instance.transform.position;
             Vector3 point = new Vector3();
             GameObject gameObject = null;
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = this.GetClosestHit(Physics.RaycastAll(cameraPosition, cameraPosition - Hands.right.pointer.position), out gameObject);
+                point = Hands.right.pointer.objectOfInterest.transform.position;
+                gameObject = Hands.right.pointer.objectOfInterest.transform.gameObject;
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestHit(Physics.RaycastAll(cameraPosition, cameraPosition - Hands.left.pointer.position), out gameObject);
+                point = Hands.left.pointer.objectOfInterest.transform.position;
+                gameObject = Hands.left.pointer.objectOfInterest.transform.gameObject;
             }
 
-            if (gameObject != null)
+            this.PointEvent(gameObject, point);
+        }
+
+        /// <summary>
+        /// Triggers the event to the state if a collision with an object unequal to MetaWorld or WaterLevelController could be found.
+        /// </summary>
+        /// <param name="gameObject">The gameobject of the collision</param>
+        /// <param name="point">The location of the collision</param>
+        private void PointEvent(GameObject gameObject, Vector3 point)
+        {
+            if (gameObject != null && gameObject.name != "MetaWorld" && gameObject.GetComponent<WaterLevelController>() == null)
             {
-                if (gameObject.GetComponent<GroundPlane>() != null) 
+                if (gameObject.GetComponent<GroundPlane>() != null)
                 {
                     this.stateContext.CurrentState.OnPoint(point);
                 }
@@ -139,32 +160,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                     this.stateContext.CurrentState.OnPoint(gameObject);
                 }
             }
-        }
-
-        /// <summary>
-        /// Get the position of the closest hit.
-        /// </summary>
-        /// <param name="hits">The hits of a ray cast</param>
-        /// <param name="gameObject">The game object that was hit</param>
-        /// <returns>Vector3 of the position of the closest hit</returns>
-        private Vector3 GetClosestHit(RaycastHit[] hits, out GameObject gameObject)
-        {
-            float minDistance = float.MaxValue;
-            Vector3 res = new Vector3();
-            GameObject o = null;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                // If not the waterplane.
-                if (hits[i].transform.gameObject.GetComponent<WaterLevelController>() == null && hits[i].distance < minDistance)
-                {
-                    res = hits[i].point;
-                    o = hits[i].transform.gameObject;
-                    minDistance = hits[i].distance;
-                }
-            }
-
-            gameObject = o;
-            return res;
         }
     }
 }

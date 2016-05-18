@@ -12,17 +12,15 @@ namespace Assets.Scripts.Unity
     public class WaterLevelController : MonoBehaviour
     {
         /// <summary>
-        /// Use this for initialization
+        /// Initializes the water plane
         /// </summary>
-        public void Init()
+        /// <param name="x">the width of the plane</param>
+        /// <param name="z">the depth of the plane</param>
+        public void Init(float x, float z)
         {
-        }
-
-        /// <summary>
-        /// Update is called once per frame
-        /// </summary>
-        public void Update()
-        {
+            this.gameObject.transform.position = new Vector3(x, -1, z);
+            this.gameObject.transform.localScale = new Vector3(2 * x, 1, 2 * z);
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
         }
     }
 }
