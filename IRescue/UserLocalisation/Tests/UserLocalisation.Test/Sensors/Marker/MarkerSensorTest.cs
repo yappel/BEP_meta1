@@ -59,7 +59,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(2, pose2);
             this.sensor.UpdateLocations(dic);
-            Assert.AreEqual(-270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
+            Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(-1337, pose2);
             this.sensor.UpdateLocations(dic);
-            Assert.AreEqual(-270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
+            Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
         /// <summary>
