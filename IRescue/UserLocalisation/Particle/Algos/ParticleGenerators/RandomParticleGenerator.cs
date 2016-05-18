@@ -33,19 +33,14 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// <param name="minima">The minimum value the Particles can have in each dimension</param>
         /// <param name="maxima">The maximum value the Particles can have in each dimension</param>
         /// <returns>A list of particle values</returns>
-        public float[] Generate(int amount, int dimensions, double[] minima, double[] maxima)
+        public float[] Generate(int amount, int dimensions)
         {
-            if (minima.Length != dimensions || maxima.Length != dimensions)
-            {
-                throw new System.ArgumentException("The length of the minima or maxima array is not equal to the amount of dimension");
-            }
-
             float[] result = new float[amount * dimensions];
             for (int i = 0; i < dimensions; i++)
             {
                 for (int j = 0; j < amount; j++)
                 {
-                    result[(i * amount) + j] = (float)((this.rng.NextDouble() * (maxima[i] - minima[i])) - minima[i]);
+                    result[(i * amount) + j] = (float)this.rng.NextDouble();
                 }
             }
 

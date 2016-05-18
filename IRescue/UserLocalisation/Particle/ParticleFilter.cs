@@ -2,6 +2,10 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+
+using System;
+using System.Text;
+
 namespace IRescue.UserLocalisation.Particle
 {
     using System.Collections.Generic;
@@ -29,7 +33,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <summary>
         /// The amount of degrees in a circle.
         /// </summary>
-        private const double ORIENTATIONMAX = 360;
+        private const float ORIENTATIONMAX = 360;
 
         /// <summary>
         /// List containing the added <see cref="IOrientationSource"/>s
@@ -55,6 +59,9 @@ namespace IRescue.UserLocalisation.Particle
         /// The maximum amount that can be added or subtracted from the value of a particle by the <see cref="INoiseGenerator"/>.
         /// </summary>
         private float noisesize;
+
+        private float[] ranges;
+        private float[] minima;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
@@ -85,20 +92,29 @@ namespace IRescue.UserLocalisation.Particle
             this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
             this.noisesize = noisesize;
+            generateFreshParticles(particleamount);
+            this.ranges = new float[]
+            {
+                this.Fieldsize.Xmax - this.Fieldsize.Xmin, this.Fieldsize.Ymax - this.Fieldsize.Ymin,
+                this.Fieldsize.Zmax - this.Fieldsize.Zmin,  ORIENTATIONMAX,  ORIENTATIONMAX, ORIENTATIONMAX
+            }; this.minima = new float[]
+             {
+                this.Fieldsize.Xmin,this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0, 0, 0
+             };
+        }
 
+        private void generateFreshParticles(int particleamount)
+        {
             // Create particle matrix
             var particlearray = this.Particlegen.Generate(
                 particleamount,
-                DIMENSIONSAMOUNT,
-                new[] { this.Fieldsize.Xmin, this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0d, 0d, 0d },
-                new[] { this.Fieldsize.Xmax, this.Fieldsize.Ymax, this.Fieldsize.Zmax, ORIENTATIONMAX, ORIENTATIONMAX, ORIENTATIONMAX });
+                DIMENSIONSAMOUNT);
             this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
 
             // Create weights matrix
             float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
-            FillArray(initweights, 1f);
+            FillArray(initweights, 1f / particleamount);
             this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
-            this.NormalizeWeightsAll(this.Weights);
         }
 
         /// <summary>
@@ -148,12 +164,17 @@ namespace IRescue.UserLocalisation.Particle
         /// <returns>An educated guess of the pose of measured object/person</returns>
         public override Pose CalculatePose(long timeStamp)
         {
+            //testprint();
             this.RetrieveMeasurements(timeStamp);
             this.Resample();
+            //testprint();
             this.Predict(timeStamp);
+            //testprint();
             this.Update();
             this.previousTS = timeStamp;
-            return this.GetResult(timeStamp);
+            Pose res = this.GetResult(timeStamp);
+            //testprint();
+            return res;
         }
 
         /// <summary>
@@ -194,7 +215,8 @@ namespace IRescue.UserLocalisation.Particle
         public float[] WeightedAverage(Matrix<float> particles, Matrix<float> weights)
         {
             Matrix<float> particlesdupe = particles.Clone();
-            particles.PointwiseMultiply(weights, particlesdupe);
+            Matrix<float> weightsdupe = weights.Clone();
+            particles.PointwiseMultiply(weightsdupe, particlesdupe);
             return particlesdupe.ColumnSums().ToArray();
         }
 
@@ -207,6 +229,10 @@ namespace IRescue.UserLocalisation.Particle
             int columncount = 0;
             foreach (Vector<float> dimension in weights.EnumerateColumns())
             {
+                if (Math.Abs(dimension.Sum()) < 0.000000000000000000001)
+                {
+                    generateFreshParticles(dimension.ToArray().Length);
+                }
                 this.NormalizeWeights(dimension);
                 weights.SetColumn(columncount, dimension);
                 columncount++;
@@ -298,7 +324,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int index = 0; index < particles.Column(i).Count; index++)
                 {
-                    float particle = particles.Column(i)[index];
+                    float particle = particles.Column(i)[index] * this.ranges[i] + this.minima[i];
                     var p = 1d;
                     for (int j = 0; j < measurements.Column(colto - colfrom).Count; j++)
                     {
@@ -430,7 +456,15 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < this.Particles.RowCount; r++)
                 {
-                    transmatrixarray[(this.Particles.RowCount * c) + r] = translation[c];
+                    if (c < 3)
+                    {
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = translation[c] / this.ranges[c];
+                    }
+                    else
+                    {
+                        //TODO change modulo
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = (translation[c] % ORIENTATIONMAX) / ranges[c];
+                    }
                 }
             }
 
@@ -457,10 +491,28 @@ namespace IRescue.UserLocalisation.Particle
         {
             float[] averages = this.WeightedAverage(this.Particles, this.Weights);
             Pose result = new Pose(
-                new Vector3(averages[0], averages[1], averages[2]),
-                new Vector3(averages[3], averages[4], averages[5]));
+                new Vector3(averages[0] * this.ranges[0] - this.minima[0], averages[1] * this.ranges[1] - this.minima[1], averages[2] * this.ranges[2] - this.minima[2]),
+                new Vector3(averages[3] * this.ranges[3] - this.minima[3], averages[4] * this.ranges[4] - this.minima[4], averages[5] * this.ranges[5] - this.minima[5]));
             this.PosePredictor.AddPoseData(timeStamp, result);
             return result;
+        }
+
+        private void testprint()
+        {
+            var particlepath = System.IO.Path.GetFullPath("D:\\Users\\Yoeri 2\\Documenten\\MATLAB\\Filter_particles.txt");
+            System.Text.StringBuilder builder1 = new StringBuilder();
+            for (int i = 0; i < this.Particles.RowCount; i++)
+            {
+                for (int jj = 0; jj < 6; jj++)
+                {
+                    builder1.Append(this.Particles[i, jj]);
+                    builder1.Append(" ");
+                    builder1.Append(this.Weights[i, jj]);
+                    builder1.Append(" ");
+                }
+                builder1.AppendLine();
+            }
+            System.IO.File.AppendAllText(particlepath, builder1.ToString());
         }
     }
 }

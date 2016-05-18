@@ -16,6 +16,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// <param name="minima">The minimum value the Particles can have in each dimension</param>
         /// <param name="maxima">The maximum value the Particles can have in each dimension</param>
         /// <returns>List with generated particle values</returns>
-        float[] Generate(int amount, int dimensions, double[] minima, double[] maxima);
+        float[] Generate(int amount, int dimensions);
     }
 }
