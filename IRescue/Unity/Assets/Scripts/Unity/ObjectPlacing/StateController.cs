@@ -145,7 +145,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Triggers the event to the state if a collision with an object unequal to MetaWorld or WaterLevelController could be found.
         /// </summary>
-        /// <param name="gameObject">The gameobject of the collision</param>
+        /// <param name="gameObject">The game object of the collision</param>
         /// <param name="point">The location of the collision</param>
         private void PointEvent(GameObject gameObject, Vector3 point)
         {

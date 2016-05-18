@@ -6,7 +6,6 @@ namespace Assets.Scripts.Unity.SourceCouplers
 {
     using System;
     using Enums;
-    using IRescue.UserLocalisation.Particle;
 
     /// <summary>
     ///  Factory to create a AbstractLocalizerCoupler.
@@ -22,9 +21,8 @@ namespace Assets.Scripts.Unity.SourceCouplers
         {
             switch (localizer)
             {
-                case Filters.MonteCarlo:
-                    //TODO NOT THE WAY IT SHOULD BE
-                    return new MonteCarloCoupler(new ParticleFilter(new double[] { 300, 200, 300, 360, 360, 360},40,0.5));
+                case Filters.Particle:
+                    return new ParticleFilterCoupler();
                 default:
                     throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer), "filter");
             }

@@ -22,7 +22,7 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// Enum type of the filter that is going to be used
         /// </summary>
-        private Filters usedFilter = Filters.MonteCarlo;
+        private Filters usedFilter = Filters.Particle;
 
         /// <summary>
         /// Size of the used markers in meters
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Unity
             this.AddControllers();
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
             this.InitControllers(coupler);
-            this.InitUser(coupler.getLocalizer());
+            this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
             this.InitPlanes(5, 5);
         }

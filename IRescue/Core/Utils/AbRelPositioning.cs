@@ -26,10 +26,19 @@ namespace IRescue.Core.Utils
         /// <returns>The location of the calculated absolute position.</returns>
         public static Pose GetLocation(Pose absolutePose, Pose relativePose)
         {
-            Vector3 position = CalculatePosition(absolutePose, relativePose);
-            Vector3 orientation = CalculateOrientation(absolutePose, relativePose);
+            float distanceXZ = CalculateDistance(relativePose.Position.X, relativePose.Position.Z);
+            float distanceXY = CalculateDistance(relativePose.Position.X, relativePose.Position.Y);
+            float distanceYZ = CalculateDistance(relativePose.Position.Y, relativePose.Position.Z);
 
-            return new Pose(position, orientation);
+            Vector3 rotation = CalculateOrientation(absolutePose.Orientation, relativePose.Orientation);
+            Vector3 orientation = CalculateOrientation(rotation, relativePose.Position, distanceXZ, distanceYZ);
+
+            return new Pose(
+                new Vector3(
+                    absolutePose.Position.X + (distanceXZ * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
+                    absolutePose.Position.Y + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Z))),
+                    absolutePose.Position.Z + (distanceXZ * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))), 
+                    orientation);
         }
 
         /// <summary>
@@ -40,65 +49,51 @@ namespace IRescue.Core.Utils
         /// <returns>The location of the calculated absolute position.</returns>
         public static Pose GetLocation2D(Pose absolutePose, Pose relativePose)
         {
-            Vector3 position = CalculateLocation2D(absolutePose, relativePose);
-            Vector3 orientation = CalculateOrientation(absolutePose, relativePose);
+            float distanceXZ = CalculateDistance(relativePose.Position.X, relativePose.Position.Z);
+            float distanceXY = CalculateDistance(relativePose.Position.X, relativePose.Position.Y);
+            float distanceYZ = CalculateDistance(relativePose.Position.Y, relativePose.Position.Z);
 
-            return new Pose(position, orientation);
+            Vector3 rotation = CalculateOrientation(absolutePose.Orientation, relativePose.Orientation);
+            Vector3 orientation = CalculateOrientation(rotation, relativePose.Position, distanceXY, distanceYZ);
+            return new Pose(
+                new Vector3(
+                    absolutePose.Position.X + (distanceXY * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
+                    absolutePose.Position.Y,
+                    absolutePose.Position.Z + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))), 
+                    orientation);
         }
 
         /// <summary>
-        /// Calculate the absolute orientation of the relative pose
+        /// Calculate the orientation of the user.
         /// </summary>
-        /// <param name="abPose">the absolute pose</param>
-        /// <param name="relPose">the measured pose</param>
-        /// <returns>pose of the calculated position</returns>
-        private static Vector3 CalculateLocation2D(Pose abPose, Pose relPose)
+        /// <param name="rotation">The angle from the normal of the marker to the user</param>
+        /// <param name="relativePosition">The position of the user</param>
+        /// <param name="distanceXZ">The distance between x and z</param>
+        /// <param name="distanceYZ">The distance between y and z</param>
+        /// <returns>The orientation of the user</returns>
+        private static Vector3 CalculateOrientation(Vector3 rotation, Vector3 relativePosition, float distanceXZ, float distanceYZ)
         {
-            float distanceXY = CalculateDistance(relPose.Position.X, relPose.Position.Z);
-            Vector3 rotation = CalculateOrientation(abPose.Orientation, relPose.Orientation);
-            return new Vector3(
-                abPose.Position.X + (distanceXY * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
-                abPose.Position.Y,
-                abPose.Position.Z + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y))));
-        }
-
-        /// <summary>
-        ///   Calculate the Absolute position.
-        /// </summary>
-        /// <param name="abPose">Pose of the known point</param>
-        /// <param name="relPose">Pose of the measured point</param>
-        /// <returns>The expected position</returns>
-        private static Vector3 CalculatePosition(Pose abPose, Pose relPose)
-        {
-            float distanceXZ = CalculateDistance(relPose.Position.X, relPose.Position.Z);
-            float distanceXY = CalculateDistance(relPose.Position.X, relPose.Position.Y);
-            Vector3 rotation = CalculateOrientation(abPose.Orientation, relPose.Orientation);
-            return new Vector3(
-                abPose.Position.X + (distanceXZ * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
-                abPose.Position.Y + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Z))),
-                abPose.Position.Z + (distanceXZ * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y))));
-        }
-
-        /// <summary>
-        /// Calculate the orientation of the relative pose
-        /// </summary>
-        /// <param name="abPose">The absolute pose</param>
-        /// <param name="relPose">The relative pose</param>
-        /// <returns>Vector3 orientation</returns>
-        private static Vector3 CalculateOrientation(Pose abPose, Pose relPose)
-        {
-            if (relPose.Position.Z > epsilon && relPose.Position.Y > epsilon && relPose.Position.Z > epsilon)
+            if (distanceXZ > epsilon && distanceYZ > epsilon)
             {
                 return new Vector3(
-                    270 + (float)Math.Atan(relPose.Position.Y / relPose.Position.Z) + abPose.Orientation.X - relPose.Orientation.X,
-                    270 + (float)Math.Atan(relPose.Position.X / relPose.Position.Z) + abPose.Orientation.Y - relPose.Orientation.Y,
-                    270 + (float)Math.Atan(relPose.Position.X / relPose.Position.Y) + abPose.Orientation.Z - relPose.Orientation.Z);
+                    Mod360(rotation.X - (float)Math.Asin(relativePosition.Y / distanceYZ)),
+                    Mod360(rotation.Y - 180 - (float)Math.Acos(relativePosition.Z / distanceXZ)),
+                    Mod360(rotation.Z));
             }
             else
             {
-                Console.WriteLine("WARNING: measured position cotained a 0.");
-                return new Vector3(0, 0, 0);
+                return new Vector3(rotation.X - 180, rotation.Y - 180, rotation.Z);
             }
+        }
+
+        /// <summary>
+        /// Module of 360 degrees
+        /// </summary>
+        /// <param name="i">number to modulo</param>
+        /// <returns>i mod 360</returns>
+        private static float Mod360(float i)
+        {
+            return ((i % 360) + 360) % 360;
         }
 
         /// <summary>
@@ -121,9 +116,9 @@ namespace IRescue.Core.Utils
         private static Vector3 CalculateOrientation(Vector3 absoluteRotation, Vector3 relativeRotation)
         {
             return new Vector3(
-                absoluteRotation.X + relativeRotation.X,
-                absoluteRotation.Y + relativeRotation.Y,
-                absoluteRotation.Z + relativeRotation.Z);
+                absoluteRotation.X - relativeRotation.X,
+                absoluteRotation.Y - relativeRotation.Y,
+                absoluteRotation.Z - relativeRotation.Z);
         }
     }
 }

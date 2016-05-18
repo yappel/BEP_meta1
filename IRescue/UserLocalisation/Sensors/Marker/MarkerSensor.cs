@@ -15,9 +15,24 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     public class MarkerSensor : IPositionSource, IOrientationSource
     {
         /// <summary>
+        /// Error or the orientation in aprilTags
+        /// </summary>
+        private const float AprilTagsErrorOrientation = 2.0f;
+
+        /// <summary>
+        /// Error of the position in aprilTags.
+        /// </summary>
+        private const float AprilTagsErrorPosition = 0.1f;
+
+        /// <summary>
         ///   Standard deviation of marker tracking.
         /// </summary>
-        private readonly float standardDeviation;
+        private readonly float standardDeviationOrientation;
+
+        /// <summary>
+        /// Standard deviation of the marker position tracking.
+        /// </summary>
+        private readonly float standardDeviationPosition;
 
         /// <summary>
         ///  The MarkerLocations.
@@ -47,11 +62,13 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="standardDeviation">the standard deviation</param>
+        /// <param name="standardDeviationOrientation">the standard deviation of the orientation</param>
+        /// <param name="standardDeviationPosition">The standard deviation of the position</param>
         /// <param name="path">url to the xml file</param>
-        public MarkerSensor(float standardDeviation, string path)
+        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition,  string path)
         {
-            this.standardDeviation = standardDeviation;
+            this.standardDeviationOrientation = standardDeviationOrientation + AprilTagsErrorOrientation;
+            this.standardDeviationPosition = standardDeviationPosition + AprilTagsErrorPosition;
             this.markerLocations = new MarkerLocations(path);
             this.orientations = new Measurement<Vector3>[this.bufferLength];
             this.positions = new Measurement<Vector3>[this.bufferLength];
@@ -61,10 +78,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class with a given buffer size.
         /// </summary>
-        /// <param name="standardDeviation">the standard deviation</param>
+        /// <param name="standardDeviationOrientation">the standard deviation of the orientation of the sensor</param>
+        /// <param name="standardDeviationPosition">The standard deviation of the position of the sensor</param>
         /// <param name="path">url to the xml file</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public MarkerSensor(float standardDeviation, string path, int bufferLength) : this(standardDeviation, path)
+        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, string path, int bufferLength) 
+            : this(standardDeviationOrientation, standardDeviationPosition, path)
         {
             this.bufferLength = bufferLength;
         }
@@ -87,8 +106,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 {
                     Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions[this.pointer] = new Measurement<Vector3>(location.Position, this.standardDeviation, timeStamp);
-                    this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviation, timeStamp);
+                    this.positions[this.pointer] = new Measurement<Vector3>(location.Position, this.standardDeviationPosition, timeStamp);
+                    this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviationOrientation, timeStamp);
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }
@@ -105,7 +124,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The orientation <see cref="Measurement{T}"/> with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastOrientation()
         {
-            return this.orientations.Length > 0 ? this.orientations[(this.pointer - 1) % this.bufferLength] : null;
+            return this.Measurements > 0 ? this.orientations[(((this.pointer - 1) % this.bufferLength) + this.bufferLength) % this.bufferLength] : null;
         }
 
         /// <summary>
@@ -144,7 +163,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>The last measured acceleration with time stamp and standard deviation. Null if no data was found</returns>
         public Measurement<Vector3> GetLastPosition()
         {
-            return this.positions.Length > 0 ? this.positions[(this.pointer - 1) % this.bufferLength] : null;
+            return this.Measurements > 0 ? this.positions[(((this.pointer - 1) % this.bufferLength) + this.bufferLength) % this.bufferLength] : null;
         }
 
         /// <summary>
