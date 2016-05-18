@@ -173,5 +173,44 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.sensor.UpdateLocations(dic);
             Assert.Null(this.sensor.GetPosition(-50));
         }
+
+        /// <summary>
+        /// Test for when the buffer size gets exceeded.
+        /// </summary>
+        [Test]
+        public void TestOverflow()
+        {
+            this.sensor = new MarkerSensor(this.std, this.savePath, 6);
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            Assert.AreEqual(6, this.sensor.GetAllOrientations().Count);
+        }
+
+        /// <summary>
+        /// Test for when one iteration had no data.
+        /// </summary>
+        [Test]
+        public void TestNoData()
+        {
+            this.sensor = new MarkerSensor(this.std, this.savePath, 6);
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
+            dic.Add(0, pose2);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(new Dictionary<int, Pose>());
+            Assert.AreEqual(6, this.sensor.GetAllOrientations().Count);
+        }
     }
 }

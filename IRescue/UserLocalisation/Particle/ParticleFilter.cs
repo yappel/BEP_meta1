@@ -294,7 +294,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < measurements.RowCount; r++)
                 {
-                    measurements[r, c] = measurements[r, c] % 360;
+                    measurements[r, c] = this.Mod(measurements[r, c], 360);
                 }
             }
 
@@ -302,7 +302,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < particles.RowCount; r++)
                 {
-                    particles[r, c] = particles[r, c] % 360;
+                    particles[r, c] = this.Mod(particles[r, c], 360);
                 }
             }
 
@@ -462,8 +462,7 @@ namespace IRescue.UserLocalisation.Particle
                     }
                     else
                     {
-                        //TODO change modulo
-                        transmatrixarray[(this.Particles.RowCount * c) + r] = (translation[c] % ORIENTATIONMAX) / ranges[c];
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = this.Mod(translation[c], ORIENTATIONMAX) / ranges[c];
                     }
                 }
             }
@@ -497,6 +496,7 @@ namespace IRescue.UserLocalisation.Particle
             return result;
         }
 
+
         private void testprint()
         {
             var particlepath = System.IO.Path.GetFullPath("D:\\Users\\Yoeri 2\\Documenten\\MATLAB\\Filter_particles.txt");
@@ -513,6 +513,17 @@ namespace IRescue.UserLocalisation.Particle
                 builder1.AppendLine();
             }
             System.IO.File.AppendAllText(particlepath, builder1.ToString());
+        }
+
+        /// <summary>
+        /// Perform the modulo operation returning a value between 0 and b-1.
+        /// </summary>
+        /// <param name="a">The number to perform modulo on.</param>
+        /// <param name="b">The number to divide by.</param>
+        /// <returns>The modulo result.</returns>
+        private float Mod(float a, float b)
+        {
+            return ((a % b) + b) % b;
         }
     }
 }

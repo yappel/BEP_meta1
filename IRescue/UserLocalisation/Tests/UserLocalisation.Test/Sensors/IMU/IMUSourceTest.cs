@@ -46,6 +46,11 @@ namespace UserLocalisation.Test.Sensors.IMU
         private int bufferSize = 5;
 
         /// <summary>
+        /// The default buffer size value used in the source.
+        /// </summary>
+        private int classDefaultBufferSize = 10;
+
+        /// <summary>
         /// Setup the source to test and the default values.
         /// </summary>
         [SetUp]
@@ -504,6 +509,26 @@ namespace UserLocalisation.Test.Sensors.IMU
             Measurement<Vector3> res = this.source.GetLastVelocity();
             this.AssertVectorAreEqual(new Vector3(2, 2, 2), res.Data);
             Assert.AreEqual(4000, res.TimeStamp);
+        }
+
+        /// <summary>
+        /// Test that a negative buffer size defaults to the default value.
+        /// </summary>
+        [Test]
+        public void NegativeBufferSizeInitTest()
+        {
+            this.source = new IMUSource(0, 0, -1);
+            Assert.AreEqual(this.classDefaultBufferSize, this.source.GetMeasurementBufferSize());
+        }
+
+        /// <summary>
+        /// Test that a zero buffer size defaults to the class default value.
+        /// </summary>
+        [Test]
+        public void ZeroBufferSizeInitTest()
+        {
+            this.source = new IMUSource(0, 0, 0);
+            Assert.AreEqual(this.classDefaultBufferSize, this.source.GetMeasurementBufferSize());
         }
 
         /// <summary>
