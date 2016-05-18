@@ -31,7 +31,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
-        public void Start()
+        public void Init()
         {
             this.stateContext = new StateContext();
         }
@@ -128,12 +128,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
-            if (this.IsValid(Hands.right, MetaGesture.POINT))
+            if (this.IsValid(Hands.right, MetaGesture.POINT) && Hands.right.pointer.objectOfInterest != null)
             {
                 point = Hands.right.pointer.objectOfInterest.transform.position;
                 gameObject = Hands.right.pointer.objectOfInterest.transform.gameObject;
             }
-            else if (this.IsValid(Hands.left, MetaGesture.POINT))
+            else if (this.IsValid(Hands.left, MetaGesture.POINT) && Hands.left.pointer.objectOfInterest != null)
             {
                 point = Hands.left.pointer.objectOfInterest.transform.position;
                 gameObject = Hands.left.pointer.objectOfInterest.transform.gameObject;
@@ -149,7 +149,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="point">The location of the collision</param>
         private void PointEvent(GameObject gameObject, Vector3 point)
         {
-            if (gameObject != null && gameObject.name != "MetaWorld" && gameObject.GetComponent<WaterLevelController>() == null)
+            if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
             {
                 if (gameObject.GetComponent<GroundPlane>() != null)
                 {

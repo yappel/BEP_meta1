@@ -18,9 +18,10 @@ namespace Assets.Scripts.Unity
         /// <param name="z">the depth of the plane</param>
         public void Init(float x, float z)
         {
-            this.gameObject.transform.position = new Vector3(x, -1, z);
+            this.gameObject.transform.position = new Vector3(x, -1.01f, z);
             this.gameObject.transform.localScale = new Vector3(2 * x, 1, 2 * z);
             this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+            this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         }
     }
 }

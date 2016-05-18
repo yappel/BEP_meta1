@@ -1,13 +1,13 @@
-﻿// <copyright file="BuildingPlacementState.cs" company="Delft University of Technology">
+﻿// <copyright file="ObjectSelectState.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     /// <summary>
-    /// State when placing a building by pointing.
+    /// State when selecting a building that you want to place.
     /// </summary>
-    public class BuildingPlacementState : AbstractState
+    public class ObjectSelectState : AbstractState
     {
         /// <summary>
         /// Coupled state context.
@@ -15,10 +15,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private StateContext stateContext;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BuildingPlacementState"/> class.
+        /// Initializes a new instance of the <see cref="ObjectSelectState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
-        public BuildingPlacementState(StateContext stateContext)
+        public ObjectSelectState(StateContext stateContext)
         {
             this.stateContext = stateContext;
         }

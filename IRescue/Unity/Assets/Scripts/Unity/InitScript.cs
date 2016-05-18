@@ -48,7 +48,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void AddControllers()
         {
-            gameObject.AddComponent<StateController>();
+            gameObject.AddComponent<StateController>().Init();
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {
