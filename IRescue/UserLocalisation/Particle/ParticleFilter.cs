@@ -5,6 +5,7 @@
 
 using System;
 using System.Text;
+using MathNet.Numerics;
 
 namespace IRescue.UserLocalisation.Particle
 {
@@ -92,7 +93,7 @@ namespace IRescue.UserLocalisation.Particle
             this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
             this.noisesize = noisesize;
-            generateFreshParticles(particleamount);
+            GenerateFreshParticles(particleamount);
             this.ranges = new float[]
             {
                 this.Fieldsize.Xmax - this.Fieldsize.Xmin, this.Fieldsize.Ymax - this.Fieldsize.Ymin,
@@ -103,7 +104,7 @@ namespace IRescue.UserLocalisation.Particle
              };
         }
 
-        private void generateFreshParticles(int particleamount)
+        private void GenerateFreshParticles(int particleamount)
         {
             // Create particle matrix
             var particlearray = this.Particlegen.Generate(
@@ -115,6 +116,15 @@ namespace IRescue.UserLocalisation.Particle
             float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
             FillArray(initweights, 1f / particleamount);
             this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
+        }
+
+        private void GenerateFreshParticles(int particleamount, int dimension)
+        {
+            float[] newparticles = this.Particlegen.Generate(particleamount, 1);
+            this.Particles.SetColumn(dimension, newparticles);
+            float[] initweights = new float[particleamount];
+            FillArray(initweights, 1f / particleamount);
+            this.Weights.SetColumn(dimension, initweights);
         }
 
         /// <summary>
@@ -167,6 +177,7 @@ namespace IRescue.UserLocalisation.Particle
             //testprint();
             this.RetrieveMeasurements(timeStamp);
             this.Resample();
+
             //testprint();
             this.Predict(timeStamp);
             //testprint();
@@ -175,6 +186,47 @@ namespace IRescue.UserLocalisation.Particle
             Pose res = this.GetResult(timeStamp);
             //testprint();
             return res;
+        }
+
+        private void Check()
+        {
+            foreach (Tuple<int, Vector<float>> weight in Weights.EnumerateColumnsIndexed())
+            {
+                if (weight.Item1 == 0)
+                {
+                    float minw = float.MaxValue;
+                    float minp = float.MaxValue;
+                    float maxp = float.MinValue;
+                    float wminp = float.MaxValue;
+                    float wmaxp = float.MinValue;
+                    int iminp = -1;
+                    int imaxp = -1;
+                    foreach (Tuple<int, float> tuple in weight.Item2.EnumerateIndexed())
+                    {
+                        if (tuple.Item2 < minw)
+                        {
+                            minw = tuple.Item2;
+                        }
+                        if (this.Particles[tuple.Item1, 0] < minp)
+                        {
+                            minp = this.Particles[tuple.Item1, 0];
+                            wminp = tuple.Item2;
+                            iminp = tuple.Item1;
+                        }
+                        else if (this.Particles[tuple.Item1, 0] > maxp)
+                        {
+                            maxp = this.Particles[tuple.Item1, 0];
+                            wmaxp = tuple.Item2;
+                            imaxp = tuple.Item1;
+                        }
+                    }
+                    Console.WriteLine("{0} {1}({2} [{3}]) {4}({5} [{6}])", minw, minp, wminp, iminp, maxp, wmaxp, imaxp);
+                }
+                //if (Math.Abs(weight) < 1 / ((float)this.Weights.RowCount * 3))
+                //{
+                //    throw new ArgumentException("Weight is too low after resampling: " + weight);
+                //}
+            }
         }
 
         /// <summary>
@@ -201,9 +253,9 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="matrix">The matrix containing the values to perform the action on.</param>
         public void ContainParticles(Matrix<float> matrix)
         {
-            this.ContainParticles(matrix, 0, this.Fieldsize.Xmin, this.Fieldsize.Xmax);
-            this.ContainParticles(matrix, 1, this.Fieldsize.Ymin, this.Fieldsize.Ymax);
-            this.ContainParticles(matrix, 2, this.Fieldsize.Zmin, this.Fieldsize.Zmax);
+            this.ContainParticles(matrix, 0);
+            this.ContainParticles(matrix, 1);
+            this.ContainParticles(matrix, 2);
         }
 
         /// <summary>
@@ -231,7 +283,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 if (Math.Abs(dimension.Sum()) < 0.000000000000000000001)
                 {
-                    generateFreshParticles(dimension.ToArray().Length);
+                    GenerateFreshParticles(dimension.ToArray().Length, columncount);
                 }
                 this.NormalizeWeights(dimension);
                 weights.SetColumn(columncount, dimension);
@@ -320,21 +372,21 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="weights">The matrix containing the current Weights of the Particles</param>
         public void AddWeights(double margin, Matrix<float> particles, int colfrom, int colto, Matrix<float> measurements, Matrix<float> weights)
         {
-            for (int i = colfrom; i < colto; i++)
+            for (int wcolumn = colfrom; wcolumn <= colto; wcolumn++)
             {
-                for (int index = 0; index < particles.Column(i).Count; index++)
+                for (int row = 0; row < particles.Column(wcolumn).Count; row++)
                 {
-                    float particle = particles.Column(i)[index] * this.ranges[i] + this.minima[i];
+                    float particle = (particles.Column(wcolumn)[row] * this.ranges[wcolumn]) + this.minima[wcolumn];
                     var p = 1d;
-                    for (int j = 0; j < measurements.Column(colto - colfrom).Count; j++)
+                    for (int measrow = 0; measrow < measurements.Column(wcolumn - colfrom).Count; measrow++)
                     {
-                        float std = measurements[j, 3];
-                        float meas = measurements[j, i - colfrom];
+                        float std = measurements[measrow, 3];
+                        float meas = measurements[measrow, wcolumn - colfrom];
                         p = p * (Normal.CDF(particle, std, meas + margin) -
                                Normal.CDF(particle, std, meas - margin));
                     }
 
-                    weights[index, i] = (float)p;
+                    weights[row, wcolumn] = (float)p;
                 }
             }
         }
@@ -358,27 +410,25 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         /// <param name="matrix">THe matrix to check the values from</param>
         /// <param name="columnindex">What column to check</param>
-        /// <param name="min">The minimum value</param>
-        /// <param name="max">THe maximum value</param>
-        private void ContainParticles(Matrix<float> matrix, int columnindex, float min, float max)
+        private void ContainParticles(Matrix<float> matrix, int columnindex)
         {
             Vector<float> particles = matrix.Column(columnindex);
             particles.Map(p =>
             {
-                if (p > max)
+                if (p > 1f)
                 {
-                    return max;
+                    return 1;
                 }
-                else if (p < 0)
+                else if (p < 0f)
                 {
-                    return min;
+                    return 0;
                 }
                 else
                 {
                     return p;
                 }
             });
-            matrix.SetColumn(0, particles.ToArray());
+            matrix.SetColumn(columnindex, particles.ToArray());
         }
 
         /// <summary>

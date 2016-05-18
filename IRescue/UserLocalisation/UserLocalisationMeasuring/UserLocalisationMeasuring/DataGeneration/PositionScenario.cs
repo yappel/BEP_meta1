@@ -46,7 +46,7 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
         public List<Measurement<Vector3>> GetPositions(long startTimeStamp, long endTimeStamp)
         {
             List<Measurement<Vector3>> measurments = new List<Measurement<Vector3>>();
-            for (long i = startTimeStamp; i <= startTimeStamp; i++)
+            for (long i = startTimeStamp; i <= endTimeStamp; i++)
             {
                 measurments.Add(this.GetPosition(i));
             }

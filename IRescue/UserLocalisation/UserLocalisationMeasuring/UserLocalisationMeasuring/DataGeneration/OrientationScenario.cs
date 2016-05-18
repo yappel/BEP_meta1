@@ -48,7 +48,7 @@ namespace IRescue.UserLocalisationMeasuring.DataGeneration
         public List<Measurement<Vector3>> GetOrientations(long startTimeStamp, long endTimeStamp)
         {
             List<Measurement<Vector3>> measurments = new List<Measurement<Vector3>>();
-            for (long i = startTimeStamp; i <= startTimeStamp; i++)
+            for (long i = startTimeStamp; i <= endTimeStamp; i++)
             {
                 measurments.Add(this.GetOrientation(i));
             }
