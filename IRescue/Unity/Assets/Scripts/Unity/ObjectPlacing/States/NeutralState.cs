@@ -20,7 +20,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// The time that is being pointed.
         /// </summary>
-        long pointTime;
+        private long pointTime;
+
+        /// <summary>
+        /// The time that is being pointed towards a building
+        /// </summary>
+        private long pointObjectTime;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
@@ -53,12 +58,23 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Sets the state to modify an object.
+        /// Sets the state to modify an object after 1.5 seconds.
         /// </summary>
-        /// <param name="gameObject"></param>
+        /// <param name="gameObject">Object pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
-            //this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
+            long time = StopwatchSingleton.Time;
+            if (time - this.pointObjectTime > 1500)
+            {
+                if (time - this.pointObjectTime < 1750)
+                {
+                    this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
+                }
+                else
+                {
+                    this.pointObjectTime = time;
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using IRescue.Core.Utils;
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -46,32 +47,39 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            this.buildingIndication.transform.position = position;
-            if (time - this.hoverTime > 500)
+            if ((position - this.buildingIndication.transform.position).magnitude > (position.magnitude / 50f))
             {
+                this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
                 this.hoverTime = time;
             }
-            else if (time - this.hoverTime > 2000)
+            else
             {
-                Debug.Log("PLACED");
-                this.buildingIndication.AddComponent<GroundPlane>();
-                this.stateContext.SetState(new ModifyState(this.stateContext, this.buildingIndication));
+
+                this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+            }
+
+            this.buildingIndication.transform.position = position;
+            if (time - this.hoverTime > 3000)
+            {
+                if (time - this.hoverTime < 3250)
+                {
+                    this.PlaceBuilding(this.buildingIndication.transform.position);
+                } 
+                else
+                {
+                    this.hoverTime = time;
+                }
             }
         }
 
         /// <summary>
         /// Sets the state to modify an object.
         /// </summary>
-        /// <param name="gameObject">the gameobject that was pointed at</param>
+        /// <param name="gameObject">the game object that was pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
-            Debug.Log("I was called!!");
-            if (gameObject != this.buildingIndication)
-            {
-                Debug.Log("should change");
-            }
-            //Object.Destroy(this.buildingIndication);
-            //this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
+            Object.Destroy(this.buildingIndication);
+            this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
         }
 
         /// <summary>
@@ -81,9 +89,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private void InitIndicator(Vector3 location)
         {
             this.buildingIndication = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            this.buildingIndication.transform.localScale = new Vector3(1.0f, 0.1f, 1.0f);
+            this.buildingIndication.transform.localScale = new Vector3(0.25f, 0.1f, 0.25f);
             this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             this.buildingIndication.transform.position = location;
+        }
+
+        /// <summary>
+        /// Place a new building at a given location.
+        /// </summary>
+        /// <param name="position">Coordinate of the position to place the building</param>
+        private void PlaceBuilding(Vector3 position)
+        {
+            GameObject newBuilding = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            newBuilding.AddComponent<GroundPlane>();
+            newBuilding.AddComponent<MetaBody>();
+            newBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            newBuilding.transform.position = new Vector3(position.x, position.y + 0.1f, position.z);
+            Object.Destroy(this.buildingIndication);
+            this.stateContext.SetState(new ModifyState(this.stateContext, newBuilding));
         }
     }
 }
