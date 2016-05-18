@@ -33,8 +33,9 @@ namespace Assets.Scripts.Unity
         public void LateUpdate()
         {
             Pose pose = this.localizer.CalculatePose(IRescue.Core.Utils.StopwatchSingleton.Time);
-            this.transform.position = this.TransformVector(pose.Position);
-            this.transform.GetChild(0).eulerAngles = this.TransformVector(pose.Orientation);
+            Transform metaFrame = this.transform.GetChild(0);
+            metaFrame.position = this.TransformVector(pose.Position);
+            metaFrame.eulerAngles = this.TransformVector(pose.Orientation);
         }
 
         /// <summary>
