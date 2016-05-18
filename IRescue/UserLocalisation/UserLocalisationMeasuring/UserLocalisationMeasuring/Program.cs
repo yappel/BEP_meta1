@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IRescue.Core.DataTypes;
+using IRescue.UserLocalisation;
 using IRescue.UserLocalisation.Particle;
 using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
 using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
@@ -12,7 +13,6 @@ using IRescue.UserLocalisation.PosePrediction;
 using IRescue.UserLocalisationMeasuring.DataGeneration;
 using IRescue.UserLocalisationMeasuring.DataProcessing;
 using MathNet.Numerics.Random;
-using UserLocalisationMeasuring;
 
 namespace IRescue.UserLocalisationMeasuring
 {
@@ -78,25 +78,30 @@ namespace IRescue.UserLocalisationMeasuring
             PositionScenario posscen2 = null;
             PositionScenario posscen1 = new PositionScenario(
                 (p => (float)Math.Sin(p)), (p => (float)Math.Sin(p)), (p => (float)Math.Cos(p)), new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, (() => (float)((random.NextDouble() * 6) - 3)), 2f);
-            IParticleGenerator particlegen = new RandomParticleGenerator(new SystemRandomSource());
-            INoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
-            IResampler resampler = new MultinomialResampler();
-            IPosePredictor posepredictor = new LinearPosePredicter();
-            double[] maxima = new double[] { 1, 1, 1, 1, 1, 1 };
-            double bestprecision1 = 0;
-            double bestprecision2 = 0;
-            double bestprecision3 = 0;
-            Console.WriteLine("Scen" + "\t" + "particle" + "\t" + "noise" + "\t" + "cdfmargin");
-            for (int particles = 0; particles < 1000; particles += 100)
+            double bestaccuracy1 = double.MaxValue;
+            double bestaccuracy2 = double.MaxValue;
+            double bestaccuracy3 = double.MaxValue;
+            System.Diagnostics.Debug.WriteLine("Scen \t particle \t noise \t cdfmargin \t  accuracy");
+            for (int particles = 100; particles < 101; particles += 10)
             {
-                for (float noise = 0; noise < 1; noise += 0.1f)
+                for (float noise = 0.001f; noise < 1; noise += 0.1f)
                 {
-                    for (double cdfmargin = 0; cdfmargin < 0.5; cdfmargin += 0.05)
+                    for (double cdfmargin = 0.0001f; cdfmargin < 0.1; cdfmargin += 0.01)
                     {
-                        ParticleFilter filter1 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
+                        List<AbstractUserLocalizer> filterlist1 = new List<AbstractUserLocalizer>();
+                        for (int i = 0; i < 10; i++)
+                        {
+                            IParticleGenerator particlegen = new RandomParticleGenerator(new SystemRandomSource());
+                            INoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
+                            IResampler resampler = new MultinomialResampler();
+                            IPosePredictor posepredictor = new LinearPosePredicter();
+                            ParticleFilter filter1 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
                             posepredictor, noisegen, resampler);
-                        filter1.AddOrientationSource(oriscen1);
-                        filter1.AddPositionSource(posscen1);
+                            filter1.AddOrientationSource(oriscen1);
+                            filter1.AddPositionSource(posscen1);
+                            filterlist1.Add(filter1);
+                        }
+
                         //ParticleFilter filter2 = new ParticleFilter(fieldSize, particles, cdfmargin, noise, particlegen,
                         //    posepredictor, noisegen, resampler);
                         //filter2.AddOrientationSource(oriscen2);
@@ -105,11 +110,13 @@ namespace IRescue.UserLocalisationMeasuring
                         //    posepredictor, noisegen, resampler);
                         //filter3.AddOrientationSource(oriscen3);
                         //filter3.AddPositionSource(posscen3);
-                        LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filter1, posscen1, oriscen1);
-                        if (bestprecision1 < locanal1.Precision)
+
+                        LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filterlist1, posscen1, oriscen1);
+                        if (bestaccuracy1 > locanal1.Precision)
                         {
-                            bestprecision1 = locanal1.Precision;
-                            Console.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
+                            bestaccuracy1 = locanal1.Precision;
+                            //System.Diagnostics.Debug.WriteLine("");
+                            System.Diagnostics.Debug.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin + "\t" + bestaccuracy1);
                         }
                         //LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2, posscen2, oriscen2);
                         //if (bestprecision2 < locanal2.Precision)
@@ -123,9 +130,12 @@ namespace IRescue.UserLocalisationMeasuring
                         //    bestprecision1 = locanal1.Precision;
                         //    Console.WriteLine("3" + "\t" + particles + "\t" + noise + "\t" + cdfmargin);
                         //}
+                        //System.Diagnostics.Debug.Write("|");
                     }
                 }
+                //System.Diagnostics.Debug.WriteLine("|");
             }
+            System.Diagnostics.Debug.WriteLine("done");
         }
 
         private static void PlotParticle()
