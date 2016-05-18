@@ -10,8 +10,8 @@ namespace Assets.Scripts.Enums
     public enum Filters
     {
         /// <summary>
-        /// MonteCarloLocalizer filter
+        /// Particle filter
         /// </summary>
-        MonteCarlo
+        Particle
     }
 }

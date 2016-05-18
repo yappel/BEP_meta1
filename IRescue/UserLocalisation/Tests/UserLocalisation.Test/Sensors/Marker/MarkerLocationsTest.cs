@@ -150,7 +150,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test the constructor with xml containing floating point numbers with . seperator.
+        /// Test the constructor with xml containing floating point numbers with . separator.
         /// </summary>
         [Test]
         public void TestFloatingPointRead()
