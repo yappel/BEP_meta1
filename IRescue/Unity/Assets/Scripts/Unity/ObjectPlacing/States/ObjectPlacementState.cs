@@ -43,7 +43,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Shows the position of the to be placed object and places it after having hovered for 3 seconds.
         /// </summary>
         /// <param name="position">position of the to be placed building</param>
-        public new void OnPoint(Vector3 position)
+        public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
             this.buildingIndication.transform.position = position;
@@ -54,7 +54,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             else if (time - this.hoverTime > 2000)
             {
                 Debug.Log("PLACED");
-                //this.stateContext.SetState(new ModifyState(this.stateContext, this.buildingIndication));
+                this.buildingIndication.AddComponent<GroundPlane>();
+                this.stateContext.SetState(new ModifyState(this.stateContext, this.buildingIndication));
             }
         }
 
@@ -62,8 +63,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Sets the state to modify an object.
         /// </summary>
         /// <param name="gameObject">the gameobject that was pointed at</param>
-        public new void OnPoint(GameObject gameObject)
+        public override void OnPoint(GameObject gameObject)
         {
+            Debug.Log("I was called!!");
+            if (gameObject != this.buildingIndication)
+            {
+                Debug.Log("should change");
+            }
             //Object.Destroy(this.buildingIndication);
             //this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
         }
