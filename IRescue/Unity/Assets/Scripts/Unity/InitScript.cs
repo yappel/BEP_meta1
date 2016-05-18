@@ -20,7 +20,7 @@ public class InitScript : MonoBehaviour
     /// <summary>
     /// Enum type of the filter that is going to be used
     /// </summary>
-    private Filters usedFilter = Filters.MonteCarlo;
+    private Filters usedFilter = Filters.Particle;
 
     /// <summary>
     /// Size of the used markers in meters
@@ -36,7 +36,7 @@ public class InitScript : MonoBehaviour
         this.AddControllers();
         AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
         this.InitControllers(coupler);
-        this.InitUser(coupler.getLocalizer());
+        this.InitUser(coupler.GetLocalizer());
         this.InitMarker();
     }
 
