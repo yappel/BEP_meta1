@@ -78,7 +78,7 @@ namespace IRescue.UserLocalisation.Particle
 
             this.particles = particles;
 
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(particles);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
 
             this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
@@ -164,7 +164,7 @@ namespace IRescue.UserLocalisation.Particle
         public void TestParticleFilterRunWithoutSources()
         {
             ParticleFilter filterr = new ParticleFilter(this.fieldsize, 30, 0.001, 0.01f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(this.particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(this.particles);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
             for (int i = 0; i < 1000; i++)
             {
