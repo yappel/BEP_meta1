@@ -13,6 +13,13 @@ namespace IRescue.Core.DataTypes
     public class Vector4 : DenseVector
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Vector4"/> class with 4 zeros.
+        /// </summary>
+        public Vector4() : base(4)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Vector4"/> class.
         /// </summary>
         /// <param name="x">The x value.</param>
@@ -43,9 +50,24 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector4"/> class with 4 zeros.
+        /// Initialez a new instance of the <see cref="Vector4"/> class.
+        /// Copies the X, Y and Z values of the <see cref="Vector3"/> to the new vector.
         /// </summary>
-        public Vector4() : base(4)
+        /// <param name="vector">The vector to copy into the new vector.</param>
+        /// <param name="w">The w value.</param>
+        public Vector4(Vector3 vector, float w) : this()
+        {
+            this.SetSubVector(0, 3, vector);
+            this[3] = w;
+        }
+
+        /// <summary>
+        /// Initialez a new instance of the <see cref="Vector4"/> class.
+        /// Copies the X, Y and Z values of the <see cref="Vector3"/> to the new vector.
+        /// Sets the w value to default value 1.
+        /// </summary>
+        /// <param name="vector">The vector to copy into the new vector.</param>
+        public Vector4(Vector3 vector) : this(vector, 1)
         {
         }
 
