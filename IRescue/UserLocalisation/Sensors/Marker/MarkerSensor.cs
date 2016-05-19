@@ -58,18 +58,18 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Length of the buffer.
         /// </summary>
         private int bufferLength = 30;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
         /// <param name="standardDeviationOrientation">the standard deviation of the orientation</param>
         /// <param name="standardDeviationPosition">The standard deviation of the position</param>
-        /// <param name="path">url to the xml file</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition,  string path)
+        /// <param name="markerLocations">The MarkerLocations.</param>
+        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, MarkerLocations markerLocations)
         {
             this.standardDeviationOrientation = standardDeviationOrientation + AprilTagsErrorOrientation;
             this.standardDeviationPosition = standardDeviationPosition + AprilTagsErrorPosition;
-            this.markerLocations = new MarkerLocations(path);
+            this.markerLocations = markerLocations;
             this.orientations = new Measurement<Vector3>[this.bufferLength];
             this.positions = new Measurement<Vector3>[this.bufferLength];
             this.Measurements = 0;
@@ -80,10 +80,10 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// </summary>
         /// <param name="standardDeviationOrientation">the standard deviation of the orientation of the sensor</param>
         /// <param name="standardDeviationPosition">The standard deviation of the position of the sensor</param>
-        /// <param name="path">url to the xml file</param>
+        /// /// <param name="markerLocations">The MarkerLocations.</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, string path, int bufferLength) 
-            : this(standardDeviationOrientation, standardDeviationPosition, path)
+        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, MarkerLocations markerLocations, int bufferLength)
+            : this(standardDeviationOrientation, standardDeviationPosition, markerLocations)
         {
             this.bufferLength = bufferLength;
         }
@@ -117,7 +117,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 
                     // Could be faster => add method in Vector4 to create a Vector3 from it
                     Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-    
+
 
                     Pose location = AbRelPositioning.GetLocation(markerWorldPose, pair.Value);
                     this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
