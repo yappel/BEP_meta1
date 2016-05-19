@@ -5,22 +5,16 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     /// <summary>
-    /// State when scaling a selected building.
+    ///  State when scaling a selected building.
     /// </summary>
     public class ModifyScaleState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
+        ///  Initializes a new instance of the <see cref="ModifyScaleState"/> class.
         /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModifyScaleState"/> class.
-        /// </summary>
-        /// <param name="stateContext">State context</param>
-        public ModifyScaleState(StateContext stateContext)
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        public ModifyScaleState(StateContext stateContext) : base(stateContext)
         {
-            this.stateContext = stateContext;
         }
     }
 }

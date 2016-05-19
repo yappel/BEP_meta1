@@ -13,11 +13,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class NeutralState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
         /// The time that is being pointed.
         /// </summary>
         private long pointTime;
@@ -30,10 +25,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
-        public NeutralState(StateContext stateContext)
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        public NeutralState(StateContext stateContext) : base(stateContext)
         {
-            this.stateContext = stateContext;
             this.pointTime = StopwatchSingleton.Time;
         }
 
@@ -48,7 +42,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (time - this.pointTime < 1750)
                 {
-                    this.stateContext.SetState(new ObjectPlacementState(this.stateContext, position));
+                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position));
                 }
                 else
                 {
@@ -68,7 +62,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (time - this.pointObjectTime < 1750)
                 {
-                    this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
+                    this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
                 }
                 else
                 {

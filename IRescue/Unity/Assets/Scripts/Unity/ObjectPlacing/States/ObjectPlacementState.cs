@@ -14,11 +14,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class ObjectPlacementState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
         /// The indication for where the building will be placed.
         /// </summary>
         private GameObject buildingIndication;
@@ -33,9 +28,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
-        public ObjectPlacementState(StateContext stateContext, Vector3 location)
+        public ObjectPlacementState(StateContext stateContext, Vector3 location) : base(stateContext)
         {
-            this.stateContext = stateContext;
             this.hoverTime = StopwatchSingleton.Time;
             this.InitIndicator(location);
         }
@@ -105,7 +99,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             newBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             newBuilding.transform.position = new Vector3(position.x, position.y + 0.1f, position.z);
             UnityEngine.Object.Destroy(this.buildingIndication);
-            this.stateContext.SetState(new ModifyState(this.stateContext, newBuilding));
+            this.StateContext.SetState(new ModifyState(this.StateContext, newBuilding));
         }
     }
 }
