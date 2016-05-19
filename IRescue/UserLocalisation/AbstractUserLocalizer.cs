@@ -14,37 +14,10 @@ namespace IRescue.UserLocalisation
     public abstract class AbstractUserLocalizer
     {
         /// <summary>
-        ///   Position coordinates.
+        ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
         /// </summary>
-        private Vector3 position;
-
-        /// <summary>
-        ///   Rotation coordinates.
-        /// </summary>
-        private Vector3 rotation;
-
-        /// <summary>
-        ///   Calculate the new location of the user based on the visible markers and accelerometer data.
-        /// </summary>
-        /// <param name="locations">Predicted locations based on data like visible markers and GPS.</param>
-        public abstract void ProcessLocation(List<Object> locations);
-
-        /// <summary>
-        ///  Return a Vector3 with the calculated position.
-        /// </summary>
-        /// <returns>Vector3 the position</returns>
-        public Vector3 GetPosition()
-        {
-            return this.position;
-        }
-
-        /// <summary>
-        ///  Return a Vector 3 with the calculated rotation.
-        /// </summary>
-        /// <returns> Vector 3 </returns>
-        public Vector3 GetRotation()
-        {
-            return this.rotation;
-        }
+        /// <param name="timeStamp">The timestamp of the point in time to calculate the <see cref="Pose"/> at.</param>
+        /// <returns>The calculated <see cref="Pose"/></returns>
+        public abstract Pose CalculatePose(long timeStamp);
     }
 }

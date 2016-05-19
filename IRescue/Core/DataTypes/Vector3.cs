@@ -32,6 +32,13 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        ///  Initializes a new instance of the Vector3 class with 3 zeros.
+        /// </summary>
+        public Vector3() : base(3)
+        {
+        }
+
+        /// <summary>
         ///  Gets or sets the X value.
         /// </summary>
         public float X
