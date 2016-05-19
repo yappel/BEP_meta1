@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Assets.Unity.Navigation;
     using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
@@ -14,24 +15,40 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class ObjectPlacementState : AbstractState
     {
         /// <summary>
-        /// The indication for where the building will be placed.
-        /// </summary>
-        private GameObject buildingIndication;
-
-        /// <summary>
         ///  The time that will be kept to not immediately place buildings.
         /// </summary>
         private long hoverTime;
+
+        /// <summary>
+        /// True if a building is being moved, else false
+        /// </summary>
+        private bool translateModification;
+
+        /// <summary>
+        /// The game object with mesh that the user has chosen that will be placed.
+        /// </summary>
+        private GameObject gameObject;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
-        public ObjectPlacementState(StateContext stateContext, Vector3 location) : base(stateContext)
+        /// <param name="gameObject">The game object that has to be placed or moved</param>
+        public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
         {
+            this.translateModification = gameObject.GetComponent<MetaBody>() != null;
+            if (this.translateModification)
+            {
+                UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
+                UnityEngine.Object.Destroy(gameObject.GetComponent<GroundPlane>());
+            }
+
             this.hoverTime = StopwatchSingleton.Time;
-            this.InitIndicator(location);
+            this.gameObject = gameObject;
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+            this.gameObject.transform.position = location;
         }
 
         /// <summary>
@@ -41,22 +58,22 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            if ((position - this.buildingIndication.transform.position).magnitude > (position.magnitude / 50f))
+            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 50f))
             {
-                this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
+                this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
                 this.hoverTime = time;
             }
             else
             {
-                this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+                this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             }
 
-            this.buildingIndication.transform.position = position;
+            this.gameObject.transform.position = position;
             if (time - this.hoverTime > 2500)
             {
                 if (time - this.hoverTime < 2750)
                 {
-                    this.PlaceBuilding(this.buildingIndication.transform.position);
+                    this.PlaceBuilding(this.gameObject.transform.position);
                 } 
                 else
                 {
@@ -72,19 +89,25 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(GameObject gameObject)
         {
             this.hoverTime = StopwatchSingleton.Time;
-            this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         }
 
         /// <summary>
-        /// Creates a placement indicator
+        /// Go back to the neutral or modify state based on the state that called it.
         /// </summary>
-        /// <param name="location">The location where to place the indicator</param>
-        private void InitIndicator(Vector3 location)
+        public override void OnBackButton()
         {
-            this.buildingIndication = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            this.buildingIndication.transform.localScale = new Vector3(0.25f, 0.1f, 0.25f);
-            this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
-            this.buildingIndication.transform.position = location;
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
+            if (this.translateModification)
+            {
+                this.gameObject.AddComponent<GroundPlane>();
+                this.gameObject.AddComponent<MetaBody>();
+                this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            }
+            else
+            {
+                this.StateContext.SetState(new NeutralState(this.StateContext));
+            }
         }
 
         /// <summary>
@@ -93,13 +116,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="position">Coordinate of the position to place the building</param>
         private void PlaceBuilding(Vector3 position)
         {
-            GameObject newBuilding = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            newBuilding.AddComponent<GroundPlane>();
-            newBuilding.AddComponent<MetaBody>();
-            newBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-            newBuilding.transform.position = new Vector3(position.x, position.y + 0.1f, position.z);
-            UnityEngine.Object.Destroy(this.buildingIndication);
-            this.StateContext.SetState(new ModifyState(this.StateContext, newBuilding));
+            this.gameObject.AddComponent<GroundPlane>();
+            this.gameObject.AddComponent<MetaBody>();
+            this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Delete the gameobject and return to the neutral state.
+        /// Delete the game object and return to the neutral state.
         /// </summary>
         public override void OnDeleteButton()
         {
@@ -61,12 +61,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Go to the translate state.
+        /// Return to the object placement state where the object can be moved.
         /// </summary>
         public override void OnTranslateButton()
         {
             this.DeleteButtons();
-            this.StateContext.SetState(new ModifyTranslateState(this.StateContext, this.gameObject));
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, this.gameObject));
         }
 
         /// <summary>

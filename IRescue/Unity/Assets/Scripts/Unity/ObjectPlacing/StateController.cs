@@ -104,6 +104,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.stateContext.CurrentState.OnDeleteButton();
         }
 
+        /// <summary>
         /// Returns if a gesture is being performed.
         /// </summary>
         /// <param name="hand">Hand of the user</param>

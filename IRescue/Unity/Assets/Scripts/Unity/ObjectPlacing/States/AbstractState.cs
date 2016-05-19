@@ -12,7 +12,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// </summary>
     public abstract class AbstractState
     {
-
+        /// <summary>
         /// Initializes a new instance of the <see cref="AbstractState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
@@ -77,6 +77,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
         }
 
+        /// <summary>
         /// Method when a hand is open. An open hand.
         /// </summary>
         /// <param name="hand">The hand(s) which perform a pinch gesture</param>
@@ -84,6 +85,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
         }
 
+        /// <summary>
         /// Method when a pinch event has occurred. A pinch using the thumb and index finger.
         /// </summary>
         /// <param name="hand">The hand(s) which perform a pinch gesture</param>

@@ -42,7 +42,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (time - this.pointTime < 1750)
                 {
-                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position));
+                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding));
                 }
                 else
                 {

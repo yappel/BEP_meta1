@@ -16,8 +16,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public StateContext()
         {
-            this.CurrentState = new NeutralState(this);
+            this.CurrentState = new ModifyState(this, null);
+            this.SelectedBuilding = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            this.SelectedBuilding.transform.localScale = new Vector3(0.25f, 0.1f, 0.25f);
         }
+
+        /// <summary>
+        /// Gets or sets the selected building
+        /// </summary>
+        public GameObject SelectedBuilding { get; set; }
 
         /// <summary>
         /// Gets the currentState.
