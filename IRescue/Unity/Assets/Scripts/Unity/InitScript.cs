@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.Enums;
+using Assets.Scripts.Unity.ObjectPlacing;
 using Assets.Scripts.Unity.SensorControllers;
 using Assets.Scripts.Unity.SourceCouplers;
 using IRescue.UserLocalisation;
@@ -44,6 +45,7 @@ public class InitScript : MonoBehaviour
     /// </summary>
     private void AddControllers()
     {
+        gameObject.AddComponent<StateController>();
         IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
         foreach (AbstractSensorController controller in sensorControllers)
         {
