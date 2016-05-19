@@ -48,6 +48,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Delete the gameobject and return to the neutral state.
+        /// </summary>
+        public override void OnDeleteButton()
+        {
+            this.DeleteButtons();
+            UnityEngine.Object.Destroy(this.gameObject);
+            this.stateContext.SetState(new NeutralState(this.stateContext));
+        }
+
+        /// <summary>
         /// Go to the rotate state.
         /// </summary>
         public override void OnRotateButton()
