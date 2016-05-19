@@ -32,7 +32,7 @@ namespace IRescue.UserLocalisationMeasuring
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
-            Console.WriteLine("  s  ");
+
             CalcBestParticleSettings();
 
         }
@@ -65,19 +65,34 @@ namespace IRescue.UserLocalisationMeasuring
 
         }
 
+        private static float Sin30(long timestamp)
+        {
+            double x = Math.PI / 60;
+            return Math.Abs((0.8f * (float)Math.Sin(x * timestamp)) + 0.1f);
+        }
+
+        private static long[] timestamps(int from, int to)
+        {
+            long[] sf = new long[to - from];
+            for (int i = 0; i < to - from; i++)
+            {
+                sf[i] = from + i;
+            }
+            return sf;
+        }
+
         public static void CalcBestParticleSettings()
         {
             RandomSource random = new SystemRandomSource();
             //TODO create scenarios
-            FieldSize fieldSize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
-            OrientationScenario oriscen1 = new OrientationScenario(
-                (p => (float)Math.Sin(p)), (p => (float)Math.Sin(p)), (p => (float)Math.Cos(p)), new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, (() => (float)((random.NextDouble() * 6) - 3)), 2f);
-            OrientationScenario oriscen2 = null;
-            OrientationScenario oriscen3 = null;
-            PositionScenario posscen3 = null;
-            PositionScenario posscen2 = null;
+            FieldSize fieldSize = new FieldSize() { Xmax = 1, Xmin = 0, Ymax = 1, Ymin = 0, Zmax = 1, Zmin = 0 };
             PositionScenario posscen1 = new PositionScenario(
-                (p => (float)Math.Sin(p)), (p => (float)Math.Sin(p)), (p => (float)Math.Cos(p)), new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, (() => (float)((random.NextDouble() * 6) - 3)), 2f);
+               (Program.Sin30), (Program.Sin30), (Program.Sin30), timestamps(0, 400), (() => (float)((random.NextDouble() * 0.1) - 0.05)), 0.05f);
+            OrientationScenario oriscen1 = new OrientationScenario(
+               (p => 360 * Program.Sin30(p)), (p => 360 * Program.Sin30(p)), (p => 360 * Program.Sin30(p)), timestamps(0, 400), (() => (float)((random.NextDouble() * 36) - 18)), 18f);
+            OrientationScenario oriscen2 = null;
+            PositionScenario posscen2 = null;
+
             double bestaccuracy1 = double.MaxValue;
             double bestaccuracy2 = double.MaxValue;
             double bestaccuracy3 = double.MaxValue;
@@ -86,7 +101,7 @@ namespace IRescue.UserLocalisationMeasuring
             {
                 for (float noise = 0.001f; noise < 1; noise += 0.1f)
                 {
-                    for (double cdfmargin = 0.0001f; cdfmargin < 0.1; cdfmargin += 0.01)
+                    for (double cdfmargin = 0.0001f; cdfmargin < 0.01; cdfmargin += 0.001)
                     {
                         List<AbstractUserLocalizer> filterlist1 = new List<AbstractUserLocalizer>();
                         for (int i = 0; i < 10; i++)

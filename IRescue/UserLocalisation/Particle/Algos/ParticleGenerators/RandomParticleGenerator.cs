@@ -30,8 +30,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// </summary>
         /// <param name="amount"> The amount of Particles to generate for every dimension</param>
         /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
-        /// <param name="minima">The minimum value the Particles can have in each dimension</param>
-        /// <param name="maxima">The maximum value the Particles can have in each dimension</param>
         /// <returns>A list of particle values</returns>
         public float[] Generate(int amount, int dimensions)
         {

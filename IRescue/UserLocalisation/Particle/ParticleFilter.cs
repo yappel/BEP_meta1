@@ -2,19 +2,17 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-
-using System;
-using System.Text;
-using MathNet.Numerics;
-
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Algos.NoiseGenerators;
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
     using Core.DataTypes;
+    using MathNet.Numerics;
     using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
@@ -61,7 +59,14 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         private float noisesize;
 
+        /// <summary>
+        /// Array of the range of possible particle values in each dimension.
+        /// </summary>
         private float[] ranges;
+
+        /// <summary>
+        /// Array of the minimal particle values in each dimension.
+        /// </summary>
         private float[] minima;
 
         /// <summary>
@@ -93,38 +98,16 @@ namespace IRescue.UserLocalisation.Particle
             this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
             this.noisesize = noisesize;
-            GenerateFreshParticles(particleamount);
+            this.GenerateFreshParticles(particleamount);
             this.ranges = new float[]
             {
                 this.Fieldsize.Xmax - this.Fieldsize.Xmin, this.Fieldsize.Ymax - this.Fieldsize.Ymin,
                 this.Fieldsize.Zmax - this.Fieldsize.Zmin,  ORIENTATIONMAX,  ORIENTATIONMAX, ORIENTATIONMAX
-            }; this.minima = new float[]
+            };
+            this.minima = new float[]
              {
-                this.Fieldsize.Xmin,this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0, 0, 0
+                this.Fieldsize.Xmin, this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0, 0, 0
              };
-        }
-
-        private void GenerateFreshParticles(int particleamount)
-        {
-            // Create particle matrix
-            var particlearray = this.Particlegen.Generate(
-                particleamount,
-                DIMENSIONSAMOUNT);
-            this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
-
-            // Create weights matrix
-            float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
-            FillArray(initweights, 1f / particleamount);
-            this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
-        }
-
-        private void GenerateFreshParticles(int particleamount, int dimension)
-        {
-            float[] newparticles = this.Particlegen.Generate(particleamount, 1);
-            this.Particles.SetColumn(dimension, newparticles);
-            float[] initweights = new float[particleamount];
-            FillArray(initweights, 1f / particleamount);
-            this.Weights.SetColumn(dimension, initweights);
         }
 
         /// <summary>
@@ -174,59 +157,13 @@ namespace IRescue.UserLocalisation.Particle
         /// <returns>An educated guess of the pose of measured object/person</returns>
         public override Pose CalculatePose(long timeStamp)
         {
-            //testprint();
             this.RetrieveMeasurements(timeStamp);
             this.Resample();
-
-            //testprint();
-            //this.Predict(timeStamp);
-            //testprint();
+            ////this.Predict(timeStamp);
             this.Update();
             this.previousTS = timeStamp;
             Pose res = this.GetResult(timeStamp);
-            //testprint();
             return res;
-        }
-
-        private void Check()
-        {
-            foreach (Tuple<int, Vector<float>> weight in Weights.EnumerateColumnsIndexed())
-            {
-                if (weight.Item1 == 0)
-                {
-                    float minw = float.MaxValue;
-                    float minp = float.MaxValue;
-                    float maxp = float.MinValue;
-                    float wminp = float.MaxValue;
-                    float wmaxp = float.MinValue;
-                    int iminp = -1;
-                    int imaxp = -1;
-                    foreach (Tuple<int, float> tuple in weight.Item2.EnumerateIndexed())
-                    {
-                        if (tuple.Item2 < minw)
-                        {
-                            minw = tuple.Item2;
-                        }
-                        if (this.Particles[tuple.Item1, 0] < minp)
-                        {
-                            minp = this.Particles[tuple.Item1, 0];
-                            wminp = tuple.Item2;
-                            iminp = tuple.Item1;
-                        }
-                        else if (this.Particles[tuple.Item1, 0] > maxp)
-                        {
-                            maxp = this.Particles[tuple.Item1, 0];
-                            wmaxp = tuple.Item2;
-                            imaxp = tuple.Item1;
-                        }
-                    }
-                    Console.WriteLine("{0} {1}({2} [{3}]) {4}({5} [{6}])", minw, minp, wminp, iminp, maxp, wmaxp, imaxp);
-                }
-                //if (Math.Abs(weight) < 1 / ((float)this.Weights.RowCount * 3))
-                //{
-                //    throw new ArgumentException("Weight is too low after resampling: " + weight);
-                //}
-            }
         }
 
         /// <summary>
@@ -283,8 +220,9 @@ namespace IRescue.UserLocalisation.Particle
             {
                 if (Math.Abs(dimension.Sum()) < 0.000000000000000000001)
                 {
-                    GenerateFreshParticles(dimension.ToArray().Length, columncount);
+                    this.GenerateFreshParticlesDimension(columncount);
                 }
+
                 this.NormalizeWeights(dimension);
                 weights.SetColumn(columncount, dimension);
                 columncount++;
@@ -446,15 +384,38 @@ namespace IRescue.UserLocalisation.Particle
                 List<Measurement<Vector3>> measall = orientationSource.GetOrientations(this.previousTS, timeStamp);
                 foreach (Measurement<Vector3> meas in measall)
                 {
-                    measx.Add(meas.Data.X);
-                    measy.Add(meas.Data.Y);
-                    measz.Add(meas.Data.Z);
-                    std.Add(meas.Std);
+                    this.ProcessMeas(measx, measy, measz, std, meas);
                 }
             }
 
             IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz).Concat(std);
             this.Measurementsori = !std.Any() ? null : new DenseMatrix(std.Count, 4, concatenated.ToArray());
+        }
+
+        /// <summary>
+        /// Get the measurement data and put it into the lists.
+        /// </summary>
+        /// <param name="measx">List to put the X data in.</param>
+        /// <param name="measy">List to put the Y data in.</param>
+        /// <param name="measz">List to put the Z data in.</param>
+        /// <param name="std">List to add the standard deviation.</param>
+        /// <param name="meas">The measurement to process.</param>
+        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<float> std, Measurement<Vector3> meas)
+        {
+            if (float.IsNaN(meas.Data.X) || float.IsNaN(meas.Data.Y) || float.IsNaN(meas.Data.Z) ||
+                        float.IsNaN(meas.Std))
+            {
+                StringBuilder message = new StringBuilder();
+                message.AppendFormat("One of the measurements or the deviation was NaN. X:{0} Y:{1} Z:{2} Stdev:{3}", meas.Data.X, meas.Data.Y, meas.Data.Z, meas.Std);
+                throw new ArithmeticException(message.ToString());
+            }
+            else
+            {
+                measx.Add(meas.Data.X);
+                measy.Add(meas.Data.Y);
+                measz.Add(meas.Data.Z);
+                std.Add(meas.Std);
+            }
         }
 
         /// <summary>
@@ -473,10 +434,7 @@ namespace IRescue.UserLocalisation.Particle
                 List<Measurement<Vector3>> measall = positionSource.GetPositions(this.previousTS, timeStamp);
                 foreach (Measurement<Vector3> meas in measall)
                 {
-                    measx.Add(meas.Data.X);
-                    measy.Add(meas.Data.Y);
-                    measz.Add(meas.Data.Z);
-                    std.Add(meas.Std);
+                    this.ProcessMeas(measx, measy, measz, std, meas);
                 }
             }
 
@@ -512,7 +470,7 @@ namespace IRescue.UserLocalisation.Particle
                     }
                     else
                     {
-                        transmatrixarray[(this.Particles.RowCount * c) + r] = this.Mod(translation[c], ORIENTATIONMAX) / ranges[c];
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = this.Mod(translation[c], ORIENTATIONMAX) / this.ranges[c];
                     }
                 }
             }
@@ -540,29 +498,41 @@ namespace IRescue.UserLocalisation.Particle
         {
             float[] averages = this.WeightedAverage(this.Particles, this.Weights);
             Pose result = new Pose(
-                new Vector3(averages[0] * this.ranges[0] - this.minima[0], averages[1] * this.ranges[1] - this.minima[1], averages[2] * this.ranges[2] - this.minima[2]),
-                new Vector3(averages[3] * this.ranges[3] - this.minima[3], averages[4] * this.ranges[4] - this.minima[4], averages[5] * this.ranges[5] - this.minima[5]));
+                new Vector3((averages[0] * this.ranges[0]) - this.minima[0], (averages[1] * this.ranges[1]) - this.minima[1], (averages[2] * this.ranges[2]) - this.minima[2]),
+                new Vector3((averages[3] * this.ranges[3]) - this.minima[3], (averages[4] * this.ranges[4]) - this.minima[4], (averages[5] * this.ranges[5]) - this.minima[5]));
             this.PosePredictor.AddPoseData(timeStamp, result);
             return result;
         }
 
-
-        private void testprint()
+        /// <summary>
+        /// Creates new particles in all dimensions.
+        /// </summary>
+        /// <param name="particleamount">Amount of particles per dimension</param>
+        private void GenerateFreshParticles(int particleamount)
         {
-            var particlepath = System.IO.Path.GetFullPath("D:\\Users\\Yoeri 2\\Documenten\\MATLAB\\Filter_particles.txt");
-            System.Text.StringBuilder builder1 = new StringBuilder();
-            for (int i = 0; i < this.Particles.RowCount; i++)
-            {
-                for (int jj = 0; jj < 6; jj++)
-                {
-                    builder1.Append(this.Particles[i, jj]);
-                    builder1.Append(" ");
-                    builder1.Append(this.Weights[i, jj]);
-                    builder1.Append(" ");
-                }
-                builder1.AppendLine();
-            }
-            System.IO.File.AppendAllText(particlepath, builder1.ToString());
+            // Create particle matrix
+            var particlearray = this.Particlegen.Generate(
+                particleamount,
+                DIMENSIONSAMOUNT);
+            this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
+
+            // Create weights matrix
+            float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
+            FillArray(initweights, 1f / particleamount);
+            this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
+        }
+
+        /// <summary>
+        /// Creates new particles in one dimensions.
+        /// </summary>
+        /// <param name="dimension">The dimension to create new particles for</param>
+        private void GenerateFreshParticlesDimension(int dimension)
+        {
+            float[] newparticles = this.Particlegen.Generate(this.Weights.RowCount, 1);
+            this.Particles.SetColumn(dimension, newparticles);
+            float[] initweights = new float[this.Weights.RowCount];
+            FillArray(initweights, 1f / this.Weights.RowCount);
+            this.Weights.SetColumn(dimension, initweights);
         }
 
         /// <summary>
