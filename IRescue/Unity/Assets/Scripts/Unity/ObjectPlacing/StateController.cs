@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using Meta;
     using States;
     using UnityEngine;
 
@@ -18,9 +19,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private StateContext stateContext;
 
         /// <summary>
+        /// Check if left hand is valid
+        /// </summary>
+        private bool validLeftHand;
+
+        /// <summary>
+        /// Check if right hand is valid
+        /// </summary>
+        private bool validRightHand;
+
+        /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
-        public void Start()
+        public void Init()
         {
             this.stateContext = new StateContext();
         }
@@ -31,18 +42,123 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public void Update()
         {
             this.stateContext.CurrentState.RunUpdate();
+            this.GrabEvent();
+            this.OpenEvent();
+            this.PinchEvent();
             this.PointEvent();
         }
-        
+
         /// <summary>
-        /// Method for determining if a point event occurred.
+        /// Returns if a gesture is being performed.
+        /// </summary>
+        /// <param name="hand">Hand of the user</param>
+        /// <param name="gesture">The gesture to be performed</param>
+        /// <returns>if the gesture is being performed by the hand</returns>
+        private bool IsValid(Hand hand, MetaGesture gesture)
+        {
+            return hand.isValid && hand.gesture.type == gesture;
+        }
+
+        /// <summary>
+        /// Return which hand performed the event
+        /// </summary>
+        /// <param name="leftHandEvent">boolean if the left hand performed the event</param>
+        /// <param name="rightHandEvent">boolean if the right hand performed the event</param>
+        /// <returns>Which HandType performs the gesture</returns>
+        private HandType GetHandType(bool leftHandEvent, bool rightHandEvent)
+        {
+            if (leftHandEvent && rightHandEvent)
+            {
+                return HandType.EITHER;
+            }
+            else if (leftHandEvent)
+            {
+                return HandType.LEFT;
+            }
+            else if (rightHandEvent)
+            {
+                return HandType.RIGHT;
+            }
+            else
+            {
+                return HandType.UNKNOWN;
+            }
+        }
+
+        /// <summary>
+        /// Event when the user performs a grab gesture, fist is closed.
+        /// </summary>
+        private void GrabEvent()
+        {
+            HandType handType = this.GetHandType(this.IsValid(Hands.left, MetaGesture.GRAB), this.IsValid(Hands.right, MetaGesture.GRAB));
+            if (handType != HandType.UNKNOWN)
+            {
+                this.stateContext.CurrentState.OnGrab(handType);
+            }
+        }
+
+        /// <summary>
+        /// Event when the user opens a hand. An open hand.
+        /// </summary>
+        private void OpenEvent()
+        {
+            HandType handType = this.GetHandType(this.IsValid(Hands.left, MetaGesture.OPEN), this.IsValid(Hands.right, MetaGesture.OPEN));
+            if (handType != HandType.UNKNOWN)
+            {
+                this.stateContext.CurrentState.OnOpen(handType);
+            }
+        }
+
+        /// <summary>
+        /// Event when the user performs a pinch gesture. A pinch using the thumb and index finger.
+        /// </summary>
+        private void PinchEvent()
+        {
+            HandType handType = this.GetHandType(this.IsValid(Hands.left, MetaGesture.PINCH), this.IsValid(Hands.right, MetaGesture.PINCH));
+            if (handType != HandType.UNKNOWN)
+            {
+                this.stateContext.CurrentState.OnPinch(handType);
+            }
+        }
+
+        /// <summary>
+        /// Method for the point event. A single finger fully extended.
         /// </summary>
         private void PointEvent()
         {
-            bool pointing = false;
-            if (pointing == true)
+            Vector3 point = new Vector3();
+            GameObject gameObject = null;
+            if (this.IsValid(Hands.right, MetaGesture.POINT) && Hands.right.pointer.objectOfInterest != null)
             {
-                this.stateContext.CurrentState.OnPoint(new Vector3(0, 0, 0));
+                point = Hands.right.pointer.objectOfInterest.transform.position;
+                gameObject = Hands.right.pointer.objectOfInterest.transform.gameObject;
+            }
+            else if (this.IsValid(Hands.left, MetaGesture.POINT) && Hands.left.pointer.objectOfInterest != null)
+            {
+                point = Hands.left.pointer.objectOfInterest.transform.position;
+                gameObject = Hands.left.pointer.objectOfInterest.transform.gameObject;
+            }
+
+            this.PointEvent(gameObject, point);
+        }
+
+        /// <summary>
+        /// Triggers the event to the state if a collision with an object unequal to MetaWorld or WaterLevelController could be found.
+        /// </summary>
+        /// <param name="gameObject">The game object of the collision</param>
+        /// <param name="point">The location of the collision</param>
+        private void PointEvent(GameObject gameObject, Vector3 point)
+        {
+            if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
+            {
+                if (gameObject.GetComponent<GroundPlane>() != null)
+                {
+                    this.stateContext.CurrentState.OnPoint(point);
+                }
+                else
+                {
+                    this.stateContext.CurrentState.OnPoint(gameObject);
+                }
             }
         }
     }
