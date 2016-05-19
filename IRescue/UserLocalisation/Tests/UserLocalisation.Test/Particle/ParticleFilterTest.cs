@@ -75,10 +75,16 @@ namespace IRescue.UserLocalisation.Particle
             {
                 particles[i] = 1;
             }
+            float[] particles2 = new float[particleamount * 1];
+            for (int i = 0; i < particleamount; i++)
+            {
+                particles2[i] = 1;
+            }
 
             this.particles = particles;
 
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 6)).Returns(particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 1)).Returns(particles2);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
 
             this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
@@ -122,10 +128,10 @@ namespace IRescue.UserLocalisation.Particle
         public void TestParticleWeighting()
         {
             int lpcount = 1;
-            Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
+            Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 0.5f, 0.5f, 0.5f });
             Matrix<float> localweigh = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
             Matrix<float> localmeas = new DenseMatrix(lpcount, 4, new float[] { 1, 1, 1, 0.1f });
-            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, localweigh);
+            this.filter.AddWeights(0.01, localparts, 0, 2, localmeas, localweigh);
             Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
             ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
         }
