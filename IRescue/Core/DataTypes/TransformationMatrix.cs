@@ -53,6 +53,28 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
+        /// Creates a 4x4 transformation matrix with rotation and translation specified in 2 <see cref="Vector3"/> objects.
+        /// </summary>
+        /// <param name="translation">The translation vector to use.</param>
+        /// <param name="rotation">The rotation vector to use.</param>
+        /// <param name="w">The w value of the transformation matrix.</param>
+        public TransformationMatrix(Vector3 translation, Vector3 rotation, float w) : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, w)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
+        /// Creates a 4x4 transformation matrix with rotation and translation specified in 2 <see cref="Vector3"/> objects.
+        /// Sets the w value to default value 1.
+        /// </summary>
+        /// <param name="translation">The translation vector to use.</param>
+        /// <param name="rotation">The rotation vector to use.</param>
+        public TransformationMatrix(Vector3 translation, Vector3 rotation) : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, 1)
+        {
+        }
+
+        /// <summary>
         /// Create an array from the specified rotation, translation and w values.
         /// </summary>
         /// <param name="xt">X axis translation.</param>
