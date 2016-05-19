@@ -104,7 +104,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             newBuilding.AddComponent<MetaBody>();
             newBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             newBuilding.transform.position = new Vector3(position.x, position.y + 0.1f, position.z);
-            Object.Destroy(this.buildingIndication);
+            UnityEngine.Object.Destroy(this.buildingIndication);
             this.stateContext.SetState(new ModifyState(this.stateContext, newBuilding));
         }
     }
