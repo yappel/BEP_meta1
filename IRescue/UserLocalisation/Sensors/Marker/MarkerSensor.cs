@@ -94,19 +94,35 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public int Measurements { get; private set; }
 
         /// <summary>
-        ///   Update the locations derived from Markers.
+        /// Update the locations derived from Markers.
         /// </summary>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
         public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds)
         {
+            // TODO should be specified outside of class?
             long timeStamp = StopwatchSingleton.Time;
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
-                    Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
-                    Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions[this.pointer] = new Measurement<Vector3>(location.Position, this.standardDeviationPosition, timeStamp);
+                    Pose markerWorldPose = this.markerLocations.GetMarker(pair.Key);
+                    Pose markerUserPose = pair.Value;
+
+                    TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
+                    TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
+                    TransformationMatrix transformationWorldToUser = new TransformationMatrix();
+                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationWorldToUser);
+                    Vector4 position = new Vector4(0, 0, 0, 1);
+                    transformationWorldToUser.Multiply(position, position);
+
+                    // Could be faster => add method in Vector4 to create a Vector3 from it
+                    Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+    
+
+                    Pose location = AbRelPositioning.GetLocation(markerWorldPose, pair.Value);
+                    this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
+
+                    // Still needs to be fixed
                     this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviationOrientation, timeStamp);
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
