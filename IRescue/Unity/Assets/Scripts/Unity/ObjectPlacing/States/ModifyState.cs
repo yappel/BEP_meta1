@@ -67,6 +67,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Go to the translate state.
+        /// </summary>
+        public override void OnTranslateButton()
+        {
+            this.DeleteButtons();
+            this.stateContext.SetState(new ModifyTranslateState(this.stateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Go to the scale state.
+        /// </summary>
+        public override void OnScaleButton()
+        {
+            this.DeleteButtons();
+            this.stateContext.SetState(new ModifyScaleState(this.stateContext, this.gameObject));
+        }
+
+        /// <summary>
         /// Delete all buttons of the screen.
         /// </summary>
         private void DeleteButtons()

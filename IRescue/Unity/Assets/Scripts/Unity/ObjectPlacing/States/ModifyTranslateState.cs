@@ -4,6 +4,8 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using UnityEngine;
+
     /// <summary>
     /// State when translating a selected building.
     /// </summary>
@@ -15,12 +17,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private StateContext stateContext;
 
         /// <summary>
+        /// The game object to modify.
+        /// </summary>
+        private GameObject gameObject;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ModifyTranslateState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
-        public ModifyTranslateState(StateContext stateContext)
+        /// <param name="gameObject">The game object to be translated</param>
+        public ModifyTranslateState(StateContext stateContext, GameObject gameObject)
         {
             this.stateContext = stateContext;
+            this.gameObject = gameObject;
         }
     }
 }
