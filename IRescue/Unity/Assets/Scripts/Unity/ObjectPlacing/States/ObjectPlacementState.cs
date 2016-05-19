@@ -54,14 +54,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
             else
             {
-
                 this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             }
 
             this.buildingIndication.transform.position = position;
-            if (time - this.hoverTime > 3000)
+            if (time - this.hoverTime > 2000)
             {
-                if (time - this.hoverTime < 3250)
+                if (time - this.hoverTime < 2250)
                 {
                     this.PlaceBuilding(this.buildingIndication.transform.position);
                 } 
