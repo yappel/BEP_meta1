@@ -365,7 +365,7 @@ namespace IRescue.UserLocalisation.Particle
                 {
                     return p;
                 }
-            });
+            }, particles);
             matrix.SetColumn(columnindex, particles.ToArray());
         }
 
