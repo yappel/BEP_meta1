@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     using MathNet.Numerics.LinearAlgebra.Single;
     using static MathNet.Numerics.Trig;
@@ -70,10 +70,10 @@ namespace IRescue.Core.Datatypes
             double a = DegreeToRadian(zr);
             float[] rot =
             {
-                (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)), xt,
-                (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)), yt,
-                (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c)), zt,
-                0, 0, 0, w
+                (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)), 0,
+                (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)), 0,
+                (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c)), 0,
+                xt, yt, zt, w
             };
             return rot;
         }
