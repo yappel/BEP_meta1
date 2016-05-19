@@ -12,7 +12,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyScaleState"/> class.
         /// </summary>
-        ///<param name="stateContext">The class that keeps track of the current active state</param>
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
         public ModifyScaleState(StateContext stateContext) : base(stateContext)
         {
         }
