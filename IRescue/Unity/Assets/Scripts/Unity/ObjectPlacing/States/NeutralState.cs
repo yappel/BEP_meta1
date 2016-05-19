@@ -10,17 +10,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class NeutralState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
-        public NeutralState(StateContext stateContext)
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        public NeutralState(StateContext stateContext) : base(stateContext)
         {
-            this.stateContext = stateContext;
         }
     }
 }

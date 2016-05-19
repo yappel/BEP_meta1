@@ -10,17 +10,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class BuildingPlacementState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BuildingPlacementState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
-        public BuildingPlacementState(StateContext stateContext)
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        public BuildingPlacementState(StateContext stateContext) : base(stateContext)
         {
-            this.stateContext = stateContext;
         }
     }
 }
