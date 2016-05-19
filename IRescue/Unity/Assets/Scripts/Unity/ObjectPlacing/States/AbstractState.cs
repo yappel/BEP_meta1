@@ -4,6 +4,8 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Assets.Unity.Navigation;
+    using Enums;
     using UnityEngine;
 
     /// <summary>
@@ -22,6 +24,34 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Method called when the confirm button was pressed
         /// </summary>
         public virtual void OnConfirmButton()
+        {
+        }
+
+        /// <summary>
+        /// Method called when a rotate button has been pressed
+        /// </summary>
+        public virtual void OnRotateButton()
+        {
+        }
+
+        /// <summary>
+        /// Method called when a scale button has been pressed
+        /// </summary>
+        public virtual void OnScaleButton()
+        {
+        }
+
+        /// <summary>
+        /// Method called when a translate button has been pressed
+        /// </summary>
+        public virtual void OnTranslateButton()
+        {
+        }
+
+        /// <summary>
+        /// Method called when a delete button has been pressed
+        /// </summary>
+        public virtual void OnDeleteButton()
         {
         }
 

@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using Enums;
     using States;
     using UnityEngine;
     using UnityEngine.EventSystems;
@@ -51,6 +52,42 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public void ConfirmButtonEvent(PointerEventData eventData)
         {
             this.stateContext.CurrentState.OnConfirmButton();
+        }
+
+        /// <summary>
+        /// Event when a modify rotate button is pressed
+        /// </summary>
+        /// <param name="eventData">event data about the button press</param>
+        public void ModifyRotateButtonEvent(PointerEventData eventData)
+        {
+            this.stateContext.CurrentState.OnRotateButton();
+        }
+
+        /// <summary>
+        /// Event when a modify translate button is pressed
+        /// </summary>
+        /// <param name="eventData">event data about the button press</param>
+        public void ModifyTranslateButtonEvent(PointerEventData eventData)
+        {
+            this.stateContext.CurrentState.OnTranslateButton();
+        }
+
+        /// <summary>
+        /// Event when a modify scale button is pressed
+        /// </summary>
+        /// <param name="eventData">event data about the button press</param>
+        public void ModifyScaleButtonEvent(PointerEventData eventData)
+        {
+            this.stateContext.CurrentState.OnScaleButton();
+        }
+
+        /// <summary>
+        /// Event when a delete object button is pressed
+        /// </summary>
+        /// <param name="eventData">event data about the button press</param>
+        public void DeleteButtonEvent(PointerEventData eventData)
+        {
+            this.stateContext.CurrentState.OnDeleteButton();
         }
 
         /// <summary>

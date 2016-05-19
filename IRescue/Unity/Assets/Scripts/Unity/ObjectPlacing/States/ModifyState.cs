@@ -30,6 +30,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ModifyState(StateContext stateContext, GameObject gameObject)
         {
             UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/ConfirmButton"));
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/DeleteButton"));
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/TranslateButton"));
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/RotateButton"));
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/ScaleButton"));
             this.stateContext = stateContext;
             this.gameObject = gameObject;
         }
@@ -39,8 +43,29 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnConfirmButton()
         {
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ConfirmButton>().transform.root.gameObject);
+            this.DeleteButtons();
             this.stateContext.SetState(new NeutralState(this.stateContext));
+        }
+
+        /// <summary>
+        /// Go to the rotate state.
+        /// </summary>
+        public override void OnRotateButton()
+        {
+            this.DeleteButtons();
+            this.stateContext.SetState(new ModifyRotateState(this.stateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Delete all buttons of the screen.
+        /// </summary>
+        private void DeleteButtons()
+        {
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ConfirmButton>().transform.root.gameObject);
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<DeleteButton>().transform.root.gameObject);
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<RotateButton>().transform.root.gameObject);
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ScaleButton>().transform.root.gameObject);
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<TranslateButton>().transform.root.gameObject);
         }
     }
 }
