@@ -43,20 +43,6 @@ namespace Core.Test
         }
 
         /// <summary>
-        /// Test 2D calculation.
-        /// </summary>
-        [Test]
-        public void Test2D2()
-        {
-            this.abPosition = new Pose(new Vector3(5, 0, 5), new Vector3(0, 270, 0));
-            this.relPosition = new Pose(new Vector3(3, 0, 3), new Vector3(0, 315, 0));
-            Pose result = AbRelPositioning.GetLocation2D(this.abPosition, this.relPosition);
-            Assert.AreEqual(2, result.Position.X, this.epsilon);
-            Assert.AreEqual(0, result.Position.Y, this.epsilon);
-            Assert.AreEqual(2, result.Position.Z, this.epsilon);
-        }
-
-        /// <summary>
         /// Expected at location 3,0,3
         /// </summary>
         [Test]
@@ -67,7 +53,7 @@ namespace Core.Test
             Pose result = AbRelPositioning.GetLocation(this.abPosition, this.relPosition);
             Assert.AreEqual(7, result.Position.X, this.epsilon);
             Assert.AreEqual(0, result.Position.Y, this.epsilon);
-            Assert.AreEqual(7, result.Position.Z, this.epsilon);
+            Assert.AreEqual(3, result.Position.Z, this.epsilon);
         }
     }
 }

@@ -16,57 +16,53 @@ public abstract class AbstractLocalizerCoupler
     /// </summary>
     /// <param name="sensor">the sensor controller</param>
     /// <returns>if the controller was registered once or more</returns>
-    public abstract bool RegisterSource(AbstractSensorController sensor);
+    public bool RegisterSource(AbstractSensorController sensor)
+    {
+        return this.RegisterAccelerationReceiver(sensor.GetAccelerationSource()) ||
+            this.RegisterDisplacementReceiver(sensor.GetDisplacementSource()) ||
+            this.RegisterOrientationReceiver(sensor.GetOrientationSource()) ||
+            this.RegisterPositionReceiver(sensor.GetPositionSource()) ||
+            this.RegisterVelocityReceiver(sensor.GetVelocitySource());
+    }
+
+    /// <summary>
+    /// Return the localizer filter
+    /// </summary>
+    /// <returns>the localizer</returns>
+    public abstract AbstractUserLocalizer GetLocalizer();
 
     /// <summary>
     /// Register a acceleration source
     /// </summary>
     /// <param name="source">The source to register</param>
     /// <returns>if the source was registered</returns>
-    protected bool RegisterAccelerationReceiver(IAccelerationSource source)
-    {
-        return false;
-    }
+    protected abstract bool RegisterAccelerationReceiver(IAccelerationSource source);
 
     /// <summary>
     /// Register a displacement source
     /// </summary>
     /// <param name="source">The source to register</param>
     /// <returns>if the source was registered</returns>
-    protected bool RegisterDisplacementReceiver(IDisplacementSource source)
-    {
-        return false;
-    }
+    protected abstract bool RegisterDisplacementReceiver(IDisplacementSource source);
 
     /// <summary>
     /// Register a orientation source
     /// </summary>
     /// <param name="source">The source to register</param>
     /// <returns>if the source was registered</returns>
-    protected bool RegisterOrientationReceiver(IOrientationSource source)
-    {
-        return false;
-    }
+    protected abstract bool RegisterOrientationReceiver(IOrientationSource source);
 
     /// <summary>
     /// Register a position source
     /// </summary>
     /// <param name="source">The source to register</param>
     /// <returns>if the source was registered</returns>
-    protected bool RegisterPositionReceiver(IPositionSource source)
-    {
-        return false;
-    }
+    protected abstract bool RegisterPositionReceiver(IPositionSource source);
 
     /// <summary>
     /// Register a velocity source
     /// </summary>
     /// <param name="source">The source to register</param>
     /// <returns>if the source was registered</returns>
-    protected bool RegisterVelocityReceiver(IVelocitySource source)
-    {
-        return false;
-    }
-
-    public abstract AbstractUserLocalizer getLocalizer();
+    protected abstract bool RegisterVelocityReceiver(IVelocitySource source);
 }

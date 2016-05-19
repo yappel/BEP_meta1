@@ -13,6 +13,19 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
     public class MultinomialResampler : IResampler
     {
         /// <summary>
+        /// Random for random numbers
+        /// </summary>
+        private static Random random;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultinomialResampler"/> class.
+        /// </summary>
+        public MultinomialResampler()
+        {
+           random = new Random();
+        }
+
+        /// <summary>
         /// Resamples Particles using a Multinomial algorithm
         /// </summary>
         /// <param name="particles">The Particles to resample</param>
@@ -47,7 +60,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         {
             int[] listout = new int[weights.Count];
             CumSum(weights);
-            Random random = new Random();
             weights[weights.Count - 1] = 1;
             int i = 0;
             while (i < weights.Count)

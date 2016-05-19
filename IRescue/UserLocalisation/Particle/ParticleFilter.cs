@@ -535,6 +535,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
+
         /// Perform the modulo operation returning a value between 0 and b-1.
         /// </summary>
         /// <param name="a">The number to perform modulo on.</param>

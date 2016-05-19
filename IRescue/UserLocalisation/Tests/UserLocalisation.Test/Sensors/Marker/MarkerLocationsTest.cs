@@ -91,7 +91,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         {
             this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml");
             Assert.AreEqual(this.markerLocations.GetMarker(0).Position.X, 25);
-            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13.52f);
         }
 
         /// <summary>
@@ -147,6 +147,21 @@ namespace UserLocalisation.Test.Sensors.Marker
             }
 
             Assert.Fail();
+        }
+
+        /// <summary>
+        /// Test the constructor with xml containing floating point numbers with . separator.
+        /// </summary>
+        [Test]
+        public void TestFloatingPointRead()
+        {
+            this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFloat.xml");
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.X, 25.12f);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Y, 13.52f);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Position.Z, 5.00f);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Orientation.X, 0.15f);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Orientation.Y, 0.23f);
+            Assert.AreEqual(this.markerLocations.GetMarker(0).Orientation.Z, 0.00f);
         }
     }
 }
