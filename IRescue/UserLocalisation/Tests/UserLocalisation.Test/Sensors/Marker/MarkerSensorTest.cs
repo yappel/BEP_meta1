@@ -7,6 +7,7 @@ namespace UserLocalisation.Test.Sensors.Marker
     using System.Collections.Generic;
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Sensors.Marker;
+    using Moq;
     using NUnit.Framework;
 
     /// <summary>
@@ -35,9 +36,9 @@ namespace UserLocalisation.Test.Sensors.Marker
         private float epsilonP = 0.25f;
 
         /// <summary>
-        /// Path to the xml
+        /// Field for the marker locations corresponding to MarkerMap01.xml. Mocking not possible due to limitation of moq.
         /// </summary>
-        private string savePath = TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml";
+        private MarkerLocations mlocmoq;
 
         /// <summary>
         /// Setup the map
@@ -45,7 +46,14 @@ namespace UserLocalisation.Test.Sensors.Marker
         [SetUp]
         public void Init()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath);
+            this.mlocmoq = new MarkerLocations();
+            this.mlocmoq.AddMarker(0, new Pose(
+                    new Vector3(25, 13.52f, 5),
+                    new Vector3(0, 0, 0)));
+            this.mlocmoq.AddMarker(1, new Pose(
+                    new Vector3(12, 21.12f, 13),
+                    new Vector3(0, 0, 0)));
+            this.sensor = new MarkerSensor(this.std, this.std, mlocmoq);
         }
 
         /// <summary>
@@ -180,7 +188,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestOverflow()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6);
+            this.sensor = new MarkerSensor(this.std, this.std, this.mlocmoq, 6);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
@@ -199,7 +207,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestNoData()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6);
+            this.sensor = new MarkerSensor(this.std, this.std, this.mlocmoq, 6);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
