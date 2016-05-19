@@ -89,27 +89,6 @@
  <Reference Include="UnityEditor.TreeEditor">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll</HintPath>
  </Reference>
- <Reference Include="IRescue-core">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/IRescue-core.dll</HintPath>
- </Reference>
- <Reference Include="IRescue-userLocalisation">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/IRescue-userLocalisation.dll</HintPath>
- </Reference>
- <Reference Include="MathNet.Numerics">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MathNet.Numerics.dll</HintPath>
- </Reference>
- <Reference Include="Meta">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Meta/Meta.dll</HintPath>
- </Reference>
- <Reference Include="Meta-Editor">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Meta/Editor/Meta-Editor.dll</HintPath>
- </Reference>
- <Reference Include="MetaPackages">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MetaPackages/MetaPackages.dll</HintPath>
- </Reference>
- <Reference Include="Vectrosity">
- <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MetaPackages/Vectrosity/Vectrosity.dll</HintPath>
- </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
@@ -118,12 +97,12 @@
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
-  
+
 </Project>

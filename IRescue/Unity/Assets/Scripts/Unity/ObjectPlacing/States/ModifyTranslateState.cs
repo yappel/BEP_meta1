@@ -12,11 +12,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class ModifyTranslateState : AbstractState
     {
         /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
         /// The game object to modify.
         /// </summary>
         private GameObject gameObject;
@@ -24,11 +19,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyTranslateState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
         /// <param name="gameObject">The game object to be translated</param>
-        public ModifyTranslateState(StateContext stateContext, GameObject gameObject)
+        public ModifyTranslateState(StateContext stateContext, GameObject gameObject) : base(stateContext)
         {
-            this.stateContext = stateContext;
             this.gameObject = gameObject;
         }
     }
