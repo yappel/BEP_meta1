@@ -12,7 +12,6 @@ namespace IRescue.UserLocalisation.Particle
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
     using Core.DataTypes;
-    using MathNet.Numerics;
     using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
@@ -365,7 +364,7 @@ namespace IRescue.UserLocalisation.Particle
                 {
                     return p;
                 }
-            });
+            }, particles);
             matrix.SetColumn(columnindex, particles.ToArray());
         }
 
