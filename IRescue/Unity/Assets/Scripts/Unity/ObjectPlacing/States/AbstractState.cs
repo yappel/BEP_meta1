@@ -13,6 +13,21 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public abstract class AbstractState
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractState"/> class.
+        /// </summary>
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        protected AbstractState(StateContext stateContext)
+        {
+            this.StateContext = stateContext;
+        }
+
+        /// <summary>
+        /// Gets the stateContext.
+        /// Coupled state context which keeps track of the current active state.
+        /// </summary>
+        public StateContext StateContext { get; private set; }
+
+        /// <summary>
         /// Method when a grab event has occurred. A closed fist.
         /// </summary>
         /// <param name="hand">The hand(s) which perform a grab gesture</param>
@@ -38,21 +53,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
         /// <summary>
         /// Method when a point event has occurred to place a building (ground plane). A single finger fully extended.
-        /// Coupled state context which keeps track of the current active state.
-        /// </summary>
-        private StateContext stateContext;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AbstractState"/> class.
-        /// </summary>
-        /// <param name="stateContext">The class that keeps track of the current active state</param>
-        protected AbstractState(StateContext stateContext)
-        {
-            this.stateContext = stateContext;
-        }
-
-        /// <summary>
-        /// Method when a point event has occurred
         /// </summary>
         /// <param name="position">The position pointed towards</param>
         public virtual void OnPoint(Vector3 position)

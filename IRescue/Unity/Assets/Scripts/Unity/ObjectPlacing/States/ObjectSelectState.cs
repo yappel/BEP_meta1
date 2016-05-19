@@ -8,7 +8,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// State when selecting a building that you want to place.
     /// </summary>
     public class ObjectSelectState : AbstractState
-    {         
+    { 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectSelectState"/> class.
         /// </summary>
