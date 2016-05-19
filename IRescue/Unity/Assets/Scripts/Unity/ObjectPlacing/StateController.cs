@@ -128,15 +128,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
-            if (this.IsValid(Hands.right, MetaGesture.POINT) && Hands.right.pointer.objectOfInterest != null)
+            Vector3 cameraPosition = this.gameObject.transform.position;
+            if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = Hands.right.pointer.objectOfInterest.transform.position;
-                gameObject = Hands.right.pointer.objectOfInterest.transform.gameObject;
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.right.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
             }
-            else if (this.IsValid(Hands.left, MetaGesture.POINT) && Hands.left.pointer.objectOfInterest != null)
+            else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = Hands.left.pointer.objectOfInterest.transform.position;
-                gameObject = Hands.left.pointer.objectOfInterest.transform.gameObject;
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.left.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
             }
 
             this.PointEvent(gameObject, point);
@@ -160,6 +159,31 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                     this.stateContext.CurrentState.OnPoint(gameObject);
                 }
             }
+        }
+
+        /// <summary>
+        /// Return the coordinate and game object of the closest object pointed at.
+        /// </summary>
+        /// <param name="hits">The hits of a ray cast</param>
+        /// <param name="gameObject">the resulting game object</param>
+        /// <returns>the location pointed at</returns>
+        private Vector3 GetClosestPoint(RaycastHit[] hits, out GameObject gameObject)
+        {
+            Vector3 res = new Vector3();
+            GameObject o = null;
+            float minDistance = float.MaxValue;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].distance < minDistance && hits[i].transform.gameObject.GetComponent<GroundPlane>() != null)
+                {
+                    minDistance = hits[i].distance;
+                    res = hits[i].point;
+                    o = hits[i].transform.gameObject;
+                }
+            }
+
+            gameObject = o;
+            return res;
         }
     }
 }
