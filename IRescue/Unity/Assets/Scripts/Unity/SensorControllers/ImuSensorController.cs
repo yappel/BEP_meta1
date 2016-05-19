@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
+    using System;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
@@ -22,12 +23,12 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// <summary>
         ///   The standard deviation of the acceleration
         /// </summary>
-        private float accelerationStd = 0.0f;
+        private float accelerationStd = 2.0f;
 
         /// <summary>
         ///   The standard deviation of the orientation
         /// </summary>
-        private float orientationStd = 0.0f;
+        private float orientationStd = 2.0f;
 
         /// <summary>
         ///   The measurement buffer size
@@ -46,7 +47,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         ///   Return the Orientation source.
         /// </summary>
         /// <returns>The IOrientationSource</returns>
-        public new IOrientationSource GetOrientationSource()
+        public override IOrientationSource GetOrientationSource()
         {
             return this.imuSource;
         }
@@ -61,6 +62,42 @@ namespace Assets.Scripts.Unity.SensorControllers
             Vector3 acc = new Vector3(unity_acc.x * (float)(9.81 / 8192), unity_acc.y * (float)(9.81 / 8192), unity_acc.z * (float)(9.81 / 8192));
             Vector3 ori = new Vector3(unity_ori.x, unity_ori.y, unity_ori.z);
             this.imuSource.AddMeasurements(IRescue.Core.Utils.StopwatchSingleton.Time, acc, ori);
+        }
+
+        /// <summary>
+        ///   Return the acceleration source.
+        /// </summary>
+        /// <returns>The IAccelerationSource</returns>
+        public override IAccelerationSource GetAccelerationSource()
+        {
+            return this.imuSource;
+        }
+
+        /// <summary>
+        ///   Return the Displacement source.
+        /// </summary>
+        /// <returns>The IDisplacementSource</returns>
+        public override IDisplacementSource GetDisplacementSource()
+        {
+            return this.imuSource;
+        }
+
+        /// <summary>
+        ///   Return the position source.
+        /// </summary>
+        /// <returns>the IPositionSource</returns>
+        public override IPositionSource GetPositionSource()
+        {
+            return null;
+        }
+
+        /// <summary>
+        ///   Return the velocity source.
+        /// </summary>
+        /// <returns>the IVelocitySource</returns>
+        public override IVelocitySource GetVelocitySource()
+        {
+            return this.imuSource;
         }
     }
 }
