@@ -58,9 +58,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             this.buildingIndication.transform.position = position;
-            if (time - this.hoverTime > 2000)
+            if (time - this.hoverTime > 2500)
             {
-                if (time - this.hoverTime < 2250)
+                if (time - this.hoverTime < 2750)
                 {
                     this.PlaceBuilding(this.buildingIndication.transform.position);
                 } 
@@ -72,13 +72,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Sets the state to modify an object.
+        /// If colliding with an other object, the indicator turns red and you cannot place a building.
         /// </summary>
         /// <param name="gameObject">the game object that was pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
-            Object.Destroy(this.buildingIndication);
-            this.stateContext.SetState(new ModifyState(this.stateContext, gameObject));
+            this.hoverTime = StopwatchSingleton.Time;
+            this.buildingIndication.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         }
 
         /// <summary>
