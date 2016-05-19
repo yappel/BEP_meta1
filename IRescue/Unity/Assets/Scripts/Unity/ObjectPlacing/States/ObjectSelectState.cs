@@ -8,19 +8,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// State when selecting a building that you want to place.
     /// </summary>
     public class ObjectSelectState : AbstractState
-    {
-        /// <summary>
-        /// Coupled state context.
-        /// </summary>
-        private StateContext stateContext;
-
+    {         
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectSelectState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
-        public ObjectSelectState(StateContext stateContext)
+        /// <param name="stateContext">The class that keeps track of the current active state</param>
+        public ObjectSelectState(StateContext stateContext) : base(stateContext)
         {
-            this.stateContext = stateContext;
         }
     }
 }
