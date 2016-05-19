@@ -19,7 +19,7 @@ namespace Assets.Scripts.Unity
         public void Init(float x, float z)
         {
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.position = new Vector3(x, -1.7f, z);
+            this.gameObject.transform.position = new Vector3(x, 0, z);
             this.gameObject.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
             this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         }
