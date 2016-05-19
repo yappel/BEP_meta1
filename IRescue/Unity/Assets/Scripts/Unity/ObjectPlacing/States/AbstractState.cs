@@ -12,6 +12,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public abstract class AbstractState
     {
         /// <summary>
+        /// Method called when the cancel or return button was pressed
+        /// </summary>
+        public virtual void CancelButtonEvent()
+        {
+        }
+
+        /// <summary>
         /// Method when a point event has occurred
         /// </summary>
         /// <param name="position">The position pointed towards</param>

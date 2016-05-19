@@ -4,6 +4,9 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Meta;
+    using UnityEngine;
+
     /// <summary>
     /// State when rotating a selected building.
     /// </summary>
@@ -15,12 +18,29 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private StateContext stateContext;
 
         /// <summary>
+        /// The game object to modify.
+        /// </summary>
+        private GameObject gameObject;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ModifyRotateState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
-        public ModifyRotateState(StateContext stateContext)
+        /// <param name="gameObject">The object to rotate</param>
+        public ModifyRotateState(StateContext stateContext, GameObject gameObject)
         {
             this.stateContext = stateContext;
+            this.gameObject = gameObject;
+            gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = true;
+        }
+
+        /// <summary>
+        /// Return to the modify state
+        /// </summary>
+        public override void CancelButtonEvent()
+        {
+            gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = false;
+            stateContext.SetState(new ModifyState(this.stateContext, this.gameObject));
         }
     }
 }
