@@ -60,7 +60,6 @@
     <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />
-    <Compile Include="Particle\Algos\ParticleGenerators\IR-class1.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\RandomParticleGenerator.cs" />
     <Compile Include="Particle\Algos\Resamplers\SimpleResampler.cs" />
     <Compile Include="Particle\Algos\Resamplers\MultinomialResampler.cs" />
