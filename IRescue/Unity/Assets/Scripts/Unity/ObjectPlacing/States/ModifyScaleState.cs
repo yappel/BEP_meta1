@@ -27,6 +27,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.gameObject = gameObject;
             this.gameObject.GetComponent<MetaBody>().scaleObjectOnTwoHandedGrab = true;
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
         }
 
         /// <summary>
