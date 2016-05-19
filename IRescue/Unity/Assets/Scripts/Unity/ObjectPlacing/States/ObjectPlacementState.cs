@@ -30,6 +30,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private GameObject gameObject;
 
         /// <summary>
+        /// The original position of a building that will be moved.
+        /// </summary>
+        private Vector3 previousPosition;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
@@ -73,7 +78,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (time - this.hoverTime < 2750)
                 {
-                    this.PlaceBuilding(this.gameObject.transform.position);
+                    this.PlaceBuilding();
                 } 
                 else
                 {
@@ -100,9 +105,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
             if (this.translateModification)
             {
-                this.gameObject.AddComponent<GroundPlane>();
-                this.gameObject.AddComponent<MetaBody>();
-                this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+                this.gameObject.transform.position = this.previousPosition;
+                this.PlaceBuilding();
             }
             else
             {
@@ -111,13 +115,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Place a new building at a given location.
+        /// Place a new building at the pointed location.
         /// </summary>
-        /// <param name="position">Coordinate of the position to place the building</param>
-        private void PlaceBuilding(Vector3 position)
+        private void PlaceBuilding()
         {
             this.gameObject.AddComponent<GroundPlane>();
             this.gameObject.AddComponent<MetaBody>();
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
     }
