@@ -14,7 +14,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Method called when the cancel or return button was pressed
         /// </summary>
-        public virtual void CancelButtonEvent()
+        public virtual void OnBackButton()
+        {
+        }
+
+        /// <summary>
+        /// Method called when the confirm button was pressed
+        /// </summary>
+        public virtual void OnConfirmButton()
         {
         }
 

@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Assets.Unity.Navigation;
     using Meta;
     using UnityEngine;
 
@@ -25,22 +26,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="ModifyRotateState"/> class.
         /// </summary>
-        /// <param name="stateContext">State context</param>
-        /// <param name="gameObject">The object to rotate</param>
+        /// <param name="stateContext">the state context that keeps track of the states</param>
+        /// <param name="gameObject">The object that will be rotated</param>
         public ModifyRotateState(StateContext stateContext, GameObject gameObject)
         {
             this.stateContext = stateContext;
             this.gameObject = gameObject;
-            gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = true;
+            this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = true;
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
         }
 
         /// <summary>
         /// Return to the modify state
         /// </summary>
-        public override void CancelButtonEvent()
+        public override void OnBackButton()
         {
-            gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = false;
-            stateContext.SetState(new ModifyState(this.stateContext, this.gameObject));
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
+            this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = false;
+            this.stateContext.SetState(new ModifyState(this.stateContext, this.gameObject));
         }
     }
 }

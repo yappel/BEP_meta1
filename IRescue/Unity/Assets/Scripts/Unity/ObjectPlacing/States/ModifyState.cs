@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Assets.Unity.Navigation;
     using UnityEngine;
 
     /// <summary>
@@ -28,8 +29,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">the game object to modify</param>
         public ModifyState(StateContext stateContext, GameObject gameObject)
         {
+            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/ConfirmButton"));
             this.stateContext = stateContext;
             this.gameObject = gameObject;
+        }
+
+        /// <summary>
+        /// Return to the neutral state when the confirm button is pressed.
+        /// </summary>
+        public override void OnConfirmButton()
+        {
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ConfirmButton>().transform.root.gameObject);
+            this.stateContext.SetState(new NeutralState(this.stateContext));
         }
     }
 }

@@ -7,6 +7,10 @@
 [Ll]ibrary/
 *sysinfo.txt
 *.stackdump
+*.meta
+*.mdb
+*.dll
+*.pdb
 */Unity/Unity.CSharp.Editor.csproj
 */Unity/Unity.CSharp.csproj
 
