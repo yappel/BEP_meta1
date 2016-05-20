@@ -55,7 +55,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [SetUp]
         public void Init()
         {
-            this.sensor = new MarkerSensor(this.std, this.savePath, this.posDistType, this.oriDistType);
+            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, this.posDistType, this.oriDistType);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(2, pose2);
             this.sensor.UpdateLocations(dic);
-            Assert.AreEqual(180f, this.sensor.GetLastOrientation().Data.X, this.epsilon);
+            Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(-1337, pose2);
             this.sensor.UpdateLocations(dic);
-            Assert.AreEqual(180f, this.sensor.GetLastOrientation().Data.X, this.epsilon);
+            Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestOverflow()
         {
-            this.sensor = new MarkerSensor(this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
+            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
@@ -209,7 +209,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestNoData()
         {
-            this.sensor = new MarkerSensor(this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
+            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
