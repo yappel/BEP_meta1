@@ -54,6 +54,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
             this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             this.gameObject.transform.position = location;
+            this.gameObject.SetActive(true);
         }
 
         /// <summary>

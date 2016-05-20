@@ -19,6 +19,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.CurrentState = new ModifyState(this, null);
             this.SelectedBuilding = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             this.SelectedBuilding.transform.localScale = new Vector3(0.25f, 0.1f, 0.25f);
+            this.SelectedBuilding.SetActive(false);
         }
 
         /// <summary>
