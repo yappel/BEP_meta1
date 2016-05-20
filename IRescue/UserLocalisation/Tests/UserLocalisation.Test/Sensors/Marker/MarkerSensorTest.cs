@@ -22,11 +22,6 @@ namespace UserLocalisation.Test.Sensors.Marker
         private MarkerSensor sensor;
 
         /// <summary>
-        /// The standard deviation
-        /// </summary>
-        private float std = 20.5f;
-
-        /// <summary>
         /// Error margin for the rotation
         /// </summary>
         private float epsilon = 2;
@@ -57,6 +52,8 @@ namespace UserLocalisation.Test.Sensors.Marker
         [SetUp]
         public void Init()
         {
+            this.posDistType = new Mock<IDistribution>();
+            this.oriDistType = new Mock<IDistribution>();
             this.sensor = new MarkerSensor(this.savePath, this.posDistType.Object, this.oriDistType.Object);
         }
 
