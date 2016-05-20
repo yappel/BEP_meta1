@@ -87,7 +87,6 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(this.standardAcceleration.Y, res.Data.Y);
             Assert.AreEqual(this.standardAcceleration.Z, res.Data.Z);
             Assert.AreEqual(0, res.TimeStamp);
-            Assert.AreEqual(this.accelerationStd, res.Std);
         }
 
         /// <summary>
@@ -149,7 +148,6 @@ namespace UserLocalisation.Test.Sensors.IMU
             this.source.AddMeasurements(1, acc, this.zeroOrientation);
             Measurement<Vector3> res = this.source.GetLastAcceleration();
             Assert.AreEqual(1, res.TimeStamp);
-            Assert.AreEqual(this.accelerationStd, res.Std);
             this.AssertVectorAreEqual(acc, res.Data);
         }
 
@@ -164,7 +162,6 @@ namespace UserLocalisation.Test.Sensors.IMU
             Measurement<Vector3> res = this.source.GetOrientation(0);
             this.AssertVectorAreEqual(or, res.Data);
             Assert.AreEqual(0, res.TimeStamp);
-            Assert.AreEqual(this.orientationStd, res.Std);
         }
 
         /// <summary>
@@ -226,7 +223,6 @@ namespace UserLocalisation.Test.Sensors.IMU
             this.source.AddMeasurements(1, this.standardAcceleration, or);
             Measurement<Vector3> res = this.source.GetLastOrientation();
             Assert.AreEqual(1, res.TimeStamp);
-            Assert.AreEqual(this.orientationStd, res.Std);
             this.AssertVectorAreEqual(or, res.Data);
         }
 

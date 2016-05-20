@@ -131,7 +131,12 @@ namespace IRescue.UserLocalisation.Particle
             Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
             Matrix<float> localweigh = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
             Matrix<float> localmeas = new DenseMatrix(lpcount, 4, new[] { 1, 1, 1, 0.1f });
-            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, localweigh);
+            List<IDistribution> dists = new List<IDistribution>();
+            for (int i = 0; i < lpcount; i++)
+            {
+                dists.Add(new Normal(0.1));
+            }
+            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, dists, localweigh);
             Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
             ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
         }
@@ -190,8 +195,13 @@ namespace IRescue.UserLocalisation.Particle
             Assert.AreEqual(6, this.filter.Particles.ColumnCount);
             this.filter.RetrieveMeasurements(1);
             Assert.AreEqual(30, this.filter.Particles.RowCount);
+            List<IDistribution> dists = new List<IDistribution>();
+            for (int i = 0; i < this.filter.Measurementspos.RowCount; i++)
+            {
+                dists.Add(this.dist.Object);
+            }
             this.filter.AddWeights(
-                20, this.filter.Particles, 0, 3, this.filter.Measurementspos, this.filter.Weights);
+                20, this.filter.Particles, 0, 2, this.filter.Measurementspos, dists, this.filter.Weights);
             Assert.AreEqual(30, this.filter.Particles.RowCount);
             Assert.AreEqual(6, this.filter.Particles.ColumnCount);
             this.filter.NormalizeWeightsAll(this.filter.Weights);

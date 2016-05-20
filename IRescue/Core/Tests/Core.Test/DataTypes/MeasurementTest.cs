@@ -83,17 +83,6 @@ namespace Core.Test
         }
 
         /// <summary>
-        /// Test Set standard deviation
-        /// </summary>
-        [Test]
-        public void TestSetStd()
-        {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 19, this.dist);
-            measurement.Std = 21;
-            Assert.AreEqual(21, measurement.Std);
-        }
-
-        /// <summary>
         /// Test SetTimestamp
         /// </summary>
         [Test]

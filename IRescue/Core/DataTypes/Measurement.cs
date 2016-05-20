@@ -26,11 +26,6 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
-        ///     Gets or sets the standard deviation of the measurement.
-        /// </summary>
-        public float Std { get; set; }
-
-        /// <summary>
         ///     Gets or sets the time stamp at which the measurement was taken.
         /// </summary>
         public long TimeStamp { get; set; }
