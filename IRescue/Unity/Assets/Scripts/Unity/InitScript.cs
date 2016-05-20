@@ -98,7 +98,6 @@ namespace Assets.Scripts.Unity
         private void InitMarker()
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.AddComponent<Rigidbody>();
             cube.transform.position = new Vector3(0, -10000, 0);
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
         }

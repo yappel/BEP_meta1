@@ -17,8 +17,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public StateContext()
         {
             this.CurrentState = new ModifyState(this, null);
-            this.SelectedBuilding = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            this.SelectedBuilding.transform.localScale = new Vector3(0.25f, 0.1f, 0.25f);
+            this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
             this.SelectedBuilding.SetActive(false);
         }
 
@@ -39,6 +38,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SetState(AbstractState newState)
         {
             this.CurrentState = newState;
+        }
+
+        /// <summary>
+        /// Swap the object that will be placed when placing a new object.
+        /// </summary>
+        /// <param name="gameObject">The new selected object for the object to place</param>
+        public void SwapObject(GameObject gameObject)
+        {
+            UnityEngine.Object.Destroy(this.SelectedBuilding);
+            UnityEngine.Object.Instantiate<GameObject>(gameObject);
+            this.SelectedBuilding = gameObject;
         }
     }
 }
