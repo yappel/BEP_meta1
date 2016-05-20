@@ -121,14 +121,14 @@ public class MarkerSensorController : AbstractSensorController
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
             int markerId = visibleMarkers[i];
-            UnityEngine.Vector3 MetaOrientation = IMULocalizer.Instance.imuOrientation;
+            UnityEngine.Vector3 metaOrientation = IMULocalizer.Instance.imuOrientation;
             this.markerDetector.SetMarkerTransform(markerId, ref this.markerTransform);
             this.markerTransform.Rotate(UnityEngine.Vector3.right, 90f);
             Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
             Vector3 rotation = new Vector3(
-                this.markerTransform.eulerAngles.x - MetaOrientation.x, 
-                this.markerTransform.eulerAngles.y - MetaOrientation.y, 
-                this.markerTransform.eulerAngles.z - MetaOrientation.z);
+                this.markerTransform.eulerAngles.x - metaOrientation.x, 
+                this.markerTransform.eulerAngles.y - metaOrientation.y, 
+                this.markerTransform.eulerAngles.z - metaOrientation.z);
             visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }
 
