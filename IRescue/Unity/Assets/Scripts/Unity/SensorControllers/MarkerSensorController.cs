@@ -39,28 +39,46 @@ public class MarkerSensorController : AbstractSensorController
     /// <summary>
     ///   The standard deviation of the meta sensor for markers.
     /// </summary>
-    private float positionStd = 0.0f;
+    private float positionStd = 0.00945f;
 
     /// <summary>
     /// standard deviation for orientation
     /// </summary>
-    private float orientationStd = 2;
+    private float orientationStd = 0.264f;
 
     /// <summary>
     ///   Method called when creating a UserController.
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor(this.positionStd, Path);
+        this.markerSensor = new MarkerSensor(this.orientationStd, this.positionStd, Path);
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
+    }
+
+    /// <summary>
+    ///   Return the acceleration source.
+    /// </summary>
+    /// <returns>The IAccelerationSource</returns>
+    public override IAccelerationSource GetAccelerationSource()
+    {
+        return null;
+    }
+
+    /// <summary>
+    ///   Return the Displacement source.
+    /// </summary>
+    /// <returns>The IDisplacementSource</returns>
+    public override IDisplacementSource GetDisplacementSource()
+    {
+        return null;
     }
 
     /// <summary>
     ///   Return the Orientation source.
     /// </summary>
     /// <returns>The IOrientationSource</returns>
-    public new IOrientationSource GetOrientationSource()
+    public override IOrientationSource GetOrientationSource()
     {
         return this.markerSensor;
     }
@@ -69,9 +87,18 @@ public class MarkerSensorController : AbstractSensorController
     ///   Return the position source.
     /// </summary>
     /// <returns>the IPositionSource</returns>
-    public new IPositionSource GetPositionSource()
+    public override IPositionSource GetPositionSource()
     {
         return this.markerSensor;
+    }
+
+    /// <summary>
+    ///   Return the velocity source.
+    /// </summary>
+    /// <returns>the IVelocitySource</returns>
+    public override IVelocitySource GetVelocitySource()
+    {
+        return null;
     }
 
     /// <summary>
@@ -94,14 +121,15 @@ public class MarkerSensorController : AbstractSensorController
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
             int markerId = visibleMarkers[i];
+            UnityEngine.Vector3 MetaOrientation = IMULocalizer.Instance.imuOrientation;
             this.markerDetector.SetMarkerTransform(markerId, ref this.markerTransform);
-            if (GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId) != null)
-            {
-                var marker = GameObject.Find("MarkerIndicators/MarkerIndicator" + markerId).transform.eulerAngles;
-                Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
-                Vector3 rotation = new Vector3(marker.x, marker.y, marker.z);
-                visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
-            }
+            this.markerTransform.Rotate(UnityEngine.Vector3.right, 90f);
+            Vector3 position = new Vector3(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z);
+            Vector3 rotation = new Vector3(
+                this.markerTransform.eulerAngles.x - MetaOrientation.x, 
+                this.markerTransform.eulerAngles.y - MetaOrientation.y, 
+                this.markerTransform.eulerAngles.z - MetaOrientation.z);
+            visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }
 
         return visibleMarkerTransforms;

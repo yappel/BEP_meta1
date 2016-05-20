@@ -12,7 +12,6 @@ namespace IRescue.UserLocalisation.Particle
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
     using Core.DataTypes;
-    using MathNet.Numerics;
     using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
@@ -536,6 +535,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
+
         /// Perform the modulo operation returning a value between 0 and b-1.
         /// </summary>
         /// <param name="a">The number to perform modulo on.</param>

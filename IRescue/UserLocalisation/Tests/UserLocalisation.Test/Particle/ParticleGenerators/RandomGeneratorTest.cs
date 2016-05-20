@@ -22,10 +22,11 @@ namespace IRescue.UserLocalisation.Particle
         public void TestSpread()
         {
             RandomParticleGenerator rng = new RandomParticleGenerator(new SystemRandomSource());
+            double maxrange = 1;
             float[] list = rng.Generate(300, 1);
             float min = list.Concat(new[] { float.MaxValue }).Min();
             float max = list.Concat(new[] { float.MinValue }).Max();
-            Assert.AreEqual(1, max - min, 0.1);
+            Assert.AreEqual(maxrange, max - min, 0.1 * maxrange);
         }
 
         /// <summary>
