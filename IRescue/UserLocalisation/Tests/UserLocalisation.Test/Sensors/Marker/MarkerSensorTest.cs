@@ -6,7 +6,9 @@ namespace UserLocalisation.Test.Sensors.Marker
 {
     using System.Collections.Generic;
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors.Marker;
+    using Moq;
     using NUnit.Framework;
 
     /// <summary>
@@ -42,12 +44,12 @@ namespace UserLocalisation.Test.Sensors.Marker
         /// <summary>
         /// The default type of probability distribution belonging to the measurements of the position.
         /// </summary>
-        private DistributionType posDistType = DistributionType.gaussian;
+        private Mock<IDistribution> posDistType;
 
         /// <summary>
         /// The default type of probability distribution belonging to the measurements of the orientation.
         /// </summary>
-        private DistributionType oriDistType = DistributionType.gaussian;
+        private Mock<IDistribution> oriDistType;
 
         /// <summary>
         /// Setup the map
@@ -55,7 +57,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [SetUp]
         public void Init()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, this.posDistType, this.oriDistType);
+            this.sensor = new MarkerSensor(this.savePath, this.posDistType.Object, this.oriDistType.Object);
         }
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestOverflow()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
+            this.sensor = new MarkerSensor(this.savePath, 6, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
@@ -209,7 +211,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestNoData()
         {
-            this.sensor = new MarkerSensor(this.std, this.std, this.savePath, 6, DistributionType.uniform, DistributionType.uniform);
+            this.sensor = new MarkerSensor(this.savePath, 6, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));

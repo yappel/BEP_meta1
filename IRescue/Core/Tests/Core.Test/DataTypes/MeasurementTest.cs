@@ -5,6 +5,7 @@
 namespace Core.Test
 {
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Distributions;
     using NUnit.Framework;
 
     /// <summary>
@@ -28,6 +29,11 @@ namespace Core.Test
         private Vector3 orientation;
 
         /// <summary>
+        /// Default probability distribution.
+        /// </summary>
+        private IDistribution dist;
+
+        /// <summary>
         /// Setup for the test
         /// </summary>
         [SetUp]
@@ -36,6 +42,7 @@ namespace Core.Test
             this.position = new Vector3(1, 2, 3);
             this.orientation = new Vector3(120, 80, 360);
             this.pose = new Pose(this.position, this.orientation);
+            this.dist = new Uniform(1);
         }
 
         /// <summary>
@@ -44,11 +51,10 @@ namespace Core.Test
         [Test]
         public void TestConstructor()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 20, 1, DistributionType.gaussian);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1, this.dist);
             Assert.True(measurement.Data is Pose);
-            Assert.True(measurement.Std == 20);
             Assert.True(measurement.TimeStamp == 1);
-            Assert.True(measurement.DistributionType == DistributionType.gaussian);
+            Assert.True(measurement.DistributionType is IDistribution);
         }
 
         /// <summary>
@@ -57,7 +63,7 @@ namespace Core.Test
         [Test]
         public void TestSetData()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441, DistributionType.gaussian);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 2441, this.dist);
             Pose newPose = new Pose(this.position, this.orientation);
             measurement.Data = newPose;
             Assert.AreEqual(measurement.Data, newPose);
@@ -70,7 +76,7 @@ namespace Core.Test
         [Test]
         public void TestSetDataNull()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 1.2f, 2441, DistributionType.gaussian);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 2441, this.dist);
             Assert.NotNull(measurement.Data);
             measurement.Data = null;
             Assert.Null(measurement.Data);
@@ -82,7 +88,7 @@ namespace Core.Test
         [Test]
         public void TestSetStd()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 52, 19, DistributionType.gaussian);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 19, this.dist);
             measurement.Std = 21;
             Assert.AreEqual(21, measurement.Std);
         }
@@ -93,20 +99,9 @@ namespace Core.Test
         [Test]
         public void TestSetTimestamp()
         {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 12, 51, DistributionType.gaussian);
+            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 51, this.dist);
             measurement.TimeStamp = 122;
             Assert.AreEqual(122, measurement.TimeStamp);
-        }
-
-        /// <summary>
-        /// Test SetTimestamp
-        /// </summary>
-        [Test]
-        public void TestSetSDistribution()
-        {
-            Measurement<Pose> measurement = new Measurement<Pose>(this.pose, 12, 51, DistributionType.gaussian);
-            measurement.DistributionType = DistributionType.uniform;
-            Assert.AreEqual(DistributionType.uniform, measurement.DistributionType);
         }
     }
 }

@@ -290,7 +290,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        ///  Generate a new Weights for the Particles for the dimensions in columns <see cref="colfrom"/> to <see cref="colto"/>, based on the likelihood that the particle value is the correct value.
+        ///  Generate a new Weights for the Particles for the dimensions in columns colfrom to colto, based on the likelihood that the particle value is the correct value.
         /// </summary>
         /// <param name="margin">The amount the X in the normal CDF calculation will be moved in both directions to calculate p(X)</param>
         /// <param name="particles">The matrix containing the values of the Particles</param>
@@ -320,7 +320,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Fills the array <see cref="arr"/> with values <see cref="value"/>
+        /// Fills the array arr with values value
         /// </summary>
         /// <typeparam name="T">The type of the elements for the array</typeparam>
         /// <param name="arr">The array to fill</param>
@@ -480,4 +480,4 @@ namespace IRescue.UserLocalisation.Particle
             return ((a % b) + b) % b;
         }
     }
-}   
+}
