@@ -29,6 +29,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             MetaBody mb = gameObject.GetComponent<MetaBody>();
             mb.useDefaultGrabSettings = false;
             mb.grabbable = true;
+            mb.moveObjectOnGrab = false;
             mb.grabbableDistance = float.MaxValue;
             mb.scaleObjectOnTwoHandedGrab = true;
             this.StateContext.Buttons.BackButton.SetActive(true);
@@ -39,7 +40,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
-            MetaBody mb = gameObject.GetComponent<MetaBody>();
+            MetaBody mb = this.gameObject.GetComponent<MetaBody>();
             mb.useDefaultGrabSettings = true;
             mb.grabbableDistance = 0.1f;
             mb.grabbable = false;

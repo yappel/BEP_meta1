@@ -19,6 +19,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private GameObject gameObject;
 
         /// <summary>
+        /// Vector of the original orientation used to lock the x and z orientation.
+        /// </summary>
+        private Vector3 originalOrientation;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ModifyRotateState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
@@ -30,8 +35,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.useDefaultGrabSettings = false;
             mb.grabbable = true;
             mb.grabbableDistance = float.MaxValue;
-            mb.rotateObjectOnGrab = true;
+            mb.moveObjectOnGrab = false;
+            mb.rotateObjectOnTwoHandedGrab = true;
             this.StateContext.Buttons.BackButton.SetActive(true);
+            this.originalOrientation = gameObject.transform.eulerAngles;
         }
 
         /// <summary>
@@ -39,12 +46,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
-            MetaBody mb = gameObject.GetComponent<MetaBody>();
+            MetaBody mb = this.gameObject.GetComponent<MetaBody>();
             mb.useDefaultGrabSettings = true;
             mb.grabbableDistance = 0.1f;
             mb.grabbable = false;
             mb.rotateObjectOnGrab = false;
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Set the x and z rotation back to the original.
+        /// </summary>
+        public override void RunLateUpdate()
+        {
+            this.gameObject.transform.eulerAngles = new Vector3(this.originalOrientation.x, this.gameObject.transform.eulerAngles.y, this.originalOrientation.z);
         }
     }
 }

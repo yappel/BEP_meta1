@@ -51,6 +51,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
+        /// Calls the RunLateUpdate of the current state
+        /// </summary>
+        public void LateUpdate()
+        {
+            this.stateContext.CurrentState.RunLateUpdate();
+        }
+
+        /// <summary>
         /// Event when a back button is pressed.
         /// </summary>
         /// <param name="eventData">event data about the button press</param>

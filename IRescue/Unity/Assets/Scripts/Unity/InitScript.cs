@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(5, 5);
+            this.InitPlanes(20, 20);
         }
 
         /// <summary>

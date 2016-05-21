@@ -116,5 +116,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public virtual void RunUpdate()
         {
         }
+
+        /// <summary>
+        /// Run a late update on the state.
+        /// </summary>
+        public virtual void RunLateUpdate()
+        {
+        }
     }
 }
