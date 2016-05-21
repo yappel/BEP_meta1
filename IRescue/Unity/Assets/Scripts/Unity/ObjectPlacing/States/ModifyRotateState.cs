@@ -26,6 +26,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ModifyRotateState(StateContext stateContext, GameObject gameObject) : base(stateContext)
         {
             this.gameObject = gameObject;
+            this.gameObject.GetComponent<MetaBody>().grabbable = true;
             this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = true;
             this.StateContext.Buttons.BackButton.SetActive(true);
         }
@@ -35,6 +36,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
+            this.gameObject.GetComponent<MetaBody>().grabbable = false;
             this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = false;
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
