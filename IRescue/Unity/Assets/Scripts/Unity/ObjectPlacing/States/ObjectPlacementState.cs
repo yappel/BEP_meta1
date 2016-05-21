@@ -46,13 +46,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.translateModification = gameObject.GetComponent<MetaBody>() != null;
             if (this.translateModification)
             {
+                this.previousPosition = gameObject.transform.position;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<GroundPlane>());
             }
 
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
+            this.StateContext.Buttons.BackButton.SetActive(true);
             this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             this.gameObject.transform.position = location;
         }
@@ -103,7 +104,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
             if (this.translateModification)
             {
                 this.gameObject.transform.position = this.previousPosition;
@@ -125,7 +125,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.gameObject.AddComponent<MetaBody>();
             this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
         }
     }
 }

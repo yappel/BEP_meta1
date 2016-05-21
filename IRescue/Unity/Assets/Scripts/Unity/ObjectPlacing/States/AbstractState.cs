@@ -19,6 +19,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         protected AbstractState(StateContext stateContext)
         {
             this.StateContext = stateContext;
+            this.StateContext.Buttons.ResetButtons();
         }
 
         /// <summary>

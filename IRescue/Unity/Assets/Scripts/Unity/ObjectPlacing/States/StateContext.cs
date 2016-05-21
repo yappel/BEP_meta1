@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Assets.Unity.Navigation;
     using UnityEngine;
 
     /// <summary>
@@ -16,7 +17,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public StateContext()
         {
-            this.CurrentState = new ModifyState(this, null);
+            this.Buttons = new ButtonHandler();
+            this.CurrentState = new NeutralState(this);
             this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
             this.SelectedBuilding.SetActive(false);
         }
@@ -25,6 +27,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Gets or sets the selected building
         /// </summary>
         public GameObject SelectedBuilding { get; set; }
+
+        /// <summary>
+        /// Gets the button handler
+        /// </summary>
+        public ButtonHandler Buttons { get; private set; }
 
         /// <summary>
         /// Gets the currentState.

@@ -27,7 +27,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.gameObject = gameObject;
             this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = true;
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/BackButton"));
+            this.StateContext.Buttons.BackButton.SetActive(true);
         }
 
         /// <summary>
@@ -35,7 +35,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
             this.gameObject.GetComponent<MetaBody>().rotateObjectOnGrab = false;
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }

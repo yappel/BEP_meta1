@@ -24,11 +24,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">the game object to modify</param>
         public ModifyState(StateContext stateContext, GameObject gameObject) : base(stateContext)
         {
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/ConfirmButton"));
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/DeleteButton"));
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/TranslateButton"));
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/RotateButton"));
-            UnityEngine.Object.Instantiate(Resources.Load("Prefabs/Buttons/ScaleButton"));
+            this.StateContext.Buttons.DeleteButton.SetActive(true);
+            this.StateContext.Buttons.ConfirmButton.SetActive(true);
+            this.StateContext.Buttons.TranslateButton.SetActive(true);
+            this.StateContext.Buttons.RotateButton.SetActive(true);
+            this.StateContext.Buttons.ScaleButton.SetActive(true);
             this.gameObject = gameObject;
         }
 
@@ -37,7 +37,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnConfirmButton()
         {
-            this.DeleteButtons();
             this.StateContext.SetState(new NeutralState(this.StateContext));
         }
 
@@ -46,7 +45,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnDeleteButton()
         {
-            this.DeleteButtons();
             UnityEngine.Object.Destroy(this.gameObject);
             this.StateContext.SetState(new NeutralState(this.StateContext));
         }
@@ -56,7 +54,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnRotateButton()
         {
-            this.DeleteButtons();
             this.StateContext.SetState(new ModifyRotateState(this.StateContext, this.gameObject));
         }
 
@@ -65,7 +62,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnTranslateButton()
         {
-            this.DeleteButtons();
             this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, this.gameObject));
         }
 
@@ -74,20 +70,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnScaleButton()
         {
-            this.DeleteButtons();
             this.StateContext.SetState(new ModifyScaleState(this.StateContext, this.gameObject));
-        }
-
-        /// <summary>
-        /// Delete all buttons of the screen.
-        /// </summary>
-        private void DeleteButtons()
-        {
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ConfirmButton>().transform.root.gameObject);
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<DeleteButton>().transform.root.gameObject);
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<RotateButton>().transform.root.gameObject);
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<ScaleButton>().transform.root.gameObject);
-            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<TranslateButton>().transform.root.gameObject);
         }
     }
 }
