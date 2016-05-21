@@ -42,7 +42,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">The game object that has to be placed or moved</param>
         public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
         {
-            this.gameObject.SetActive(true);
+            gameObject.SetActive(true);
             this.translateModification = gameObject.GetComponent<MetaBody>() != null;
             if (this.translateModification)
             {
@@ -111,6 +111,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
             else
             {
+                UnityEngine.Object.Destroy(this.gameObject);
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
         }
@@ -124,6 +125,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.gameObject.AddComponent<MetaBody>();
             this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            UnityEngine.Object.Destroy(GameObject.FindObjectOfType<BackButton>().transform.root.gameObject);
         }
     }
 }
