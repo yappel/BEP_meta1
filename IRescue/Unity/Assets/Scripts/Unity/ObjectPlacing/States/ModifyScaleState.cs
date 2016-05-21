@@ -26,8 +26,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ModifyScaleState(StateContext stateContext, GameObject gameObject) : base(stateContext)
         {
             this.gameObject = gameObject;
-            this.gameObject.GetComponent<MetaBody>().grabbable = true;
-            this.gameObject.GetComponent<MetaBody>().scaleObjectOnTwoHandedGrab = true;
+            MetaBody mb = gameObject.GetComponent<MetaBody>();
+            mb.useDefaultGrabSettings = false;
+            mb.grabbable = true;
+            mb.grabbableDistance = float.MaxValue;
+            mb.scaleObjectOnTwoHandedGrab = true;
             this.StateContext.Buttons.BackButton.SetActive(true);
         }
 
@@ -36,8 +39,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
-            this.gameObject.GetComponent<MetaBody>().grabbable = false;
-            this.gameObject.GetComponent<MetaBody>().scaleObjectOnTwoHandedGrab = false;
+            MetaBody mb = gameObject.GetComponent<MetaBody>();
+            mb.useDefaultGrabSettings = true;
+            mb.grabbableDistance = 0.1f;
+            mb.grabbable = false;
+            mb.scaleObjectOnTwoHandedGrab = false;
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
     }

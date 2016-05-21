@@ -206,7 +206,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
             {
-                if (gameObject.GetComponent<GroundPlane>() != null)
+                if (gameObject.GetComponent<MetaBody>() == null)
                 {
                     this.stateContext.CurrentState.OnPoint(point);
                 }
