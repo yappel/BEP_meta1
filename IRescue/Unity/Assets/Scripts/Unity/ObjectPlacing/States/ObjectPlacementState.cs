@@ -65,7 +65,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 50f))
+            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 10f))
             {
                 this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
                 this.hoverTime = time;
