@@ -20,7 +20,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.Buttons = new ButtonHandler();
             this.CurrentState = new NeutralState(this);
             this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject"));
-            this.SelectedBuilding.SetActive(false);
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SwapObject(GameObject gameObject)
         {
             UnityEngine.Object.Destroy(this.SelectedBuilding);
-            UnityEngine.Object.Instantiate<GameObject>(gameObject);
+            UnityEngine.Object.Instantiate<GameObject>(gameObject).SetActive(false);
             gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             this.SelectedBuilding = gameObject;
         }
