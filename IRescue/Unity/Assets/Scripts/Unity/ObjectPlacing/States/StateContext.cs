@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using Assets.Unity.Navigation;
     using UnityEngine;
 
     /// <summary>
@@ -53,9 +52,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SwapObject(GameObject gameObject)
         {
             UnityEngine.Object.Destroy(this.SelectedBuilding);
-            UnityEngine.Object.Instantiate<GameObject>(gameObject).SetActive(false);
+            this.SelectedBuilding = UnityEngine.Object.Instantiate<GameObject>(gameObject);
+            this.SelectedBuilding.SetActive(false);
             gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-            this.SelectedBuilding = gameObject;
         }
     }
 }
