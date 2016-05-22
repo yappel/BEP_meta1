@@ -14,7 +14,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public ObjectSelectState(StateContext stateContext) : base(stateContext)
-        {   
+        {
+            this.StateContext.Buttons.ObjectSelect.SetActive(true);
             this.StateContext.Buttons.ToggleButton.SetActive(true);
         }
 
@@ -23,7 +24,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnToggleButton()
         {
-            this.StateContext.SetState(new ObjectSelectState(this.StateContext));
+            this.StateContext.SetState(new NeutralState(this.StateContext));
         }
     }
 }

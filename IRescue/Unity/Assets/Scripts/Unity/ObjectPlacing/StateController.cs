@@ -122,6 +122,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
+        /// Event when another object has been selected
+        /// </summary>
+        /// <param name="eventData">event data about the selected object</param>
+        /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
+        public void SelectObjectButtonEvent(PointerEventData eventData, string resourcePath)
+        {
+            this.stateContext.SwapObject(Resources.Load<GameObject>("Objects/" + resourcePath));
+        }
+
+        /// <summary>
         /// Returns if a gesture is being performed.
         /// </summary>
         /// <param name="hand">Hand of the user</param>
