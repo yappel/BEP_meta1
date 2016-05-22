@@ -19,7 +19,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.Buttons = new ButtonHandler();
             this.CurrentState = new NeutralState(this);
-            this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
+            this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject"));
             this.SelectedBuilding.SetActive(false);
         }
 

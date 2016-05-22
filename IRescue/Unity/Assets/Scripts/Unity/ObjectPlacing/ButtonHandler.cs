@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using Assets.Unity.Navigation;
     using UnityEngine;
 
     /// <summary>
@@ -23,6 +22,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.RotateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/RotateButton")));
             this.ScaleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ScaleButton")));
             this.BackButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/BackButton")));
+            this.ToggleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ToggleButton")));
             this.ResetButtons();
         }
 
@@ -50,6 +50,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Gets the scale button
         /// </summary>
         public GameObject ScaleButton { get; private set; }
+
+        /// <summary>
+        /// Gets the toggle button
+        /// </summary>
+        public GameObject ToggleButton { get; private set; }
 
         /// <summary>
         /// Gets the delete button

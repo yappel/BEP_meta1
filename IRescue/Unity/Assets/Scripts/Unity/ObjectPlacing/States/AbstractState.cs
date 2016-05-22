@@ -36,6 +36,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Method called when toggle button was pressed
+        /// </summary>
+        public virtual void OnToggleButton()
+        {
+        }
+
+        /// <summary>
         /// Method called when the confirm button was pressed
         /// </summary>
         public virtual void OnConfirmButton()

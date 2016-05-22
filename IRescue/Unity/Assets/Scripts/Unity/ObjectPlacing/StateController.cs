@@ -68,6 +68,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
+        /// Event when a toggle button is pressed.
+        /// </summary>
+        /// <param name="eventData">event data about the button press</param>
+        public void ToggleButtonEvent(PointerEventData eventData)
+        {
+            this.stateContext.CurrentState.OnToggleButton();
+        }
+
+        /// <summary>
         /// Event when a confirm button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
