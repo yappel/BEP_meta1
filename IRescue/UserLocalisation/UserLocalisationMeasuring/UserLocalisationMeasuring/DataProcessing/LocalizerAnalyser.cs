@@ -1,130 +1,163 @@
 ﻿// <copyright file="LocalizerAnalyser.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using IRescue.Core.DataTypes;
-using IRescue.Core.Utils;
-using IRescue.UserLocalisation;
-using IRescue.UserLocalisationMeasuring.DataGeneration;
-
 namespace IRescue.UserLocalisationMeasuring.DataProcessing
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation.Particle;
+    using IRescue.UserLocalisationMeasuring.DataGeneration;
+
     /// <summary>
     /// Analyzes the a localisation filter and calculates metrics.
     /// </summary>
     public class LocalizerAnalyser
     {
-        /// <summary>
-        /// The average runtime the filter in milliseconds
-        /// </summary>
-        public long AverageRuntime { get; private set; }
+        private List<float> orix;
 
-        /// <summary>
-        /// The mean absolute deviation of the localizer, an indication how big the spread of the results is.
-        /// </summary>
-        public double Precision { get; private set; }
+        private List<float> oriy;
 
-        /// <summary>
-        /// The accuracy of the localizer, the absolute deviation of the average result.
-        /// </summary>
-        public double Accuracy { get; private set; }
+        private List<float> oriz;
 
-        public LocalizerAnalyser(int repititions, int cycleamount, List<AbstractUserLocalizer> filters, PositionScenario posscen, OrientationScenario oriscen)
+        private List<float> posx;
+
+        private List<float> posy;
+
+        private List<float> posz;
+
+        public LocalizerAnalyser(
+            int cycleamount,
+            List<ParticleFilter> filters,
+            PositionScenario posscen,
+            OrientationScenario oriscen,
+            int sceneid,
+            double cdfmargin,
+            double noise,
+            int algos)
         {
-            List<Result> results = GenerateResults(repititions, cycleamount, filters);
-            Pose averageResult = CalculateAverageResult(results);
-            this.AverageRuntime = CalculateAverageRuntime(results);
-            this.Precision = CalculatePrecision(results, posscen, oriscen, filters[0].Fieldsize, cycleamount);
-            this.Accuracy = CalculateAccuracy(averageResult, posscen, oriscen, filters[0].Fieldsize, cycleamount);
-        }
-
-        private List<Result> GenerateResults(int repititions, int cycleamount, List<AbstractUserLocalizer> filter)
-        {
-            List<Result> results = new List<Result>(repititions);
-            for (int i = 0; i < repititions; i++)
+            this.posx = new List<float>();
+            this.posy = new List<float>();
+            this.posz = new List<float>();
+            this.orix = new List<float>();
+            this.oriy = new List<float>();
+            this.oriz = new List<float>();
+            StringBuilder builder = new StringBuilder();
+            this.WriteHeader(builder, filters[0], sceneid, filters.Count, cdfmargin, noise, algos);
+            foreach (ParticleFilter filter in filters)
             {
-                results.Add(GenerateResult(cycleamount, filter[i]));
-            }
-            return results;
-        }
-
-        private Result GenerateResult(int cycleamount, AbstractUserLocalizer filter)
-        {
-            long begintime = StopwatchSingleton.Time;
-            Result res = new Result();
-            for (int time = 1; time < cycleamount; time++)
-            {
-                filter.CalculatePose(time);
+                for (int cycleIndex = 1; cycleIndex <= cycleamount; cycleIndex++)
+                {
+                    this.AddResults(filter.CalculatePose(cycleIndex));
+                }
             }
 
-            res.Pose = filter.CalculatePose(cycleamount);
-            res.Runtime = StopwatchSingleton.Time - begintime;
-            return res;
+            this.WriteResults(builder, cycleamount);
+            this.WriteActual(builder, posscen, oriscen, cycleamount);
+
+            int particleamount = filters[0].Particles.RowCount;
+            StringBuilder namebuilder = new StringBuilder();
+            namebuilder.AppendFormat(
+                "P{0}_CDF{1}_N{2}_A{3}_S{4}_C{5}.csv",
+                particleamount,
+                Math.Round(1 / cdfmargin),
+                Math.Round(1 / noise),
+                algos,
+                sceneid,
+                filters.Count);
+            string path = @"D:\Users\Yoeri 2\Documenten\MATLAB\FilterAnalyse\Data\";
+            string filepath = Path.GetFullPath(path + namebuilder);
+            File.WriteAllText(filepath, builder.ToString());
         }
 
-        private Pose CalculateAverageResult(List<Result> results)
+        private void AddResults(Pose pose)
         {
-            Vector3 oriSum = new Vector3();
-            Vector3 posSum = new Vector3();
-            foreach (Result result in results)
+            this.posx.Add(pose.Position.X);
+            this.posy.Add(pose.Position.Y);
+            this.posz.Add(pose.Position.Z);
+            this.orix.Add(pose.Orientation.X);
+            this.oriy.Add(pose.Orientation.Y);
+            this.oriz.Add(pose.Orientation.Z);
+        }
+
+        private void Write1Actual(StringBuilder builder, Func<long, float> func, int cycleamount)
+        {
+            for (int j = 1; j <= cycleamount; j++)
             {
-                oriSum.Add(result.Pose.Position, oriSum);
-                posSum.Add(result.Pose.Orientation, posSum);
+                builder.AppendFormat("{0}, ", func(j));
             }
-            oriSum.Divide(results.Count, oriSum);
-            posSum.Divide(results.Count, posSum);
-            return new Pose(posSum, oriSum);
+
+            builder.AppendLine();
         }
 
-        private long CalculateAverageRuntime(List<Result> results)
+        private void Write3Actual(StringBuilder builder, AbstractScenario3D scen, int cycleamount)
         {
-            long sum = results.Sum(result => result.Runtime);
-            return sum / results.Count;
+            this.Write1Actual(builder, scen.RealX, cycleamount);
+            this.Write1Actual(builder, scen.RealY, cycleamount);
+            this.Write1Actual(builder, scen.RealZ, cycleamount);
         }
 
-        private double CalculatePrecision(List<Result> results, PositionScenario posscen, OrientationScenario oriscen, FieldSize fieldsize, long cycleamount)
+        private void WriteActual(
+            StringBuilder builder,
+            PositionScenario posscen,
+            OrientationScenario oriscen,
+            int cycleamount)
         {
-            float sum = 0;
-            foreach (Result result in results)
+            this.Write3Actual(builder, posscen, cycleamount);
+            this.Write3Actual(builder, oriscen, cycleamount);
+        }
+
+        private void WriteHeader(
+            StringBuilder builder,
+            ParticleFilter filter,
+            int sceneid,
+            int cycles,
+            double cdfmargin,
+            double noise,
+            int algos)
+        {
+            float rangex = filter.Fieldsize.Xmax - filter.Fieldsize.Xmin;
+            float rangey = filter.Fieldsize.Ymax - filter.Fieldsize.Ymin;
+            float rangez = filter.Fieldsize.Zmax - filter.Fieldsize.Zmin;
+            int particleamount = filter.Particles.RowCount;
+            builder.AppendFormat(
+                "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}",
+                cycles,
+                rangex,
+                rangey,
+                rangez,
+                particleamount,
+                cdfmargin,
+                noise,
+                algos,
+                sceneid);
+            builder.AppendLine();
+        }
+
+        private void WriteResult(StringBuilder builder, List<float> list, int cycleamount)
+        {
+            for (int i = 0; i < this.posx.Count / cycleamount; i++)
             {
-                sum += (Math.Abs(result.Pose.Orientation.X - posscen.RealX(cycleamount)) - fieldsize.Xmin) / (fieldsize.Xmax - fieldsize.Xmin);
-                sum += (Math.Abs(result.Pose.Orientation.Y - posscen.RealY(cycleamount)) - fieldsize.Ymin) / (fieldsize.Ymax - fieldsize.Ymin);
-                sum += (Math.Abs(result.Pose.Orientation.Z - posscen.RealZ(cycleamount)) - fieldsize.Zmin) / (fieldsize.Zmax - fieldsize.Zmin);
-                sum += Math.Abs(result.Pose.Position.X - oriscen.RealX(cycleamount)) / 360;
-                sum += Math.Abs(result.Pose.Position.Y - oriscen.RealY(cycleamount)) / 360;
-                sum += Math.Abs(result.Pose.Position.Z - oriscen.RealZ(cycleamount)) / 360;
+                for (int j = 0; j < cycleamount; j++)
+                {
+                    builder.AppendFormat("{0}, ", list[(i * cycleamount) + j]);
+                }
+
+                builder.AppendLine();
             }
-            return sum / results.Count;
         }
 
-        private float CalculateAccuracy(Pose average, PositionScenario posscen, OrientationScenario oriscen, FieldSize fieldsize, long cycleamount)
+        private void WriteResults(StringBuilder builder, int cycleamount)
         {
-            float sum = 0;
-            sum += (Math.Abs(average.Orientation.X - posscen.RealX(cycleamount)) - fieldsize.Xmin) / (fieldsize.Xmax - fieldsize.Xmin);
-            sum += (Math.Abs(average.Orientation.Y - posscen.RealY(cycleamount)) - fieldsize.Ymin) / (fieldsize.Ymax - fieldsize.Ymin);
-            sum += (Math.Abs(average.Orientation.Z - posscen.RealZ(cycleamount)) - fieldsize.Zmin) / (fieldsize.Zmax - fieldsize.Zmin);
-            sum += Math.Abs(average.Position.X - oriscen.RealX(cycleamount)) / 360;
-            sum += Math.Abs(average.Position.Y - oriscen.RealY(cycleamount)) / 360;
-            sum += Math.Abs(average.Position.Z - oriscen.RealZ(cycleamount)) / 360;
-            return sum;
-        }
-
-        private struct Result
-        {
-            /// <summary>
-            /// The time it took for the localizer to come to this <see cref="Result"/>
-            /// </summary>
-            public long Runtime;
-
-            /// <summary>
-            /// The pose the localizer guessed.
-            /// </summary>
-            public Pose Pose;
-
+            this.WriteResult(builder, this.posx, cycleamount);
+            this.WriteResult(builder, this.posy, cycleamount);
+            this.WriteResult(builder, this.posz, cycleamount);
+            this.WriteResult(builder, this.orix, cycleamount);
+            this.WriteResult(builder, this.oriy, cycleamount);
+            this.WriteResult(builder, this.oriz, cycleamount);
         }
     }
-
 }

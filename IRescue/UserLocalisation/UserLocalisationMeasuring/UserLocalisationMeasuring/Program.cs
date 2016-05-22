@@ -126,13 +126,13 @@ namespace IRescue.UserLocalisationMeasuring
                         //filter3.AddOrientationSource(oriscen3);
                         //filter3.AddPositionSource(posscen3);
 
-                        LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filterlist1, posscen1, oriscen1);
-                        if (bestaccuracy1 > locanal1.Precision)
-                        {
-                            bestaccuracy1 = locanal1.Precision;
-                            //System.Diagnostics.Debug.WriteLine("");
-                            System.Diagnostics.Debug.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin + "\t" + bestaccuracy1);
-                        }
+                        //LocalizerAnalyser locanal1 = new LocalizerAnalyser(10, 10, filterlist1, posscen1, oriscen1);
+                        //if (bestaccuracy1 > locanal1.Precision)
+                        //{
+                        //    bestaccuracy1 = locanal1.Precision;
+                        //    //System.Diagnostics.Debug.WriteLine("");
+                        //    System.Diagnostics.Debug.WriteLine("1" + "\t" + particles + "\t" + noise + "\t" + cdfmargin + "\t" + bestaccuracy1);
+                        //}
                         //LocalizerAnalyser locanal2 = new LocalizerAnalyser(10, 10, filter2, posscen2, oriscen2);
                         //if (bestprecision2 < locanal2.Precision)
                         //{
