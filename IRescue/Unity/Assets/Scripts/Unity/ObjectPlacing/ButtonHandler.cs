@@ -141,7 +141,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(), 
                 new Vector3(-frameWidth, -(230 + (entryWidth * (1 + Mathf.Floor(objects.Length / columnSize))))), 
-                new Vector2(entryWidth + (2 * padding * columnSize), entryHeight + (2 * padding * (1 + Mathf.Floor(objects.Length / columnSize)))));
+                new Vector2((entryWidth + (2 * padding)) * columnSize, (entryHeight + (2 * padding)) * (1 + Mathf.Floor(objects.Length / columnSize))));
             float deductY = content.GetComponent<RectTransform>().sizeDelta.y;
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
             for (int i  = 0; i < objects.Length; i++)
