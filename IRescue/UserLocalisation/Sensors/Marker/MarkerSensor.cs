@@ -8,6 +8,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     using System.Collections.Generic;
     using Core.DataTypes;
     using Core.Utils;
+    using static MathNet.Numerics.Trig;
 
     /// <summary>
     ///  This class keeps track of the location based on Markers.
@@ -110,10 +111,10 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 
                     TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
                     TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
-                    TransformationMatrix transformationWorldToUser = new TransformationMatrix();
-                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationWorldToUser);
+                    TransformationMatrix transformationUserToWorld = new TransformationMatrix();
+                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
                     Vector4 position = new Vector4(0, 0, 0, 1);
-                    transformationWorldToUser.Multiply(position, position);
+                    transformationUserToWorld.Multiply(position, position);
 
                     // Could be faster => add method in Vector4 to create a Vector3 from it
                     Vector3 pos = new Vector3(position.X, position.Y, position.Z);
@@ -122,8 +123,17 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                     Pose location = AbRelPositioning.GetLocation(markerWorldPose, pair.Value);
                     this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
 
+                    RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
+                    Vector3 xRotation = new Vector3(1, 0, 0);
+                    Vector3 yRotation = new Vector3(0, 1, 0);
+                    Vector3 zRotation = new Vector3(0, 0, 1);
+                    rotationUserToWorld.Multiply(xRotation, xRotation);
+                    rotationUserToWorld.Multiply(yRotation, yRotation);
+                    rotationUserToWorld.Multiply(zRotation, zRotation);
+                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(yRotation.X, yRotation.Z)), (float)RadianToDegree(Math.Acos(yRotation.Y)), (float)RadianToDegree(Math.Atan2(xRotation.Y, zRotation.Y)));
+
                     // Still needs to be fixed
-                    this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviationOrientation, timeStamp);
+                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, this.standardDeviationOrientation, timeStamp);
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }

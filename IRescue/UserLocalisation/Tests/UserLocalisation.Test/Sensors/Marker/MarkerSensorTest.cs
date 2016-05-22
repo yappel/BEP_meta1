@@ -220,5 +220,49 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.sensor.UpdateLocations(new Dictionary<int, Pose>());
             Assert.AreEqual(6, this.sensor.GetAllOrientations().Count);
         }
+
+        /// <summary>
+        /// Test that a simple relative and relative rotation of a marker return the correct 
+        /// position of the user in the world.
+        /// </summary>
+        [Test]
+        public void SimpleUserPositionTest()
+        {
+            Pose marker = new Pose(new Vector3(3, 0, 1), new Vector3(0, 0, 0));
+            Pose rel = new Pose(new Vector3(1, 0, 1), new Vector3(0, -90, 0));
+            MarkerLocations mloc = new MarkerLocations();
+            mloc.AddMarker(1, marker);
+            this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, rel);
+            this.sensor.UpdateLocations(dic);
+            this.AssertVectorAreEqual(new Vector3(2, 0, 2), this.sensor.GetLastPosition().Data);
+        }
+
+        [Test]
+        public void SimpleUserPositionTest2()
+        {
+            Pose marker = new Pose(new Vector3(1, 0, 1), new Vector3(0, 0, 0));
+            Pose rel = new Pose(new Vector3(2, 0, 1), new Vector3(0, 180, 0));
+            MarkerLocations mloc = new MarkerLocations();
+            mloc.AddMarker(1, marker);
+            this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, rel);
+            this.sensor.UpdateLocations(dic);
+            this.AssertVectorAreEqual(new Vector3(3, 0, 2), this.sensor.GetLastPosition().Data);
+        }
+
+        /// <summary>
+        /// Assert that all elements in the vectors match with possible deviation 0.0001.
+        /// </summary>
+        /// <param name="expected">The expected vector.</param>
+        /// <param name="actual">The actual vector.</param>
+        private void AssertVectorAreEqual(Vector3 expected, Vector3 actual)
+        {
+            Assert.AreEqual(expected.X, actual.X, 0.0001);
+            Assert.AreEqual(expected.Y, actual.Y, 0.0001);
+            Assert.AreEqual(expected.Z, actual.Z, 0.0001);
+        }
     }
 }

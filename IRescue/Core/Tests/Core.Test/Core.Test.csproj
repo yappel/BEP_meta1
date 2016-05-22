@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="DataTypes\MeasurementTest.cs" />
     <Compile Include="DataTypes\PoseTest.cs" />
+    <Compile Include="DataTypes\TransformationMatrixTest.cs" />
     <Compile Include="DataTypes\Vector3Test.cs" />
     <Compile Include="DataTypes\Vector4Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

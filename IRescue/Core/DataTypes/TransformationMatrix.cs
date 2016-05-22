@@ -75,6 +75,17 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Returns the rotation matrix that is in the transformation matrix.
+        /// </summary>
+        /// <returns></returns>
+        public RotationMatrix GetRotation()
+        {
+            RotationMatrix res = new RotationMatrix();
+            this.SubMatrix(0, 3, 0, 3).CopyTo(res);
+            return res;
+        }
+
+        /// <summary>
         /// Create an array from the specified rotation, translation and w values.
         /// </summary>
         /// <param name="xt">X axis translation.</param>

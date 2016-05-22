@@ -56,14 +56,15 @@ namespace IRescue.UserLocalisation.Particle
                         data[i][11]));
                 Pose output = new Pose(
                     new Vector3(
-                        data[i][6],
-                        data[i][7],
-                        data[i][8]),
+                        data[i][12],
+                        data[i][13],
+                        data[i][14]),
                     new Vector3(
-                        data[i][9],
-                        data[i][10],
-                        data[i][11]));
+                        data[i][15],
+                        data[i][16],
+                        data[i][17]));
                 var i1 = i;
+                System.Diagnostics.Debug.WriteLine(i);
                 this.mloc.AddMarker(i1, marker);
                 this.TestThis(meting, output, i);
             }
@@ -76,8 +77,21 @@ namespace IRescue.UserLocalisation.Particle
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(i, meting);
             sensor.UpdateLocations(dic);
-            Assert.AreEqual(output.Position, sensor.GetLastPosition().Data);
-            Assert.AreEqual(output.Orientation, sensor.GetLastOrientation().Data);
+            this.AssertVectorAreEqual(output.Position, sensor.GetLastPosition().Data);
+            this.AssertVectorAreEqual(output.Orientation, sensor.GetLastOrientation().Data);
+        }
+
+        /// <summary>
+        /// Assert that all elements in the vectors match with possible deviation 0.0001.
+        /// </summary>
+        /// <param name="expected">The expected vector.</param>
+        /// <param name="actual">The actual vector.</param>
+        private void AssertVectorAreEqual(Vector3 expected, Vector3 actual)
+        {
+            System.Diagnostics.Debug.WriteLine("x=" + actual.X + " y=" + actual.Y + " z=" + actual.Z);
+            Assert.AreEqual(expected.X, actual.X, 0.01);
+            Assert.AreEqual(expected.Y, actual.Y, 0.01);
+            Assert.AreEqual(expected.Z, actual.Z, 0.01);
         }
     }
 }
