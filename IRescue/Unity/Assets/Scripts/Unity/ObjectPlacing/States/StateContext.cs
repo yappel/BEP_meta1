@@ -54,7 +54,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             UnityEngine.Object.Destroy(this.SelectedBuilding);
             this.SelectedBuilding = UnityEngine.Object.Instantiate<GameObject>(gameObject);
             this.SelectedBuilding.SetActive(false);
-            gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            this.SelectedBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
     }
 }
