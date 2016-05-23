@@ -317,7 +317,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int row = 0; row < particles.Column(wcolumn).Count; row++)
                 {
-                    float particle = (particles.Column(wcolumn)[row] * this.ranges[wcolumn]) + this.minima[wcolumn];
+                    float particle = (particles[row, wcolumn] * this.ranges[wcolumn]) + this.minima[wcolumn];
                     var p = 1d;
                     for (int measrow = 0; measrow < measurements.Column(wcolumn - colfrom).Count; measrow++)
                     {
@@ -385,10 +385,7 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IOrientationSource orientationSource in this.orilist)
             {
                 List<Measurement<Vector3>> measall = orientationSource.GetOrientations(this.previousTS, timeStamp);
-                foreach (Measurement<Vector3> meas in measall)
-                {
-                    this.ProcessMeas(measx, measy, measz, std, meas);
-                }
+                this.ProcessMeas(measx, measy, measz, std, measall);
             }
 
             IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz).Concat(std);
@@ -396,28 +393,44 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Get the measurement data and put it into the lists.
+        /// Get the latest measurement data and put it into the lists.
         /// </summary>
         /// <param name="measx">List to put the X data in.</param>
         /// <param name="measy">List to put the Y data in.</param>
         /// <param name="measz">List to put the Z data in.</param>
         /// <param name="std">List to add the standard deviation.</param>
-        /// <param name="meas">The measurement to process.</param>
-        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<float> std, Measurement<Vector3> meas)
+        /// <param name="meas">List of measurements to process.</param>
+        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<float> std, List<Measurement<Vector3>> measall)
         {
-            if (float.IsNaN(meas.Data.X) || float.IsNaN(meas.Data.Y) || float.IsNaN(meas.Data.Z) ||
-                        float.IsNaN(meas.Std))
+            if (measall.Count <= 0)
+            {
+                return;
+            }
+
+            Measurement<Vector3> recentmeas = null;
+            long ts = -1;
+            foreach (Measurement<Vector3> meas in measall)
+            {
+                if (ts < meas.TimeStamp)
+                {
+                    recentmeas = meas;
+                    ts = meas.TimeStamp;
+                }
+            }
+
+            if (float.IsNaN(recentmeas.Data.X) || float.IsNaN(recentmeas.Data.Y) || float.IsNaN(recentmeas.Data.Z) ||
+                        float.IsNaN(recentmeas.Std))
             {
                 StringBuilder message = new StringBuilder();
-                message.AppendFormat("One of the measurements or the deviation was NaN. X:{0} Y:{1} Z:{2} Stdev:{3}", meas.Data.X, meas.Data.Y, meas.Data.Z, meas.Std);
+                message.AppendFormat("One of the measurements or the deviation was NaN. X:{0} Y:{1} Z:{2} Stdev:{3}", recentmeas.Data.X, recentmeas.Data.Y, recentmeas.Data.Z, recentmeas.Std);
                 throw new ArithmeticException(message.ToString());
             }
             else
             {
-                measx.Add(meas.Data.X);
-                measy.Add(meas.Data.Y);
-                measz.Add(meas.Data.Z);
-                std.Add(meas.Std);
+                measx.Add(recentmeas.Data.X);
+                measy.Add(recentmeas.Data.Y);
+                measz.Add(recentmeas.Data.Z);
+                std.Add(recentmeas.Std);
             }
         }
 
@@ -435,10 +448,7 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IPositionSource positionSource in this.poslist)
             {
                 List<Measurement<Vector3>> measall = positionSource.GetPositions(this.previousTS, timeStamp);
-                foreach (Measurement<Vector3> meas in measall)
-                {
-                    this.ProcessMeas(measx, measy, measz, std, meas);
-                }
+                this.ProcessMeas(measx, measy, measz, std, measall);
             }
 
             IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz).Concat(std);
