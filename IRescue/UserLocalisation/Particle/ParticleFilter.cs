@@ -158,7 +158,6 @@ namespace IRescue.UserLocalisation.Particle
         {
             this.RetrieveMeasurements(timeStamp);
             this.Resample();
-            ////this.Predict(timeStamp);
             this.Update();
             this.previousTS = timeStamp;
             Pose res = this.GetResult(timeStamp);
@@ -217,7 +216,6 @@ namespace IRescue.UserLocalisation.Particle
             int columncount = 0;
             foreach (Vector<float> dimension in weights.EnumerateColumns())
             {
-
                 if (Math.Abs(dimension.Sum()) < float.Epsilon)
                 {
                     this.GenerateFreshParticlesDimension(columncount);
@@ -354,7 +352,8 @@ namespace IRescue.UserLocalisation.Particle
         private void ContainParticles(Matrix<float> matrix, int columnindex)
         {
             Vector<float> particles = matrix.Column(columnindex);
-            particles.Map(p =>
+            particles.Map(
+                p =>
             {
                 if (p > 1f)
                 {
@@ -368,7 +367,8 @@ namespace IRescue.UserLocalisation.Particle
                 {
                     return p;
                 }
-            }, particles);
+            },
+                particles);
             matrix.SetColumn(columnindex, particles.ToArray());
         }
 
@@ -399,7 +399,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="measy">List to put the Y data in.</param>
         /// <param name="measz">List to put the Z data in.</param>
         /// <param name="std">List to add the standard deviation.</param>
-        /// <param name="meas">List of measurements to process.</param>
+        /// <param name="measall">List of measurements to process.</param>
         private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<float> std, List<Measurement<Vector3>> measall)
         {
             if (measall.Count <= 0)
@@ -417,10 +417,12 @@ namespace IRescue.UserLocalisation.Particle
                     {
                         measlist.Clear();
                     }
+
                     measlist.Add(meas);
                     ts = meas.TimeStamp;
                 }
             }
+
             foreach (Measurement<Vector3> measurement in measlist)
             {
                 this.AddMeasurmentsToList(measurement.Data.X, measx);
@@ -560,7 +562,6 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-
         /// Perform the modulo operation returning a value between 0 and b-1.
         /// </summary>
         /// <param name="a">The number to perform modulo on.</param>

@@ -75,6 +75,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 particles[i] = 1;
             }
+
             float[] particles2 = new float[particleamount * 1];
             for (int i = 0; i < particleamount; i++)
             {
