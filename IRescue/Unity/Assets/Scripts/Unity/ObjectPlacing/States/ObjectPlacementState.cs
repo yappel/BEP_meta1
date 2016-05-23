@@ -34,6 +34,36 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private Vector3 previousPosition;
 
         /// <summary>
+        /// The render components that can be adjusted for the outline
+        /// </summary>
+        private Renderer[] colorRenders;
+
+        /// <summary>
+        /// The current outline shader
+        /// </summary>
+        private Shader currentShader;
+
+        /// <summary>
+        /// Red outline shader
+        /// </summary>
+        private Shader redOutline = Shader.Find("Outlined/Diffuse_R");
+
+        /// <summary>
+        /// Yellow outline shader
+        /// </summary>
+        private Shader yellowOutline = Shader.Find("Outlined/Diffuse_Y");
+
+        /// <summary>
+        /// Red outline shader
+        /// </summary>
+        private Shader greenOutline = Shader.Find("Outlined/Diffuse_G");
+
+        /// <summary>
+        /// The default shader, no outline
+        /// </summary>
+        private Shader defaultShader = Shader.Find("Standard");
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
@@ -52,8 +82,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
             this.StateContext.Buttons.BackButton.SetActive(true);
-            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
             this.gameObject.transform.position = location;
+            this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
+            this.ChangeOutlineRender(this.greenOutline);
         }
 
         /// <summary>
@@ -65,12 +96,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             long time = StopwatchSingleton.Time;
             if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 10f))
             {
-                this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
+                this.ChangeOutlineRender(this.yellowOutline);
                 this.hoverTime = time;
             }
             else
             {
-                this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.green);
+                this.ChangeOutlineRender(this.greenOutline);
             }
 
             this.gameObject.transform.position = position;
@@ -94,7 +125,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(GameObject gameObject)
         {
             this.hoverTime = StopwatchSingleton.Time;
-            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.red);
+            this.ChangeOutlineRender(this.redOutline);
         }
 
         /// <summary>
@@ -121,8 +152,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.gameObject.AddComponent<GroundPlane>();
             this.gameObject.AddComponent<MetaBody>();
-            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
+            this.ChangeOutlineRender(this.defaultShader);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Change the outline color
+        /// </summary>
+        /// <param name="colorPath">path of the color</param>
+        private void ChangeOutlineRender(Shader shader)
+        {
+            if (shader != this.currentShader)
+            {
+                for (int i = 0; i < this.colorRenders.Length; i++)
+                {
+                    this.currentShader = shader;
+                    this.colorRenders[i].material.shader = shader;
+                }
+            }
         }
     }
 }
