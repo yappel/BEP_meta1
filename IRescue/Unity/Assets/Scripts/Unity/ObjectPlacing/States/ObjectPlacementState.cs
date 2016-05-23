@@ -65,7 +65,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private Shader defaultShader = Shader.Find("Standard");
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class.
+        /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class. The object will be scaled to 1 meter big.
         /// </summary>
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
@@ -80,6 +80,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 this.previousPosition = gameObject.transform.position;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<GroundPlane>());
+            }
+            else
+            {
+                this.SetScale(gameObject);
             }
 
             this.hoverTime = StopwatchSingleton.Time;
@@ -173,6 +177,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                     this.colorRenders[i].material.shader = shader;
                 }
             }
+        }
+
+        /// <summary>
+        /// Set the scale of the game object to have a width or height of max 1 meter
+        /// </summary>
+        /// <param name="gameObject">the game object that will be placed</param>
+        private void SetScale(GameObject gameObject)
+        {
+            Bounds totalBounds = gameObject.GetComponentInChildren<Renderer>().bounds;
+            Renderer[] colliders = gameObject.GetComponentsInChildren<Renderer>();
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                totalBounds.Encapsulate(colliders[i].bounds);
+            }
+
+            Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
+            float boundScale = 1 / Mathf.Max(bound.z, bound.x);
+            gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);
         }
     }
 }
