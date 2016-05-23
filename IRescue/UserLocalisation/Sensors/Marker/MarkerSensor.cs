@@ -118,22 +118,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 
                     // Could be faster => add method in Vector4 to create a Vector3 from it
                     Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-
-
-                    Pose location = AbRelPositioning.GetLocation(markerWorldPose, pair.Value);
                     this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
 
                     RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
-                    Vector3 xRotation = new Vector3(1, 0, 0);
-                    Vector3 yRotation = new Vector3(0, 1, 0);
-                    Vector3 zRotation = new Vector3(0, 0, 1);
-                    rotationUserToWorld.Multiply(xRotation, xRotation);
-                    rotationUserToWorld.Multiply(yRotation, yRotation);
-                    rotationUserToWorld.Multiply(zRotation, zRotation);
-                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(yRotation.X, yRotation.Z)), (float)RadianToDegree(Math.Acos(yRotation.Y)), (float)RadianToDegree(Math.Atan2(xRotation.Y, zRotation.Y)));
-
-                    // Still needs to be fixed
+                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
                     this.orientations[this.pointer] = new Measurement<Vector3>(orientation, this.standardDeviationOrientation, timeStamp);
+
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }

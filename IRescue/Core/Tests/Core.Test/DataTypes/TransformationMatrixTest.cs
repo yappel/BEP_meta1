@@ -38,13 +38,16 @@
             Assert.AreEqual(1, res.W);
         }
 
+        /// <summary>
+        /// Test that extracting the rotation matrix returns a correct rotation matrix.
+        /// </summary>
         [Test]
-        public void RotationMatrixTest()
+        public void GetRotationMatrixTest()
         {
-            RotationMatrix rot = new RotationMatrix(45, 90, 30);
-            Vector3 res = new Vector3(1, 2, 3);
-            rot.Multiply(res, res);
-            System.Diagnostics.Debug.WriteLine("x=" + res.X + " y=" + res.Y + " z=" + res.Z);
+            this.transformation = new TransformationMatrix(1, 1, 1, 45, 90, 30);
+            RotationMatrix rot = this.transformation.GetRotation();
+            RotationMatrix expected = new RotationMatrix(45, 90, 30);
+            Assert.AreEqual(expected, rot);
         }
     }
 }
