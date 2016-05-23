@@ -35,7 +35,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext();
+            this.stateContext = new StateContext(this);
         }
 
         /// <summary>
@@ -61,8 +61,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a back button is pressed.
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void BackButtonEvent(PointerEventData eventData)
+        public void BackButtonEvent()
         {
             this.stateContext.CurrentState.OnBackButton();
         }
@@ -70,8 +69,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a toggle button is pressed.
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ToggleButtonEvent(PointerEventData eventData)
+        public void ToggleButtonEvent()
         {
             this.stateContext.CurrentState.OnToggleButton();
         }
@@ -79,8 +77,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a confirm button is pressed
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ConfirmButtonEvent(PointerEventData eventData)
+        public void ConfirmButtonEvent()
         {
             this.stateContext.CurrentState.OnConfirmButton();
         }
@@ -88,8 +85,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a modify rotate button is pressed
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyRotateButtonEvent(PointerEventData eventData)
+        public void ModifyRotateButtonEvent()
         {
             this.stateContext.CurrentState.OnRotateButton();
         }
@@ -97,8 +93,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a modify translate button is pressed
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyTranslateButtonEvent(PointerEventData eventData)
+        public void ModifyTranslateButtonEvent()
         {
             this.stateContext.CurrentState.OnTranslateButton();
         }
@@ -106,8 +101,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a modify scale button is pressed
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyScaleButtonEvent(PointerEventData eventData)
+        public void ModifyScaleButtonEvent()
         {
             this.stateContext.CurrentState.OnScaleButton();
         }
@@ -115,8 +109,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when a delete object button is pressed
         /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void DeleteButtonEvent(PointerEventData eventData)
+        public void DeleteButtonEvent()
         {
             this.stateContext.CurrentState.OnDeleteButton();
         }
@@ -124,10 +117,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Event when another object has been selected
         /// </summary>
-        /// <param name="eventData">event data about the selected object</param>
         /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
-        public void SelectObjectButtonEvent(PointerEventData eventData, string resourcePath)
+        public void SelectObjectButtonEvent(string resourcePath)
         {
+            Debug.Log(resourcePath);
             this.stateContext.SwapObject("Objects/" + resourcePath);
         }
 

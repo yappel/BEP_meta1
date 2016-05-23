@@ -19,9 +19,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>
-        public StateContext()
+        /// <param name="controller">The state controller which tracks events</param>
+        public StateContext(StateController controller)
         {
-            this.Buttons = new ButtonHandler();
+            this.Buttons = new ButtonHandler(controller);
             this.CurrentState = new NeutralState(this);
             this.SwapObject(DefaultObjectPath);
         }

@@ -4,8 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using System.IO;
-    using UnityEditor;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -52,16 +50,41 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
-        public ButtonHandler()
+        /// <param name="controller">The state controller which tracks events</param>
+        public ButtonHandler(StateController controller)
         {
+            // Create the confirm button
             this.ConfirmButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ConfirmButton")));
+            this.ConfirmButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ConfirmButtonEvent());
+
+            // Create the delete button
             this.DeleteButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/DeleteButton")));
+            this.DeleteButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.DeleteButtonEvent());
+
+            // Create the translate button
             this.TranslateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/TranslateButton")));
+            this.TranslateButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyTranslateButtonEvent());
+
+            // Create the rotate button
             this.RotateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/RotateButton")));
+            this.RotateButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyRotateButtonEvent());
+
+            // Create the scale button
             this.ScaleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ScaleButton")));
+            this.ScaleButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyScaleButtonEvent());
+
+            // Create the backbutton
             this.BackButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/BackButton")));
+            this.BackButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.BackButtonEvent());
+
+            // Create the toggle button
             this.ToggleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ToggleButton")));
-            this.ObjectSelect = this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth));
+            this.ToggleButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ToggleButtonEvent());
+
+            // Create the object select frame
+            this.ObjectSelect = this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller));
+
+            // Set all buttons to inactive
             this.ResetButtons();
         }
 
@@ -138,7 +161,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="padding">the padding of an entry to either sides</param>
         /// <param name="frameWidth">the preferred size of the frame</param>
         /// <returns>The Object select frame game object</returns>
-        private GameObject InitObjectSelect(int columnSize, int entryWidth, int entryHeight, int padding, int frameWidth)
+        /// <param name="controller">The state controller which tracks events</param>
+        private GameObject InitObjectSelect(int columnSize, int entryWidth, int entryHeight, int padding, int frameWidth, StateController controller)
         {
             GameObject objectSelect = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ObjectSelect"));
             GameObject[] objects = Resources.LoadAll<GameObject>(ObjectPath);
@@ -153,7 +177,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
             for (int i  = 0; i < objects.Length; i++)
             {
-                this.AddScrollEntry(GameObject.Instantiate(scrollViewEntry), objects[i].name, deductY, content.transform, i, columnSize, entryWidth, entryHeight, padding);
+                this.AddScrollEntry(GameObject.Instantiate(scrollViewEntry), objects[i].name, deductY, content.transform, i, columnSize, entryWidth, entryHeight, padding, controller);
             }
 
             UnityEngine.Object.Destroy(scrollViewEntry);
@@ -184,9 +208,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="entryWidth">width of an entry</param>
         /// <param name="entryHeight">height of an entry</param>
         /// <param name="padding">padding to either sides of the entry</param>
+        /// <param name="controller">The state controller which tracks events</param>
         private void AddScrollEntry(
-            GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding)
+            GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, StateController controller)
         {
+            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.SelectObjectButtonEvent(name));
             entry.transform.GetComponentInChildren<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
