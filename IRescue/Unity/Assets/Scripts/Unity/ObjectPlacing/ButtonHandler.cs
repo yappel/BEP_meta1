@@ -81,6 +81,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.ToggleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ToggleButton")));
             this.ToggleButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ToggleButtonEvent());
 
+            // Create the info text
+            this.InfoText = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/InfoText")));
+
             // Create the object select frame
             this.ObjectSelect = this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller));
 
@@ -129,6 +132,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public GameObject ObjectSelect { get; private set; }
 
         /// <summary>
+        /// Gets the info text frame
+        /// </summary>
+        public GameObject InfoText { get; private set; }
+
+        /// <summary>
         /// Set all buttons to inactive, making them invisible.
         /// </summary>
         public void ResetButtons()
@@ -140,6 +148,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.ConfirmButton.SetActive(false);
             this.BackButton.SetActive(false);
             this.ObjectSelect.SetActive(false);
+            this.ToggleButton.SetActive(false);
+            this.InfoText.SetActive(false);
         }
 
         /// <summary>

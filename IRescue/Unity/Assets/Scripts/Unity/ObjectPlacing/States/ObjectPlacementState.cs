@@ -7,6 +7,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// State when placing a building by pointing.
@@ -74,6 +75,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.translateModification = gameObject.GetComponent<MetaBody>() != null;
             if (this.translateModification)
             {
+                this.StateContext.Buttons.InfoText.SetActive(true);
+                this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Move";
                 this.previousPosition = gameObject.transform.position;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<GroundPlane>());

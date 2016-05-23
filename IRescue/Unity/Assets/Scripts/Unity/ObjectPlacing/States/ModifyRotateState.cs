@@ -6,6 +6,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using Meta;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// State when rotating a selected building.
@@ -36,8 +37,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.grabbableDistance = float.MaxValue;
             mb.moveObjectOnGrab = false;
             mb.rotateObjectOnTwoHandedGrab = true;
-            this.StateContext.Buttons.BackButton.SetActive(true);
             this.originalOrientation = gameObject.transform.eulerAngles;
+            this.StateContext.Buttons.BackButton.SetActive(true);
+            this.StateContext.Buttons.InfoText.SetActive(true);
+            this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Rotate";
         }
 
         /// <summary>
