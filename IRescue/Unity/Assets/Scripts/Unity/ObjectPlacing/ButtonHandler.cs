@@ -231,6 +231,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                 padding + (Mathf.Floor(i % columnSize) * (entryWidth + (2 * padding))), 
                 -((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
             entry.transform.GetComponentInChildren<Text>().text = name;
+            if (name == "DefaultObject")
+            {
+                this.ClickButton(entry.transform, controller, name);
+            }
         }
 
         /// <summary>

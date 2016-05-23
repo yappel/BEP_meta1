@@ -10,7 +10,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// <summary>
     ///  Context for keeping track of the current states.
     /// </summary>
-    public class StateContext : MonoBehaviour
+    public class StateContext
     {
         /// <summary>
         /// Path for the default object
