@@ -17,7 +17,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// The time before buttons can be pressed after switching states.
         /// </summary>
-        private const int TimeBeforeAction = 1500;
+        private const int TimeBeforeAction = 1200;
 
         /// <summary>
         /// Coupled state context.

@@ -54,6 +54,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="newState">The new current state</param>
         public void SetState(AbstractState newState)
         {
+            this.PreviousSwitchTime = StopwatchSingleton.Time;
             this.CurrentState = newState;
         }
 
@@ -63,7 +64,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObjectPath">The path of the new selected object for the object to place</param>
         public void SwapObject(string gameObjectPath)
         {
-            this.PreviousSwitchTime = StopwatchSingleton.Time;
             this.SelectedBuilding = gameObjectPath;
         }
     }
