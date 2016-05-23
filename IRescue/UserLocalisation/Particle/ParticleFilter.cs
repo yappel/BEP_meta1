@@ -217,13 +217,17 @@ namespace IRescue.UserLocalisation.Particle
             int columncount = 0;
             foreach (Vector<float> dimension in weights.EnumerateColumns())
             {
-                if (Math.Abs(dimension.Sum()) < 0.000000000000000000001)
+
+                if (Math.Abs(dimension.Sum()) < float.Epsilon)
                 {
                     this.GenerateFreshParticlesDimension(columncount);
                 }
+                else
+                {
+                    this.NormalizeWeights(dimension);
+                    weights.SetColumn(columncount, dimension);
+                }
 
-                this.NormalizeWeights(dimension);
-                weights.SetColumn(columncount, dimension);
                 columncount++;
             }
         }
