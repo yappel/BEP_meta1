@@ -5,6 +5,7 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
 
@@ -46,15 +47,27 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             this.oriy = new List<float>();
             this.oriz = new List<float>();
             StringBuilder builder = new StringBuilder();
-            this.WriteHeader(builder, filters[0], sceneid, filters.Count, cdfmargin, noise, algos);
+            StringBuilder particlebuilder = new StringBuilder();
+            StringBuilder weightbuilder = new StringBuilder();
+            StringBuilder measurementbuilder = new StringBuilder();
+
+            long totaltime = 0;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             foreach (ParticleFilter filter in filters)
             {
                 for (int cycleIndex = 1; cycleIndex <= cycleamount; cycleIndex++)
                 {
-                    this.AddResults(filter.CalculatePose(cycleIndex));
+                    stopwatch.Restart();
+                    Pose pose = filter.CalculatePose(cycleIndex);
+                    totaltime += stopwatch.ElapsedMilliseconds;
+                    this.AddResults(pose);
+                    this.AddDebugData(filter, particlebuilder, weightbuilder, measurementbuilder, cycleIndex);
                 }
             }
 
+            long averagetime = totaltime / (filters.Count * cycleamount);
+            this.WriteHeader(builder, filters[0], sceneid, filters.Count, cdfmargin, noise, algos, averagetime);
             this.WriteResults(builder, cycleamount);
             this.WriteActual(builder, posscen, oriscen, cycleamount);
 
@@ -69,8 +82,54 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
                 sceneid,
                 filters.Count);
             string path = @"D:\Users\Yoeri 2\Documenten\MATLAB\FilterAnalyse\Data\";
-            string filepath = Path.GetFullPath(path + namebuilder);
+            string filepath = Path.GetFullPath(path + "Data_" + namebuilder);
             File.WriteAllText(filepath, builder.ToString());
+
+            //filepath = Path.GetFullPath(path + @"Debug\Particles\" + namebuilder);
+            //File.WriteAllText(filepath, particlebuilder.ToString());
+            //filepath = Path.GetFullPath(path + @"Debug\Weights\" + namebuilder);
+            //File.WriteAllText(filepath, weightbuilder.ToString());
+            //filepath = Path.GetFullPath(path + @"Debug\Measurements\" + namebuilder);
+            //File.WriteAllText(filepath, measurementbuilder.ToString());
+            filepath = Path.GetFullPath(path + @"Meas_" + namebuilder);
+            File.WriteAllText(filepath, measurementbuilder.ToString());
+        }
+
+        private void AddDebugData(ParticleFilter filter, StringBuilder particlebuilder, StringBuilder weightbuilder, StringBuilder measurementbuilder, int timestamp)
+        {
+            for (int i = 0; i < filter.Particles.RowCount; i++)
+            {
+                for (int j = 0; j < filter.Particles.ColumnCount; j++)
+                {
+                    particlebuilder.AppendFormat("{0},", filter.Particles[i, j]);
+                }
+                particlebuilder.AppendLine();
+            }
+            particlebuilder.AppendLine();
+
+            for (int i = 0; i < filter.Weights.RowCount; i++)
+            {
+                for (int j = 0; j < filter.Weights.ColumnCount; j++)
+                {
+                    weightbuilder.AppendFormat("{0},", filter.Weights[i, j]);
+                }
+                weightbuilder.AppendLine();
+            }
+            weightbuilder.AppendLine();
+
+            for (int i = 0; i < Math.Max(filter.Measurementsori.RowCount, filter.Measurementspos.RowCount); i++)
+            {
+                measurementbuilder.Append($"{timestamp},");
+                for (int j = 0; j < filter.Measurementspos.ColumnCount; j++)
+                {
+                    measurementbuilder.AppendFormat("{0},", filter.Measurementspos[i, j]);
+                }
+                for (int j = 0; j < filter.Measurementsori.ColumnCount; j++)
+                {
+                    measurementbuilder.AppendFormat("{0},", filter.Measurementsori[i, j]);
+                }
+                measurementbuilder.AppendLine();
+            }
         }
 
         private void AddResults(Pose pose)
@@ -117,14 +176,15 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             int cycles,
             double cdfmargin,
             double noise,
-            int algos)
+            int algos,
+            long averagetime)
         {
             float rangex = filter.Fieldsize.Xmax - filter.Fieldsize.Xmin;
             float rangey = filter.Fieldsize.Ymax - filter.Fieldsize.Ymin;
             float rangez = filter.Fieldsize.Zmax - filter.Fieldsize.Zmin;
             int particleamount = filter.Particles.RowCount;
             builder.AppendFormat(
-                "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}",
+                "{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}",
                 cycles,
                 rangex,
                 rangey,
@@ -133,7 +193,8 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
                 cdfmargin,
                 noise,
                 algos,
-                sceneid);
+                sceneid,
+                averagetime);
             builder.AppendLine();
         }
 

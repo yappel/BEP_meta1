@@ -10,7 +10,7 @@ namespace IRescue.UserLocalisation.Particle
 
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
-    using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+    using Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
     using IRescue.UserLocalisation.PosePrediction;
     using IRescue.UserLocalisationMeasuring;
@@ -27,13 +27,17 @@ namespace IRescue.UserLocalisation.Particle
     /// </summary>
     public class ProgramTest
     {
-        private OrientationScenario oriscen1;
+        private OrientationScenario oriscen11;
+        private OrientationScenario oriscen12;
 
-        private OrientationScenario oriscen2;
+        private OrientationScenario oriscen21;
+        private OrientationScenario oriscen22;
 
-        private PositionScenario posscen1;
+        private PositionScenario posscen11;
+        private PositionScenario posscen12;
 
-        private PositionScenario posscen2;
+        private PositionScenario posscen21;
+        private PositionScenario posscen22;
 
         private FieldSize fieldsize;
 
@@ -41,32 +45,59 @@ namespace IRescue.UserLocalisation.Particle
         public void Setup()
         {
             this.fieldsize = new FieldSize { Xmin = 0, Xmax = 10, Ymin = 0, Ymax = 2, Zmin = 0, Zmax = 10 };
-            RandomSource random = new SystemRandomSource();
             ////"Realistic" movements
-            this.oriscen2 = new OrientationScenario(
+            this.oriscen21 = new OrientationScenario(
                 p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
                 p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
                 p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
                 this.timestamps(0, 400),
                 () => (float)ContinuousUniform.Sample(-3, 3),
                 1.5f);
-            this.posscen2 = new PositionScenario(
+            this.posscen21 = new PositionScenario(
                 p => this.Scene2PosXy(p, 60),
-                p => (float)((0.2f * Math.Sin((Math.PI / 25) * p)) + 1.8f),
+                p => (float)((0.2f * Math.Sin((Math.PI / 25) * p)) + 1.7f),
+                p => this.Scene2PosXy(p, 90),
+                this.timestamps(0, 400),
+                () => (float)Normal.Sample(0, 0.025),
+                0.025f);
+            this.oriscen22 = new OrientationScenario(
+                p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                this.timestamps(0, 400),
+                () => (float)ContinuousUniform.Sample(-3, 3),
+                1.5f);
+            this.posscen22 = new PositionScenario(
+                p => this.Scene2PosXy(p, 60),
+                p => (float)((0.2f * Math.Sin((Math.PI / 25) * p)) + 1.7f),
                 p => this.Scene2PosXy(p, 90),
                 this.timestamps(0, 400),
                 () => (float)Normal.Sample(0, 0.025),
                 0.025f);
 
             ////No movement
-            this.oriscen1 = new OrientationScenario(
+            this.oriscen11 = new OrientationScenario(
                 p => 0,
                 p => 0,
                 p => 0,
                 this.timestamps(0, 400),
                 () => (float)ContinuousUniform.Sample(-3, 3),
                 1.5f);
-            this.posscen1 = new PositionScenario(
+            this.posscen11 = new PositionScenario(
+                p => (float)(0.5 * (this.fieldsize.Xmax - this.fieldsize.Xmin)),
+                p => (float)(0.5 * (this.fieldsize.Ymax - this.fieldsize.Ymin)),
+                p => (float)(0.5 * (this.fieldsize.Zmax - this.fieldsize.Zmin)),
+                this.timestamps(0, 400),
+                () => (float)Normal.Sample(0, 0.025),
+                0.025f);
+            this.oriscen12 = new OrientationScenario(
+                p => 0,
+                p => 0,
+                p => 0,
+                this.timestamps(0, 400),
+                () => (float)ContinuousUniform.Sample(-3, 3),
+                1.5f);
+            this.posscen12 = new PositionScenario(
                 p => (float)(0.5 * (this.fieldsize.Xmax - this.fieldsize.Xmin)),
                 p => (float)(0.5 * (this.fieldsize.Ymax - this.fieldsize.Ymin)),
                 p => (float)(0.5 * (this.fieldsize.Zmax - this.fieldsize.Zmin)),
@@ -89,7 +120,7 @@ namespace IRescue.UserLocalisation.Particle
         {
             float margin = 0.2f;
             float xsize = ((this.fieldsize.Xmax - this.fieldsize.Xmin) / 2) - (2 * margin);
-            return (float)((xsize * Math.Sin(Math.PI / ticks)) + margin + xsize);
+            return (float)((xsize * Math.Sin((x * Math.PI) / ticks)) + margin + xsize);
         }
 
         /// <summary>
@@ -102,8 +133,8 @@ namespace IRescue.UserLocalisation.Particle
             // (p => 0.8f), (p => 0.8f), (p => 0.8f), timestamps(0, 400), (() => 0f), 0.05f);
             int particleamount = 30;
             ParticleFilter filter1 = this.creatFilter(particleamount);
-            filter1.AddOrientationSource(this.oriscen1);
-            filter1.AddPositionSource(this.posscen1);
+            filter1.AddOrientationSource(this.oriscen11);
+            filter1.AddPositionSource(this.posscen11);
 
             // ParticleFilter filter2 = creatFilter(particleamount);
             // filter2.AddOrientationSource(oriscen2);
@@ -164,16 +195,10 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestSin16()
         {
-            for (int i = 0; i < 120; i++)
+            foreach (long p in this.timestamps(0, 400))
             {
-                Console.Write("{0} : ", i);
-                Console.WriteLine(this.Sin16(i));
-                Console.WriteLine(this.Sin(i, 120));
+                Console.WriteLine(this.Scene2PosXy(p, 60));
             }
-
-            Assert.AreEqual(0.1f, this.Sin16(0), 0.001);
-            Assert.AreEqual(0.9f, this.Sin16(16), 0.001);
-            Assert.AreEqual(0.1f, this.Sin16(32), 0.001);
         }
 
         ////-----------------------------------------------------------------------------------------------------------------
@@ -186,16 +211,39 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void WriteToFiles()
         {
-            PositionScenario posscen = this.posscen2;
-            OrientationScenario oriscen = this.oriscen2;
-            int sceneid = 22;
-
-
-            int particles = 30;
-            float noise = 0.2f;
+            int particles = 100;
+            float noise = 0.1f;
             double cdfmargin = 0.001;
+            int runamount = 100;
+            for (particles = 50; particles < 401; particles = particles + 25)
+            {
+                for (noise = 0.1f; noise < 1; noise = noise + 0.1f)
+                {
+                    for (cdfmargin = 0.001; cdfmargin < 0.1; cdfmargin = cdfmargin + 0.01)
+                    {
+                        PositionScenario posscen1 = this.posscen11;
+                        PositionScenario posscen2 = this.posscen12;
+                        OrientationScenario oriscen1 = this.oriscen11;
+                        OrientationScenario oriscen2 = this.oriscen12;
+                        int sceneid = 11;
+                        this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
+                        posscen1 = this.posscen21;
+                        posscen2 = this.posscen22;
+                        oriscen1 = this.oriscen21;
+                        oriscen2 = this.oriscen22;
+                        sceneid = 22;
+                        this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
+                    }
+
+                }
+
+            }
+
+        }
+
+        private void SimulateFilter(PositionScenario posscen1, PositionScenario posscen2, OrientationScenario oriscen1, OrientationScenario oriscen2, int sceneid, int particles, float noise, double cdfmargin, int runamount)
+        {
             int algos = 1111;
-            int runamount = 10;
 
             List<ParticleFilter> filterlist = new List<ParticleFilter>();
             for (int i = 0; i < runamount; i++)
@@ -214,15 +262,17 @@ namespace IRescue.UserLocalisation.Particle
                     noisegen,
                     resampler);
                 filterlist.Add(filter);
-                filter.AddPositionSource(posscen);
-                filter.AddOrientationSource(oriscen);
+                filter.AddPositionSource(posscen1);
+                filter.AddPositionSource(posscen2);
+                filter.AddOrientationSource(oriscen1);
+                filter.AddOrientationSource(oriscen2);
             }
 
             LocalizerAnalyser analyzer = new LocalizerAnalyser(
-                120,
+                390,
                 filterlist,
-                posscen,
-                oriscen,
+                posscen1,
+                oriscen2,
                 sceneid,
                 cdfmargin,
                 noise,
@@ -270,8 +320,8 @@ namespace IRescue.UserLocalisation.Particle
 
         private long[] timestamps(int from, int to)
         {
-            long[] sf = new long[((to - from) / 2)];
-            for (int i = from; i < (to - from) / 2; i++)
+            long[] sf = new long[(to - @from)];
+            for (int i = from; i < (to - from); i++)
             {
                 sf[i] = from + i;
             }
