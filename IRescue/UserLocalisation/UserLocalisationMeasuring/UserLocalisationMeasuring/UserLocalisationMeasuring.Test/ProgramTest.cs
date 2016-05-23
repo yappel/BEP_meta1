@@ -28,15 +28,19 @@ namespace IRescue.UserLocalisation.Particle
     public class ProgramTest
     {
         private OrientationScenario oriscen11;
+
         private OrientationScenario oriscen12;
 
         private OrientationScenario oriscen21;
+
         private OrientationScenario oriscen22;
 
         private PositionScenario posscen11;
+
         private PositionScenario posscen12;
 
         private PositionScenario posscen21;
+
         private PositionScenario posscen22;
 
         private FieldSize fieldsize;
@@ -46,33 +50,35 @@ namespace IRescue.UserLocalisation.Particle
         {
             this.fieldsize = new FieldSize { Xmin = 0, Xmax = 10, Ymin = 0, Ymax = 2, Zmin = 0, Zmax = 10 };
             ////"Realistic" movements
-            this.oriscen21 = new OrientationScenario(
-                p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                this.timestamps(0, 400),
-                () => (float)ContinuousUniform.Sample(-3, 3),
-                1.5f);
+            this.oriscen21 =
+                new OrientationScenario(
+                    p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    this.timestamps(0, 400),
+                    () => (float)ContinuousUniform.Sample(-3, 3),
+                    1.5f);
             this.posscen21 = new PositionScenario(
                 p => this.Scene2PosXy(p, 60),
                 p => (float)((0.2f * Math.Sin((Math.PI / 25) * p)) + 1.7f),
                 p => this.Scene2PosXy(p, 90),
                 this.timestamps(0, 400),
-                () => (float)Normal.Sample(0, 0.025),
+                () => (float)Normal.Sample(0, 0.1),
                 0.025f);
-            this.oriscen22 = new OrientationScenario(
-                p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
-                this.timestamps(0, 400),
-                () => (float)ContinuousUniform.Sample(-3, 3),
-                1.5f);
+            this.oriscen22 =
+                new OrientationScenario(
+                    p => this.Mod((float)((60 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    p => this.Mod((float)((90 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    p => this.Mod((float)((30 * Math.Sin((Math.PI / 16) * p)) + 360), 360),
+                    this.timestamps(0, 400),
+                    () => (float)ContinuousUniform.Sample(-3, 3),
+                    1.5f);
             this.posscen22 = new PositionScenario(
                 p => this.Scene2PosXy(p, 60),
                 p => (float)((0.2f * Math.Sin((Math.PI / 25) * p)) + 1.7f),
                 p => this.Scene2PosXy(p, 90),
                 this.timestamps(0, 400),
-                () => (float)Normal.Sample(0, 0.025),
+                () => (float)Normal.Sample(0, 0.1),
                 0.025f);
 
             ////No movement
@@ -88,7 +94,7 @@ namespace IRescue.UserLocalisation.Particle
                 p => (float)(0.5 * (this.fieldsize.Ymax - this.fieldsize.Ymin)),
                 p => (float)(0.5 * (this.fieldsize.Zmax - this.fieldsize.Zmin)),
                 this.timestamps(0, 400),
-                () => (float)Normal.Sample(0, 0.025),
+                () => (float)Normal.Sample(0, 0.1),
                 0.025f);
             this.oriscen12 = new OrientationScenario(
                 p => 0,
@@ -102,7 +108,7 @@ namespace IRescue.UserLocalisation.Particle
                 p => (float)(0.5 * (this.fieldsize.Ymax - this.fieldsize.Ymin)),
                 p => (float)(0.5 * (this.fieldsize.Zmax - this.fieldsize.Zmin)),
                 this.timestamps(0, 400),
-                () => (float)Normal.Sample(0, 0.025),
+                () => (float)Normal.Sample(0, 0.1),
                 0.025f);
         }
 
@@ -211,34 +217,40 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void WriteToFiles()
         {
-            int particles = 100;
+            int particles = 225;
             float noise = 0.1f;
             double cdfmargin = 0.001;
-            int runamount = 100;
-            for (particles = 50; particles < 401; particles = particles + 25)
+            int runamount = 10;
+            this.CreateAndAnalyze(particles, noise, cdfmargin, runamount);
+
+            for (cdfmargin = 0.001; cdfmargin < 0.5; cdfmargin = cdfmargin + 0.1)
             {
-                for (noise = 0.1f; noise < 1; noise = noise + 0.1f)
+                for (noise = 0.1f; noise < 0.5f; noise = noise + 0.1f)
                 {
-                    for (cdfmargin = 0.001; cdfmargin < 0.1; cdfmargin = cdfmargin + 0.01)
+                    for (particles = 50; particles < 401; particles = particles + 25)
                     {
-                        PositionScenario posscen1 = this.posscen11;
-                        PositionScenario posscen2 = this.posscen12;
-                        OrientationScenario oriscen1 = this.oriscen11;
-                        OrientationScenario oriscen2 = this.oriscen12;
-                        int sceneid = 11;
-                        this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
-                        posscen1 = this.posscen21;
-                        posscen2 = this.posscen22;
-                        oriscen1 = this.oriscen21;
-                        oriscen2 = this.oriscen22;
-                        sceneid = 22;
-                        this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
                     }
 
                 }
 
             }
 
+        }
+
+        private void CreateAndAnalyze(int particles, float noise, double cdfmargin, int runamount)
+        {
+            PositionScenario posscen1 = this.posscen11;
+            PositionScenario posscen2 = this.posscen12;
+            OrientationScenario oriscen1 = this.oriscen11;
+            OrientationScenario oriscen2 = this.oriscen12;
+            int sceneid = 11;
+            this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
+            posscen1 = this.posscen21;
+            posscen2 = this.posscen22;
+            oriscen1 = this.oriscen21;
+            oriscen2 = this.oriscen22;
+            sceneid = 22;
+            this.SimulateFilter(posscen1, posscen2, oriscen1, oriscen2, sceneid, particles, noise, cdfmargin, runamount);
         }
 
         private void SimulateFilter(PositionScenario posscen1, PositionScenario posscen2, OrientationScenario oriscen1, OrientationScenario oriscen2, int sceneid, int particles, float noise, double cdfmargin, int runamount)

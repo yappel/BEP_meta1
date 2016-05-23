@@ -66,7 +66,7 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
                 }
             }
 
-            long averagetime = totaltime / (filters.Count * cycleamount);
+            float averagetime = (float)totaltime / ((float)(filters.Count * cycleamount));
             this.WriteHeader(builder, filters[0], sceneid, filters.Count, cdfmargin, noise, algos, averagetime);
             this.WriteResults(builder, cycleamount);
             this.WriteActual(builder, posscen, oriscen, cycleamount);
@@ -177,7 +177,7 @@ namespace IRescue.UserLocalisationMeasuring.DataProcessing
             double cdfmargin,
             double noise,
             int algos,
-            long averagetime)
+            float averagetime)
         {
             float rangex = filter.Fieldsize.Xmax - filter.Fieldsize.Xmin;
             float rangey = filter.Fieldsize.Ymax - filter.Fieldsize.Ymin;
