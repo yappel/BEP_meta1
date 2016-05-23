@@ -128,7 +128,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
         public void SelectObjectButtonEvent(PointerEventData eventData, string resourcePath)
         {
-            this.stateContext.SwapObject(Resources.Load<GameObject>("Objects/" + resourcePath));
+            this.stateContext.SwapObject("Objects/" + resourcePath);
         }
 
         /// <summary>

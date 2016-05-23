@@ -11,6 +11,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// </summary>
     public class StateContext : MonoBehaviour
     {
+        public const string DefaultObjectPath = "Objects/DefaultObject";
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>
@@ -18,13 +19,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.Buttons = new ButtonHandler();
             this.CurrentState = new NeutralState(this);
-            this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject"));
+            this.SwapObject(DefaultObjectPath);
         }
 
         /// <summary>
-        /// Gets or sets the selected building
+        /// Gets or sets the selected building path
         /// </summary>
-        public GameObject SelectedBuilding { get; set; }
+        public string SelectedBuilding { get; set; }
 
         /// <summary>
         /// Gets the button handler
@@ -48,13 +49,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Swap the object that will be placed when placing a new object.
         /// </summary>
-        /// <param name="gameObject">The new selected object for the object to place</param>
-        public void SwapObject(GameObject gameObject)
+        /// <param name="gameObjectPath">The path of the new selected object for the object to place</param>
+        public void SwapObject(string gameObjectPath)
         {
-            UnityEngine.Object.Destroy(this.SelectedBuilding);
-            this.SelectedBuilding = UnityEngine.Object.Instantiate<GameObject>(gameObject);
-            this.SelectedBuilding.SetActive(false);
-            this.SelectedBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            this.SelectedBuilding = gameObjectPath;
         }
     }
 }

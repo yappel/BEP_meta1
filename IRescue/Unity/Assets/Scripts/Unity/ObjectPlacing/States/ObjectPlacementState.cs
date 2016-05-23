@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using Assets.Unity.Navigation;
     using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
@@ -42,7 +41,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">The game object that has to be placed or moved</param>
         public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
         {
-            gameObject.SetActive(true);
             this.translateModification = gameObject.GetComponent<MetaBody>() != null;
             if (this.translateModification)
             {
@@ -123,7 +121,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.gameObject.AddComponent<GroundPlane>();
             this.gameObject.AddComponent<MetaBody>();
-            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.gray);
+            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.white);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
     }
