@@ -11,7 +11,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// </summary>
     public class StateContext : MonoBehaviour
     {
+        /// <summary>
+        /// Path for the default object
+        /// </summary>
         public const string DefaultObjectPath = "Objects/DefaultObject";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>

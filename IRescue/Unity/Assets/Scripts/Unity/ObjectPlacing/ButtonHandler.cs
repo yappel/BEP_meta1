@@ -211,7 +211,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
             else
             {
-                return Resources.Load<Sprite>(PreviewPath);
+                return Resources.Load<Sprite>(PreviewPath + "DefaultPreview");
             }
         }
     }
