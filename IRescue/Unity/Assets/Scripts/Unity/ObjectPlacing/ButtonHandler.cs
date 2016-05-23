@@ -4,6 +4,8 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using System.IO;
+    using UnityEditor;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -16,6 +18,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// The location at which the objects are stored.
         /// </summary>
         private const string ObjectPath = "Objects";
+
+        /// <summary>
+        /// Path to the preview location
+        /// </summary>
+        private const string PreviewPath = "Objects/Previews/";
 
         /// <summary>
         /// Amount of columns allowed in the frame for object selecting
@@ -180,6 +187,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private void AddScrollEntry(
             GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding)
         {
+            entry.transform.GetComponentInChildren<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
@@ -187,6 +195,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                 padding + (Mathf.Floor(i % columnSize) * (entryWidth + (2 * padding))), 
                 -((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
             entry.transform.GetComponentInChildren<Text>().text = name;
+        }
+
+        /// <summary>
+        /// Load the sprite of the prefab preview if it exists, return default otherwise
+        /// </summary>
+        /// <param name="name">name of the prefab</param>
+        /// <returns>sprite if it exists</returns>
+        private Sprite CreateImage(string name)
+        {
+            Sprite sprite = Resources.Load<Sprite>(PreviewPath + name);
+            if (sprite != null)
+            {
+                return Resources.Load<Sprite>(PreviewPath + name);
+            }
+            else
+            {
+                return Resources.Load<Sprite>(PreviewPath);
+            }
         }
     }
 }
