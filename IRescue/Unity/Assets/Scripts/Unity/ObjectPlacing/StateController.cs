@@ -4,17 +4,21 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using Enums;
+    using IRescue.Core.Utils;
     using Meta;
     using States;
     using UnityEngine;
-    using UnityEngine.EventSystems;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
     /// </summary>
     public class StateController : MonoBehaviour
     {
+        /// <summary>
+        /// The time before buttons can be pressed after switching states.
+        /// </summary>
+        private const int TimeBeforeAction = 1500;
+
         /// <summary>
         /// Coupled state context.
         /// </summary>
@@ -31,6 +35,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private bool validRightHand;
 
         /// <summary>
+        /// Boolean to keep track if a state can be changed.
+        /// Used to stop immediate transitions from one state to another.
+        /// </summary>
+        private bool canSwitchState;
+
+        /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
         public void Init()
@@ -44,10 +54,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public void Update()
         {
             this.stateContext.CurrentState.RunUpdate();
-            this.GrabEvent();
-            this.OpenEvent();
-            this.PinchEvent();
-            this.PointEvent();
+            if (this.CanSwitch())
+            {
+                this.GrabEvent();
+                this.OpenEvent();
+                this.PinchEvent();
+                this.PointEvent();
+            }
         }
 
         /// <summary>
@@ -63,7 +76,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void BackButtonEvent()
         {
-            this.stateContext.CurrentState.OnBackButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnBackButton();
+            }
         }
 
         /// <summary>
@@ -71,7 +87,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ToggleButtonEvent()
         {
-            this.stateContext.CurrentState.OnToggleButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnToggleButton();
+            }
         }
 
         /// <summary>
@@ -79,7 +98,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ConfirmButtonEvent()
         {
-            this.stateContext.CurrentState.OnConfirmButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnConfirmButton();
+            }
         }
 
         /// <summary>
@@ -87,7 +109,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ModifyRotateButtonEvent()
         {
-            this.stateContext.CurrentState.OnRotateButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnRotateButton();
+            }
         }
 
         /// <summary>
@@ -95,7 +120,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ModifyTranslateButtonEvent()
         {
-            this.stateContext.CurrentState.OnTranslateButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnTranslateButton();
+            }
         }
 
         /// <summary>
@@ -103,7 +131,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ModifyScaleButtonEvent()
         {
-            this.stateContext.CurrentState.OnScaleButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnScaleButton();
+            }
         }
 
         /// <summary>
@@ -111,7 +142,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void DeleteButtonEvent()
         {
-            this.stateContext.CurrentState.OnDeleteButton();
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnDeleteButton();
+            }
         }
 
         /// <summary>
@@ -120,8 +154,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
         public void SelectObjectButtonEvent(string resourcePath)
         {
-            Debug.Log(resourcePath);
-            this.stateContext.SwapObject("Objects/" + resourcePath);
+            if (this.canSwitchState)
+            {
+                this.stateContext.SwapObject("Objects/" + resourcePath);
+            }
         }
 
         /// <summary>
@@ -260,6 +296,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 
             gameObject = o;
             return res;
+        }
+
+        /// <summary>
+        /// Check if enough time passed since switching between states.
+        /// </summary>
+        /// <returns>boolean if enough time has passed</returns>
+        private bool CanSwitch()
+        {
+            this.canSwitchState = StopwatchSingleton.Time - this.stateContext.PreviousSwitchTime > TimeBeforeAction;
+            return this.canSwitchState;
         }
     }
 }

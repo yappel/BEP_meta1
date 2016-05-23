@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using IRescue.Core.Utils;
     using UnityEngine;
 
     /// <summary>
@@ -26,6 +27,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.CurrentState = new NeutralState(this);
             this.SwapObject(DefaultObjectPath);
         }
+
+        /// <summary>
+        /// Gets the time of the last state switch
+        /// </summary>
+        public long PreviousSwitchTime { get; private set; }
 
         /// <summary>
         /// Gets or sets the selected building path
@@ -57,6 +63,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObjectPath">The path of the new selected object for the object to place</param>
         public void SwapObject(string gameObjectPath)
         {
+            this.PreviousSwitchTime = StopwatchSingleton.Time;
             this.SelectedBuilding = gameObjectPath;
         }
     }
