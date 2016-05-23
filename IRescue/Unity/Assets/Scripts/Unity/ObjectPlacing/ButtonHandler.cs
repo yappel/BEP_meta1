@@ -212,7 +212,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private void AddScrollEntry(
             GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, StateController controller)
         {
-            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.SelectObjectButtonEvent(name));
+            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickButton(entry.transform, controller, name));
             entry.transform.GetComponentInChildren<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
@@ -239,6 +239,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 return Resources.Load<Sprite>(PreviewPath + "DefaultPreview");
             }
+        }
+
+        /// <summary>
+        /// Button listener, click the button and highlight the text
+        /// </summary>
+        /// <param name="entry">the object entry in the scroll pane</param>
+        /// <param name="controller">the state controller which will receive the event call</param>
+        /// <param name="name">the name of the object</param>
+        private void ClickButton(Transform entry, StateController controller, string name)
+        {
+            Text[] entries = entry.parent.GetComponentsInChildren<Text>();
+            for (int i = 0; i < entries.Length; i++)
+            {
+                entries[i].color = Color.white;
+            }
+
+            entry.GetComponentInChildren<Text>().color = Color.yellow;
+            controller.SelectObjectButtonEvent(name);
         }
     }
 }
