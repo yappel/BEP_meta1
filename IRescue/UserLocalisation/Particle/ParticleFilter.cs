@@ -407,31 +407,42 @@ namespace IRescue.UserLocalisation.Particle
                 return;
             }
 
-            Measurement<Vector3> recentmeas = null;
+            List<Measurement<Vector3>> measlist = new List<Measurement<Vector3>>();
             long ts = -1;
             foreach (Measurement<Vector3> meas in measall)
             {
-                if (ts < meas.TimeStamp)
+                if (ts <= meas.TimeStamp)
                 {
-                    recentmeas = meas;
+                    if (ts < meas.TimeStamp)
+                    {
+                        measlist.Clear();
+                    }
+                    measlist.Add(meas);
                     ts = meas.TimeStamp;
                 }
             }
+            foreach (Measurement<Vector3> measurement in measlist)
+            {
+                this.AddMeasurmentsToList(measurement.Data.X, measx);
+                this.AddMeasurmentsToList(measurement.Data.Y, measy);
+                this.AddMeasurmentsToList(measurement.Data.Z, measz);
+                this.AddMeasurmentsToList(measurement.Std, std);
+            }
+        }
 
-            if (float.IsNaN(recentmeas.Data.X) || float.IsNaN(recentmeas.Data.Y) || float.IsNaN(recentmeas.Data.Z) ||
-                        float.IsNaN(recentmeas.Std))
+        /// <summary>
+        /// Checks if a the measured value is a number and adds it to the given list.
+        /// </summary>
+        /// <param name="meas">The measured value</param>
+        /// <param name="measlist">The list to add the value to</param>
+        private void AddMeasurmentsToList(float meas, List<float> measlist)
+        {
+            if (float.IsNaN(meas))
             {
-                StringBuilder message = new StringBuilder();
-                message.AppendFormat("One of the measurements or the deviation was NaN. X:{0} Y:{1} Z:{2} Stdev:{3}", recentmeas.Data.X, recentmeas.Data.Y, recentmeas.Data.Z, recentmeas.Std);
-                throw new ArithmeticException(message.ToString());
+                throw new ArithmeticException("One of the measurements or the deviation was NaN");
             }
-            else
-            {
-                measx.Add(recentmeas.Data.X);
-                measy.Add(recentmeas.Data.Y);
-                measz.Add(recentmeas.Data.Z);
-                std.Add(recentmeas.Std);
-            }
+
+            measlist.Add(meas);
         }
 
         /// <summary>
