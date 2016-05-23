@@ -1,10 +1,21 @@
-﻿namespace Core.Test.DataTypes
+﻿// <copyright file="TransformationMatrixTest.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
+
+namespace Core.Test.DataTypes
 {
     using IRescue.Core.DataTypes;
     using NUnit.Framework;
 
-    class TransformationMatrixTest
+    /// <summary>
+    /// Test class for testing the <see cref="TransformationMatrix"/> class.
+    /// Also tests some simple rotations, translations and rotation/translation combinations.
+    /// </summary>
+    public class TransformationMatrixTest
     {
+        /// <summary>
+        /// Reference to the transformation matrix to use in testing.
+        /// </summary>
         private TransformationMatrix transformation;
 
         /// <summary>

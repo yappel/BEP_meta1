@@ -1,18 +1,19 @@
-﻿// <copyright file="Vector3Test.cs" company="Delft University of Technology">
+﻿// <copyright file="Vector4Test.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 namespace Core.Test.DataTypes
 {
+    using System;
     using IRescue.Core.DataTypes;
     using MathNet.Numerics.LinearAlgebra.Single;
     using NUnit.Framework;
-    using System;
+
     /// <summary>
     /// Test class for the <see cref="Vector4"/> class.
     /// Testing setters, getters, constructor and other functionality.
     /// </summary>
-    class Vector4Test
+    public class Vector4Test
     {
         /// <summary>
         /// Test that creating a Vector4 with no parameters sets all values to 0.
@@ -73,7 +74,7 @@ namespace Core.Test.DataTypes
         [Test]
         public void ConstructorFromArrayIncorrectSize()
         {
-            Assert.Catch<ArgumentException>(()=>new Vector4(new float[] { 1 }));
+            Assert.Catch<ArgumentException>(() => new Vector4(new float[] { 1 }));
         }
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace Core.Test.DataTypes
         }
 
         /// <summary>
-        /// Test that a constructor with a Vector3 and no w value gives the correct values and w defaul value.
+        /// Test that a constructor with a Vector3 and no w value gives the correct values and w default value.
         /// </summary>
         [Test]
         public void ConstructorFromVector3NoWValueTest()
@@ -104,6 +105,9 @@ namespace Core.Test.DataTypes
             Assert.AreEqual(1, v4.W);
         }
 
+        /// <summary>
+        /// Test that the getters and setters function correctly.
+        /// </summary>
         [Test]
         public void GettersAndSettersTest()
         {

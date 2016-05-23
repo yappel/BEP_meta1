@@ -50,7 +50,7 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
-        /// Initialez a new instance of the <see cref="Vector4"/> class.
+        /// Initializes a new instance of the <see cref="Vector4"/> class.
         /// Copies the X, Y and Z values of the <see cref="Vector3"/> to the new vector.
         /// </summary>
         /// <param name="vector">The vector to copy into the new vector.</param>
@@ -62,7 +62,7 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
-        /// Initialez a new instance of the <see cref="Vector4"/> class.
+        /// Initializes a new instance of the <see cref="Vector4"/> class.
         /// Copies the X, Y and Z values of the <see cref="Vector3"/> to the new vector.
         /// Sets the w value to default value 1.
         /// </summary>

@@ -77,7 +77,7 @@ namespace IRescue.Core.DataTypes
         /// <summary>
         /// Returns the rotation matrix that is in the transformation matrix.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The 3x3 rotation matrix which is in the transformation matrix.</returns>
         public RotationMatrix GetRotation()
         {
             RotationMatrix res = new RotationMatrix();
