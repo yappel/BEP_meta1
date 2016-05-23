@@ -17,6 +17,21 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private GameObject gameObject;
 
         /// <summary>
+        /// The render components that can be adjusted for the outline
+        /// </summary>
+        private Renderer[] colorRenders;
+
+        /// <summary>
+        /// Green outline shade
+        /// </summary>
+        private Shader greenOutline = Shader.Find("Outlined/Diffuse_G");
+
+        /// <summary>
+        /// The default shade, no outline
+        /// </summary>
+        private Shader defaultShader = Shader.Find("Standard");
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ModifyState"/> class.
         /// </summary>
         /// <param name="stateContext">State context</param>
@@ -29,6 +44,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.StateContext.Buttons.RotateButton.SetActive(true);
             this.StateContext.Buttons.ScaleButton.SetActive(true);
             this.gameObject = gameObject;
+            this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
+            this.ChangeOutlineRender(this.greenOutline);
         }
 
         /// <summary>
@@ -36,6 +53,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnConfirmButton()
         {
+            this.ChangeOutlineRender(this.defaultShader);
             this.StateContext.SetState(new NeutralState(this.StateContext));
         }
 
@@ -70,6 +88,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnScaleButton()
         {
             this.StateContext.SetState(new ModifyScaleState(this.StateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Change the outline color
+        /// </summary>
+        /// <param name="shader">New outline shade</param>
+        private void ChangeOutlineRender(Shader shader)
+        {
+            for (int i = 0; i < this.colorRenders.Length; i++)
+            {
+                this.colorRenders[i].material.shader = shader;
+            }
         }
     }
 }

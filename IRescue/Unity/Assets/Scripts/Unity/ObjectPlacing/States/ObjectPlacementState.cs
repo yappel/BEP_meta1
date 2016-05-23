@@ -39,27 +39,27 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private Renderer[] colorRenders;
 
         /// <summary>
-        /// The current outline shader
+        /// The current outline shade
         /// </summary>
         private Shader currentShader;
 
         /// <summary>
-        /// Red outline shader
+        /// Red outline shade
         /// </summary>
         private Shader redOutline = Shader.Find("Outlined/Diffuse_R");
 
         /// <summary>
-        /// Yellow outline shader
+        /// Yellow outline shade
         /// </summary>
         private Shader yellowOutline = Shader.Find("Outlined/Diffuse_Y");
 
         /// <summary>
-        /// Red outline shader
+        /// Red outline shade
         /// </summary>
         private Shader greenOutline = Shader.Find("Outlined/Diffuse_G");
 
         /// <summary>
-        /// The default shader, no outline
+        /// The default shading, no outline
         /// </summary>
         private Shader defaultShader = Shader.Find("Standard");
 
@@ -159,7 +159,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Change the outline color
         /// </summary>
-        /// <param name="colorPath">path of the color</param>
+        /// <param name="shader">New outline shade</param>
         private void ChangeOutlineRender(Shader shader)
         {
             if (shader != this.currentShader)
