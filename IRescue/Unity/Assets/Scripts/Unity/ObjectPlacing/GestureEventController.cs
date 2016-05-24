@@ -1,19 +1,17 @@
-﻿// <copyright file="StateController.cs" company="Delft University of Technology">
+﻿// <copyright file="GestureEventController.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using Enums;
     using Meta;
     using States;
     using UnityEngine;
-    using UnityEngine.EventSystems;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
     /// </summary>
-    public class StateController : MonoBehaviour
+    public class GestureEventController : MonoBehaviour
     {
         /// <summary>
         /// Coupled state context.
@@ -35,7 +33,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext(this);
+            this.stateContext = new StateContext();
         }
 
         /// <summary>
@@ -56,60 +54,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public void LateUpdate()
         {
             this.stateContext.CurrentState.RunLateUpdate();
-        }
-
-        /// <summary>
-        /// Event when a back button is pressed.
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void BackButtonEvent()
-        {
-            this.stateContext.CurrentState.OnBackButton();
-        }
-
-        /// <summary>
-        /// Event when a confirm button is pressed
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ConfirmButtonEvent()
-        {
-            this.stateContext.CurrentState.OnConfirmButton();
-        }
-
-        /// <summary>
-        /// Event when a modify rotate button is pressed
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyRotateButtonEvent()
-        {
-            this.stateContext.CurrentState.OnRotateButton();
-        }
-
-        /// <summary>
-        /// Event when a modify translate button is pressed
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyTranslateButtonEvent()
-        {
-            this.stateContext.CurrentState.OnTranslateButton();
-        }
-
-        /// <summary>
-        /// Event when a modify scale button is pressed
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void ModifyScaleButtonEvent()
-        {
-            this.stateContext.CurrentState.OnScaleButton();
-        }
-
-        /// <summary>
-        /// Event when a delete object button is pressed
-        /// </summary>
-        /// <param name="eventData">event data about the button press</param>
-        public void DeleteButtonEvent()
-        {
-            this.stateContext.CurrentState.OnDeleteButton();
         }
 
         /// <summary>

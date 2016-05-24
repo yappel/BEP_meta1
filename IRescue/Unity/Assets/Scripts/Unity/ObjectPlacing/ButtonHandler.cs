@@ -5,7 +5,7 @@
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
     using System.Collections.Generic;
-    using System.Linq.Expressions;
+    using States;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -57,28 +57,28 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
-        /// <param name="controller">The state controller which tracks events</param>
-        public ButtonHandler(StateController controller)
+        /// <param name="context">The state context which tracks the current state</param>
+        public ButtonHandler(StateContext context)
         {
             this.buttons = new List<GameObject>();
 
             // Create the confirm button
-            this.ConfirmButton = this.AddButton("Prefabs/Buttons/ConfirmButton", () => controller.ConfirmButtonEvent());
+            this.ConfirmButton = this.AddButton("Prefabs/Buttons/ConfirmButton", () => context.CurrentState.OnConfirmButton());
 
             // Create the delete button
-            this.DeleteButton = this.AddButton("Prefabs/Buttons/DeleteButton", () => controller.DeleteButtonEvent());
+            this.DeleteButton = this.AddButton("Prefabs/Buttons/DeleteButton", () => context.CurrentState.OnDeleteButton());
 
             // Create the translate button
-            this.TranslateButton = this.AddButton("Prefabs/Buttons/TranslateButton", () => controller.ModifyTranslateButtonEvent());
+            this.TranslateButton = this.AddButton("Prefabs/Buttons/TranslateButton", () => context.CurrentState.OnTranslateButton());
 
             // Create the rotate button
-            this.RotateButton = this.AddButton("Prefabs/Buttons/RotateButton", () => controller.ModifyRotateButtonEvent());
+            this.RotateButton = this.AddButton("Prefabs/Buttons/RotateButton", () => context.CurrentState.OnRotateButton());
 
             // Create the scale button
-            this.ScaleButton = this.AddButton("Prefabs/Buttons/ScaleButton", () => controller.ModifyScaleButtonEvent());
+            this.ScaleButton = this.AddButton("Prefabs/Buttons/ScaleButton", () => context.CurrentState.OnScaleButton());
 
             // Create the backbutton
-            this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => controller.BackButtonEvent());
+            this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => context.CurrentState.OnBackButton());
         }
 
         /// <summary>
@@ -134,6 +134,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
             }
+
             button.SetActive(false);
             this.buttons.Add(button);
             return button;

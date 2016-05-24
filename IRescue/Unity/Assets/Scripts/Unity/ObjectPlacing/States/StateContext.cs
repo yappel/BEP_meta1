@@ -13,11 +13,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
-        /// <param name="controller">The controller which keeps track of the events</param>
         /// </summary>
-        public StateContext(StateController controller)
+        public StateContext()
         {
-            this.Buttons = new ButtonHandler(controller);
+            this.Buttons = new ButtonHandler(this);
             this.CurrentState = new NeutralState(this);
             this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
             this.SelectedBuilding.SetActive(false);
