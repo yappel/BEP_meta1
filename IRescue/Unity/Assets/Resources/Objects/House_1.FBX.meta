@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: 82ab7385c7ffe594eb14c3742d5fec77
-timeCreated: 1464017308
-licenseType: Free
+guid: 28d592096e7e76148945c98658a6c011
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
@@ -9,24 +7,69 @@ ModelImporter:
     100002: House_1_lod_0
     100004: House_1_lod_1
     100006: House_1_lod_2
+    100008: House_2_lod_0
+    100010: House_2_lod_1
+    100012: House_2_lod_2
+    100014: House_3_lod_0
+    100016: House_3_lod_1
+    100018: House_3_lod_2
+    100020: House_4_lod_0
+    100022: House_4_lod_1
+    100024: House_4_lod_2
     400000: //RootNode
     400002: House_1_lod_0
     400004: House_1_lod_1
     400006: House_1_lod_2
+    400008: House_2_lod_0
+    400010: House_2_lod_1
+    400012: House_2_lod_2
+    400014: House_3_lod_0
+    400016: House_3_lod_1
+    400018: House_3_lod_2
+    400020: House_4_lod_0
+    400022: House_4_lod_1
+    400024: House_4_lod_2
     2300000: House_1_lod_0
     2300002: House_1_lod_1
     2300004: House_1_lod_2
+    2300006: House_2_lod_0
+    2300008: House_2_lod_1
+    2300010: House_2_lod_2
+    2300012: House_3_lod_0
+    2300014: House_3_lod_1
+    2300016: House_3_lod_2
+    2300018: House_4_lod_0
+    2300020: House_4_lod_1
+    2300022: House_4_lod_2
     3300000: House_1_lod_0
     3300002: House_1_lod_1
     3300004: House_1_lod_2
-    4300000: House_1_lod_0
-    4300002: House_1_lod_2
-    4300004: House_1_lod_1
+    3300006: House_2_lod_0
+    3300008: House_2_lod_1
+    3300010: House_2_lod_2
+    3300012: House_3_lod_0
+    3300014: House_3_lod_1
+    3300016: House_3_lod_2
+    3300018: House_4_lod_0
+    3300020: House_4_lod_1
+    3300022: House_4_lod_2
+    4300000: House_2_lod_0
+    4300002: House_1_lod_0
+    4300004: House_4_lod_0
+    4300006: House_3_lod_0
+    4300008: House_1_lod_2
+    4300010: House_1_lod_1
+    4300012: House_2_lod_1
+    4300014: House_2_lod_2
+    4300016: House_4_lod_1
+    4300018: House_4_lod_2
+    4300020: House_3_lod_2
+    4300022: House_3_lod_1
     9500000: //RootNode
   materials:
     importMaterials: 1
-    materialName: 0
-    materialSearch: 1
+    materialName: 1
+    materialSearch: 2
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -61,11 +104,11 @@ ModelImporter:
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
-    useFileScale: 1
+    useFileScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
-    tangentImportMode: 3
+    tangentImportMode: 4
   importAnimation: 1
   copyAvatar: 0
   humanDescription:

@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: a5e3c527b73981b41ae263d17a43ed13
-timeCreated: 1464017309
-licenseType: Free
+guid: 63378c9e93891ba43b71973b16224476
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
@@ -25,8 +23,8 @@ ModelImporter:
     9500000: //RootNode
   materials:
     importMaterials: 1
-    materialName: 0
-    materialSearch: 1
+    materialName: 1
+    materialSearch: 2
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -61,11 +59,11 @@ ModelImporter:
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
-    useFileScale: 1
+    useFileScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
-    tangentImportMode: 3
+    tangentImportMode: 4
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
