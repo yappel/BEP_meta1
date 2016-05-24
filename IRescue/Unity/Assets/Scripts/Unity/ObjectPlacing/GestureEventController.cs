@@ -9,7 +9,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using UnityEngine;
 
     /// <summary>
-    ///  Controller for holding track of the gestures and states.
+    /// This controller keeps track of gesture events and passes it to a statecontext.
     /// </summary>
     public class GestureEventController : MonoBehaviour
     {
