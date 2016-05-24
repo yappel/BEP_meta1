@@ -16,11 +16,14 @@ namespace IRescue.Core.DataTypes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RotationMatrix"/> class.
-        /// Creates an empty 3x3 matrix which corresponds with no rotation around 
+        /// Creates an identity 3x3 matrix which corresponds with no rotation around 
         /// all 3 axis.
         /// </summary>
         public RotationMatrix() : base(3, 3)
         {
+            this[0, 0] = 1;
+            this[1, 1] = 1;
+            this[2, 2] = 1;
         }
 
         /// <summary>
