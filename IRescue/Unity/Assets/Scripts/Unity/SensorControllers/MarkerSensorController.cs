@@ -57,24 +57,6 @@ public class MarkerSensorController : AbstractSensorController
     }
 
     /// <summary>
-    ///   Return the acceleration source.
-    /// </summary>
-    /// <returns>The IAccelerationSource</returns>
-    public override IAccelerationSource GetAccelerationSource()
-    {
-        return null;
-    }
-
-    /// <summary>
-    ///   Return the Displacement source.
-    /// </summary>
-    /// <returns>The IDisplacementSource</returns>
-    public override IDisplacementSource GetDisplacementSource()
-    {
-        return null;
-    }
-
-    /// <summary>
     ///   Return the Orientation source.
     /// </summary>
     /// <returns>The IOrientationSource</returns>
@@ -93,20 +75,11 @@ public class MarkerSensorController : AbstractSensorController
     }
 
     /// <summary>
-    ///   Return the velocity source.
-    /// </summary>
-    /// <returns>the IVelocitySource</returns>
-    public override IVelocitySource GetVelocitySource()
-    {
-        return null;
-    }
-
-    /// <summary>
     ///   Method calles on every frame.
     /// </summary>
     public void Update()
     {
-        this.markerSensor.UpdateLocations(this.GetVisibleMarkers());
+        this.markerSensor.UpdateLocations(IRescue.Core.Utils.StopwatchSingleton.Time, this.GetVisibleMarkers());
     }
 
     /// <summary>
