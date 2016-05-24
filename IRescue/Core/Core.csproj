@@ -62,7 +62,6 @@
     <Compile Include="Datatypes\Pose.cs" />
     <Compile Include="Datatypes\Measurement.cs" />
     <Compile Include="Datatypes\Vector4.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Distributions\IDistribution.cs" />
     <Compile Include="Distributions\Uniform.cs" />
     <Compile Include="Distributions\Normal.cs" />

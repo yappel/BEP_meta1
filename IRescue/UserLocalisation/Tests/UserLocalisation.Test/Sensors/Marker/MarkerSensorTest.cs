@@ -88,7 +88,7 @@ namespace UserLocalisation.Test.Sensors.Marker
                     new Vector3(0, 0, 0)));
             this.posDistType = new Mock<IDistribution>();
             this.oriDistType = new Mock<IDistribution>();
-            this.sensor = new MarkerSensor(this.savePath, this.posDistType.Object, this.oriDistType.Object);
+            this.sensor = new MarkerSensor(this.mlocmoq, this.posDistType.Object, this.oriDistType.Object);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestOverflow()
         {
-            this.sensor = new MarkerSensor(this.savePath, 6, this.posDistType.Object, this.oriDistType.Object);
+            this.sensor = new MarkerSensor(this.mlocmoq, 6, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
@@ -228,7 +228,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestNoData()
         {
-            this.sensor = new MarkerSensor(this.savePath, 6, this.posDistType.Object, this.oriDistType.Object);
+            this.sensor = new MarkerSensor(this.mlocmoq, 6, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
@@ -253,7 +253,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose rel = new Pose(new Vector3(1, 0, 1), new Vector3(0, -90, 0));
             MarkerLocations mloc = new MarkerLocations();
             mloc.AddMarker(1, marker);
-            this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
+            this.sensor = new MarkerSensor(mloc, 5, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, rel);
             this.sensor.UpdateLocations(1, dic);
@@ -267,7 +267,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose rel = new Pose(new Vector3(1, 0, 1), new Vector3(0, 180, 0));
             MarkerLocations mloc = new MarkerLocations();
             mloc.AddMarker(1, marker);
-            this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
+            this.sensor = new MarkerSensor(mloc, 5, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, rel);
             this.sensor.UpdateLocations(1, dic);
@@ -285,7 +285,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             Pose rel = new Pose(new Vector3(2, 0, 1), new Vector3(0, 180, 0));
             MarkerLocations mloc = new MarkerLocations();
             mloc.AddMarker(1, marker);
-            this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
+            this.sensor = new MarkerSensor(mloc, 5, this.posDistType.Object, this.oriDistType.Object);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, rel);
             this.sensor.UpdateLocations(1, dic);
@@ -300,7 +300,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         public void CombinedPositionAndOrientationInOutTest()
         {
             this.mlocmoq = new MarkerLocations();
-            this.sensor = new MarkerSensor(0, 0, this.mlocmoq);
+            this.sensor = new MarkerSensor(this.mlocmoq, 5, this.posDistType.Object, this.oriDistType.Object);
             for (int i = 0; i < this.bulkData.Length; i++)
             {
                 Pose marker = new Pose(

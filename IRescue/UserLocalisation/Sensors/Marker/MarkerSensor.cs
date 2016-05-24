@@ -54,12 +54,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="path">url to the xml file</param>
+        /// <param name="markerLocations">The MarkerLocations object storing all markers.</param>
         /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
         /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
-        public MarkerSensor(string path, IDistribution posDistType, IDistribution oriDistType)
+        public MarkerSensor(MarkerLocations markerLocations, IDistribution posDistType, IDistribution oriDistType)
         {
-            this.markerLocations = new MarkerLocations(path);
+            this.markerLocations = markerLocations;
             this.posDistType = posDistType;
             this.oriDistType = oriDistType;
             this.orientations = new Measurement<Vector3>[this.bufferLength];
@@ -70,12 +70,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class with a given buffer size.
         /// </summary>
-        /// <param name="path">url to the xml file</param>
+        /// <param name="markerLocations">The object storing all world marker locations.</param>
         /// <param name="bufferLength">Length of the buffer</param>
         /// <param name="posDistType">The type of the distribution of the positions measurements</param>
         /// <param name="oriDistType">The type of the distribution of the orientation measurements</param>
-        public MarkerSensor(string path, int bufferLength, IDistribution posDistType, IDistribution oriDistType)
-            : this(path, posDistType, oriDistType)
+        public MarkerSensor(MarkerLocations markerLocations, int bufferLength, IDistribution posDistType, IDistribution oriDistType)
+            : this(markerLocations, posDistType, oriDistType)
         {
             this.bufferLength = bufferLength;
             this.orientations = new Measurement<Vector3>[this.bufferLength];
