@@ -90,7 +90,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Update the locations derived from Markers.
         /// </summary>
-        /// <param name="timeStamp">Time stamp at which the measurement was taken.</param>
+        /// <param name="timeStamp">Time stamp at which the measurements were taken.</param>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
         public void UpdateLocations(long timeStamp, Dictionary<int, Pose> visibleMarkerIds)
         {
@@ -121,7 +121,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 }
                 catch (UnallocatedMarkerException e)
                 {
-                    Console.Error.WriteLine("ERROR: ", e.Message);
+                    Console.Error.WriteLine("ERROR: {0}", e.Message);
                 }
             }
         }
@@ -254,8 +254,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             for (int i = 0; i < length; i++)
             {
                 int index = this.GetIndex(i);
-
-                Console.WriteLine(this.GetIndex(i));
                 if (measurements[index].TimeStamp >= startTimeStamp && measurements[index].TimeStamp <= endTimeStamp)
                 {
                     timeMeasurements.Add(measurements[index]);

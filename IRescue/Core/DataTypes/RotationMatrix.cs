@@ -1,12 +1,10 @@
 ﻿// <copyright file="RotationMatrix.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.Core.DataTypes
 {
-    using System;
     using MathNet.Numerics.LinearAlgebra.Single;
-    using MathNet.Numerics.LinearAlgebra.Storage;
+
     using static MathNet.Numerics.Trig;
 
     /// <summary>
@@ -16,7 +14,7 @@ namespace IRescue.Core.DataTypes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RotationMatrix"/> class.
-        /// Creates an identity 3x3 matrix which corresponds with no rotation around 
+        /// Creates an identity 3x3 matrix which corresponds with no rotation around
         /// all 3 axis.
         /// </summary>
         public RotationMatrix()
@@ -52,11 +50,11 @@ namespace IRescue.Core.DataTypes
             double b = DegreeToRadian(yRotation);
             double a = DegreeToRadian(zRotation);
             float[] rot =
-            {
-                (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)),
-                (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)),
-                (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c))
-            };
+                {
+                    (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)),
+                    (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)),
+                    (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))),  (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c))
+                };
             return rot;
         }
     }
