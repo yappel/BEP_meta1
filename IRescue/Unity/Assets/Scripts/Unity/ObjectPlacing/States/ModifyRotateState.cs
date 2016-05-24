@@ -49,7 +49,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.useDefaultGrabSettings = true;
             mb.grabbableDistance = 0.1f;
             mb.grabbable = false;
-            mb.rotateObjectOnGrab = false;
+            mb.rotateObjectOnTwoHandedGrab = false;
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
 
