@@ -16,8 +16,21 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public StateContext()
         {
+            this.Buttons = new ButtonHandler(this);
             this.CurrentState = new NeutralState(this);
+            this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
+            this.SelectedBuilding.SetActive(false);
         }
+
+        /// <summary>
+        /// Gets or sets the selected building
+        /// </summary>
+        public GameObject SelectedBuilding { get; set; }
+
+        /// <summary>
+        /// Gets the button handler
+        /// </summary>
+        public ButtonHandler Buttons { get; private set; }
 
         /// <summary>
         /// Gets the currentState.
@@ -31,6 +44,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SetState(AbstractState newState)
         {
             this.CurrentState = newState;
+        }
+
+        /// <summary>
+        /// Swap the object that will be placed when placing a new object.
+        /// </summary>
+        /// <param name="gameObject">The new selected object for the object to place</param>
+        public void SwapObject(GameObject gameObject)
+        {
+            UnityEngine.Object.Destroy(this.SelectedBuilding);
+            this.SelectedBuilding = UnityEngine.Object.Instantiate<GameObject>(gameObject);
+            this.SelectedBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
     }
 }

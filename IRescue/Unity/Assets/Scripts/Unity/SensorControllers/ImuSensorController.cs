@@ -4,8 +4,6 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
-    using System;
-
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
