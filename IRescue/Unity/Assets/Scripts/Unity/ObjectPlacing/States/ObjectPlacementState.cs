@@ -75,16 +75,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             this.gameObject.transform.position = position;
-            if (time - this.hoverTime > 2500)
+            if (time - this.hoverTime < 2750)
             {
-                if (time - this.hoverTime < 2750)
-                {
-                    this.PlaceBuilding();
-                } 
-                else
-                {
-                    this.hoverTime = time;
-                }
+                this.hoverTime = time;
+            }
+            else if (time - this.hoverTime > 2500)
+            {
+                this.PlaceBuilding();
             }
         }
 
