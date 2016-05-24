@@ -4,6 +4,8 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -48,47 +50,45 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private const int FrameWidth = 270;
 
         /// <summary>
+        /// The list of all buttons which are set to inactive on every state switch
+        /// </summary>
+        private List<GameObject> buttons;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
         /// <param name="controller">The state controller which tracks events</param>
         public ButtonHandler(StateController controller)
         {
+            this.buttons = new List<GameObject>();
+
             // Create the confirm button
-            this.ConfirmButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ConfirmButton")));
-            this.ConfirmButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ConfirmButtonEvent());
+            this.ConfirmButton = this.AddButton("Prefabs/Buttons/ConfirmButton", () => controller.ConfirmButtonEvent());
 
             // Create the delete button
-            this.DeleteButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/DeleteButton")));
-            this.DeleteButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.DeleteButtonEvent());
+            this.DeleteButton = this.AddButton("Prefabs/Buttons/DeleteButton", () => controller.DeleteButtonEvent());
 
             // Create the translate button
-            this.TranslateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/TranslateButton")));
-            this.TranslateButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyTranslateButtonEvent());
+            this.TranslateButton = this.AddButton("Prefabs/Buttons/TranslateButton", () => controller.ModifyTranslateButtonEvent());
 
             // Create the rotate button
-            this.RotateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/RotateButton")));
-            this.RotateButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyRotateButtonEvent());
+            this.RotateButton = this.AddButton("Prefabs/Buttons/RotateButton", () => controller.ModifyRotateButtonEvent());
 
             // Create the scale button
-            this.ScaleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ScaleButton")));
-            this.ScaleButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ModifyScaleButtonEvent());
+            this.ScaleButton = this.AddButton("Prefabs/Buttons/ScaleButton", () => controller.ModifyScaleButtonEvent());
 
             // Create the backbutton
-            this.BackButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/BackButton")));
-            this.BackButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.BackButtonEvent());
+            this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => controller.BackButtonEvent());
 
             // Create the toggle button
-            this.ToggleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ToggleButton")));
-            this.ToggleButton.transform.GetComponentInChildren<Button>().onClick.AddListener(() => controller.ToggleButtonEvent());
+            this.ToggleButton = this.AddButton("Prefabs/Buttons/ToggleButton", () => controller.ToggleButtonEvent());
 
             // Create the info text
-            this.InfoText = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/InfoText")));
+            this.InfoText = this.AddButton("Prefabs/Buttons/InfoText", () => { });
 
             // Create the object select frame
             this.ObjectSelect = this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller));
-
-            // Set all buttons to inactive
-            this.ResetButtons();
+            this.buttons.Add(this.ObjectSelect);
         }
 
         /// <summary>
@@ -141,15 +141,25 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ResetButtons()
         {
-            this.ScaleButton.SetActive(false);
-            this.RotateButton.SetActive(false);
-            this.TranslateButton.SetActive(false);
-            this.DeleteButton.SetActive(false);
-            this.ConfirmButton.SetActive(false);
-            this.BackButton.SetActive(false);
-            this.ObjectSelect.SetActive(false);
-            this.ToggleButton.SetActive(false);
-            this.InfoText.SetActive(false);
+            for (int i = 0; i < this.buttons.Count; i++)
+            {
+                this.buttons[i].SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Add a button to the game.
+        /// </summary>
+        /// <param name="buttonPrefabName">The path and name of the button prefab</param>
+        /// <param name="action">The lambda of the action that should be taken on press</param>
+        /// <returns>The GameObject of the linked button that can be get in this method</returns>
+        private GameObject AddButton(string buttonPrefabName, UnityEngine.Events.UnityAction action)
+        {
+            GameObject gameObject = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>(buttonPrefabName)));
+            gameObject.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
+            gameObject.SetActive(false);
+            this.buttons.Add(gameObject);
+            return gameObject;
         }
 
         /// <summary>
