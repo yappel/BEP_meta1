@@ -22,7 +22,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private Dictionary<int, Pose> markers;
 
         /// <summary>
-        ///   Initializes a new instance of the MarkerLocations class with the markers from a defines file.
+        /// Initializes a new instance of the <see cref="MarkerLocations"/> class with the markers from a defines file.
         /// </summary>
         /// <param name="path">Path to the xml file</param>
         public MarkerLocations(string path)

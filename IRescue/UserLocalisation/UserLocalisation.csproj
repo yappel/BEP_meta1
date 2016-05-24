@@ -49,14 +49,6 @@
       <HintPath>..\..\packages\MathNet.Numerics.3.11.1\lib\net35\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StyleCop, Version=4.7.1000.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StyleCop.4.7.49.0\lib\net35\StyleCop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="StyleCop.CSharp, Version=4.7.1000.0, Culture=neutral, PublicKeyToken=f904653c63bc2738, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StyleCop.4.7.49.0\lib\net35\StyleCop.CSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -70,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />

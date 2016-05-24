@@ -33,16 +33,6 @@ namespace UserLocalisation.Test.Sensors.IMU
         private Vector3 standardAcceleration;
 
         /// <summary>
-        /// The default acceleration measurement standard deviation.
-        /// </summary>
-        private float accelerationStd = 0;
-
-        /// <summary>
-        /// The default orientation measurement standard deviation.
-        /// </summary>
-        private float orientationStd = 0;
-
-        /// <summary>
         /// The default buffer size.
         /// </summary>
         private int bufferSize = 5;
@@ -76,7 +66,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
-        /// Test the get acceleration 
+        /// Test the get acceleration
         /// </summary>
         [Test]
         public void GetAccelerationTimeStampTest()
@@ -152,7 +142,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
-        /// Test the get orientation. 
+        /// Test the get orientation.
         /// </summary>
         [Test]
         public void GetOrientationTimeStampTest()
@@ -456,7 +446,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
-        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// Test that when more measurements are added than the buffer limit it still returns
         /// the correct results for get last acceleration.
         /// </summary>
         [Test]
@@ -479,7 +469,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
-        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// Test that when more measurements are added than the buffer limit it still returns
         /// the correct results for get last orientation.
         /// </summary>
         [Test]
@@ -502,7 +492,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
-        /// Test that when more measurements are added than the buffer limit it still returns 
+        /// Test that when more measurements are added than the buffer limit it still returns
         /// the correct results for get last velocity.
         /// </summary>
         [Test]

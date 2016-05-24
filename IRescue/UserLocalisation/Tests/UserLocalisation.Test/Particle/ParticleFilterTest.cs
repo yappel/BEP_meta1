@@ -136,6 +136,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 dists.Add(new Normal(0.1));
             }
+
             this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, dists, localweigh);
             Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
             ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
@@ -200,6 +201,7 @@ namespace IRescue.UserLocalisation.Particle
             {
                 dists.Add(this.dist.Object);
             }
+
             this.filter.AddWeights(
                 20, this.filter.Particles, 0, 2, this.filter.Measurementspos, dists, this.filter.Weights);
             Assert.AreEqual(30, this.filter.Particles.RowCount);

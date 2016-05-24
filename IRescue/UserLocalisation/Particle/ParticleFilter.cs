@@ -138,7 +138,7 @@ namespace IRescue.UserLocalisation.Particle
         public Matrix<float> Measurementspos { get; set; }
 
         /// <summary>
-        /// Gets or sets the generator that is used generate a new set of Particles 
+        /// Gets or sets the generator that is used generate a new set of Particles.
         /// </summary>
         private IParticleGenerator Particlegen { get; set; }
 
@@ -300,7 +300,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        ///  Generate a new Weights for the Particles for the dimensions in columns colfrom to colto, based on the likelihood that the particle value is the correct value.
+        ///  Generate a new Weights for the Particles for the dimensions in columns <paramref name="colfrom"/> to <paramref name="colto"/>, based on the likelihood that the particle value is the correct value.
         /// </summary>
         /// <param name="margin">The amount the X in the normal CDF calculation will be moved in both directions to calculate p(X)</param>
         /// <param name="particles">The matrix containing the values of the Particles</param>
@@ -329,7 +329,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Fills the array arr with values value
+        /// Fills the array <paramref name="arr"/> with values value
         /// </summary>
         /// <typeparam name="T">The type of the elements for the array</typeparam>
         /// <param name="arr">The array to fill</param>

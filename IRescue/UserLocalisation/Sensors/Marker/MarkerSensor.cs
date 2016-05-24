@@ -54,8 +54,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
         /// <param name="path">url to the xml file</param>
-        /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
         /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
+        /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
         public MarkerSensor(string path, IDistribution posDistType, IDistribution oriDistType)
         {
             this.markerLocations = new MarkerLocations(path);
@@ -73,7 +73,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <param name="bufferLength">Length of the buffer</param>
         /// <param name="posDistType">The type of the distribution of the positions measurements</param>
         /// <param name="oriDistType">The type of the distribution of the orientation measurements</param>
-        public MarkerSensor(string path, int bufferLength, IDistribution posDistType, IDistribution oriDistType) : this(path, posDistType, oriDistType)
+        public MarkerSensor(string path, int bufferLength, IDistribution posDistType, IDistribution oriDistType)
+            : this(path, posDistType, oriDistType)
         {
             this.bufferLength = bufferLength;
         }
@@ -96,8 +97,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 {
                     Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
                     Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions[this.pointer] = (new Measurement<Vector3>(location.Position, timeStamp, this.posDistType));
-                    this.orientations[this.pointer] = (new Measurement<Vector3>(location.Orientation, timeStamp, this.oriDistType));
+                    this.positions[this.pointer] = new Measurement<Vector3>(location.Position, timeStamp, this.posDistType);
+                    this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, timeStamp, this.oriDistType);
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }
