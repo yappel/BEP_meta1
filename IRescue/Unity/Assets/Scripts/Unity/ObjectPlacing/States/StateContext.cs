@@ -53,10 +53,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SwapObject(GameObject gameObject)
         {
             UnityEngine.Object.Destroy(this.SelectedBuilding);
-            UnityEngine.Object.Instantiate<GameObject>(gameObject);
-            gameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-            this.SelectedBuilding = gameObject;
-            this.SelectedBuilding.SetActive(false);
+            this.SelectedBuilding = UnityEngine.Object.Instantiate<GameObject>(gameObject);
+            this.SelectedBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
     }
 }
