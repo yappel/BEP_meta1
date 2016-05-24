@@ -37,10 +37,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Method when a point event has occurred to place a building (ground plane). A single finger fully extended.
+        /// Gets the stateContext.
         /// Coupled state context which keeps track of the current active state.
         /// </summary>
-        private StateContext stateContext;
+        public StateContext StateContext { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractState"/> class.
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         protected AbstractState(StateContext stateContext)
         {
-            this.stateContext = stateContext;
+            this.StateContext = stateContext;
         }
 
         /// <summary>
