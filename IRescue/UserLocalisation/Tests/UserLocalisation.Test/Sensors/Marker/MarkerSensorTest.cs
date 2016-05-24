@@ -78,14 +78,10 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.mlocmoq = new MarkerLocations();
             this.mlocmoq.AddMarker(
                 0,
-                new Pose(
-                    new Vector3(25, 13.52f, 5),
-                    new Vector3(0, 0, 0)));
+                new Pose(new Vector3(25, 13.52f, 5), new Vector3(0, 0, 0)));
             this.mlocmoq.AddMarker(
                 1,
-                new Pose(
-                    new Vector3(12, 21.12f, 13),
-                    new Vector3(0, 0, 0)));
+                new Pose(new Vector3(12, 21.12f, 13), new Vector3(0, 0, 0)));
             this.posDistType = new Mock<IDistribution>();
             this.oriDistType = new Mock<IDistribution>();
             this.sensor = new MarkerSensor(this.mlocmoq, this.posDistType.Object, this.oriDistType.Object);
@@ -312,28 +308,16 @@ namespace UserLocalisation.Test.Sensors.Marker
                         this.bulkData[i][0],
                         this.bulkData[i][1],
                         this.bulkData[i][2]),
-                    new Vector3(
-                        this.bulkData[i][3],
-                        this.bulkData[i][4],
-                        this.bulkData[i][5]));
+                    new Vector3(this.bulkData[i][3], this.bulkData[i][4], this.bulkData[i][5]));
                 Pose measurement = new Pose(
                     new Vector3(
                         this.bulkData[i][6],
                         this.bulkData[i][7],
                         this.bulkData[i][8]),
-                    new Vector3(
-                        this.bulkData[i][9],
-                        this.bulkData[i][10],
-                        this.bulkData[i][11]));
+                    new Vector3(this.bulkData[i][9], this.bulkData[i][10], this.bulkData[i][11]));
                 Pose output = new Pose(
-                    new Vector3(
-                        this.bulkData[i][12],
-                        this.bulkData[i][13],
-                        this.bulkData[i][14]),
-                    new Vector3(
-                        this.bulkData[i][15],
-                        this.bulkData[i][16],
-                        this.bulkData[i][17]));
+                    new Vector3(this.bulkData[i][12], this.bulkData[i][13], this.bulkData[i][14]),
+                    new Vector3(this.bulkData[i][15], this.bulkData[i][16], this.bulkData[i][17]));
                 this.mlocmoq.AddMarker(i, marker);
                 this.TestComplexInOut(measurement, output, i);
             }
