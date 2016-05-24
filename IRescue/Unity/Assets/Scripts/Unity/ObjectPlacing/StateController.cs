@@ -8,6 +8,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using Meta;
     using States;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -286,6 +287,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             float minDistance = float.MaxValue;
             for (int i = 0; i < hits.Length; i++)
             {
+                if (hits[i].transform.gameObject.GetComponent<Button>() != null)
+                {
+                    gameObject = null;
+                    return new Vector3();
+                }
+
                 if (hits[i].distance < minDistance && hits[i].transform.gameObject.GetComponent<GroundPlane>() != null)
                 {
                     minDistance = hits[i].distance;
