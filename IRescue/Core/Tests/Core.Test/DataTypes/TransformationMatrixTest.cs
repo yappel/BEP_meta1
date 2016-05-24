@@ -116,10 +116,10 @@ namespace Core.Test.DataTypes
         /// <param name="actual">The actual result.</param>
         private void AssertVectorAreEqual(Vector4 expected, Vector4 actual)
         {
-            Assert.AreEqual(expected.X, actual.X);
-            Assert.AreEqual(expected.Y, actual.Y);
-            Assert.AreEqual(expected.Z, actual.Z);
-            Assert.AreEqual(expected.W, actual.W);
+            Assert.AreEqual(expected.X, actual.X, 0.0001);
+            Assert.AreEqual(expected.Y, actual.Y, 0.0001);
+            Assert.AreEqual(expected.Z, actual.Z, 0.0001);
+            Assert.AreEqual(expected.W, actual.W, 0.0001);
         }
     }
 }
