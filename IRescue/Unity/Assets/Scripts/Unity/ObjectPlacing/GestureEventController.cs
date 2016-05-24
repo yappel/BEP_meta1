@@ -42,6 +42,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private bool canSwitchState;
 
         /// <summary>
+        /// Bool if watching in 3d or not;
+        /// </summary>
+        private bool threeDMode = true;
+
+        /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
         public void Init()
@@ -54,6 +59,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Update()
         {
+            this.MonoStereo();
             this.stateContext.CurrentState.RunUpdate();
             if (this.CanSwitch())
             {
@@ -158,6 +164,23 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             if (this.canSwitchState)
             {
                 this.stateContext.SwapObject("Objects/" + resourcePath);
+            }
+        }
+
+        /// <summary>
+        /// Changes the button size if the monocular state changes.
+        /// </summary>
+        private void MonoStereo()
+        {
+            if (threeDMode && Meta.MetaCameraMode.monocular)
+            {
+                this.threeDMode = false;
+                this.stateContext.Buttons.SetScale(3);
+            }
+            else if (!threeDMode && !Meta.MetaCameraMode.monocular)
+            {
+                this.threeDMode = true;
+                this.stateContext.Buttons.SetScale(1);
             }
         }
 

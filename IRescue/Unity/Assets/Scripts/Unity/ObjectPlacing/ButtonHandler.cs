@@ -56,11 +56,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private List<GameObject> buttons;
 
         /// <summary>
+        /// The wrapper for all buttons to change the scale for all buttons the same
+        /// </summary>
+        private GameObject buttonWrapper;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
         /// <param name="controller">The state controller which tracks events</param>
         public ButtonHandler(GestureEventController controller)
         {
+            this.buttonWrapper = new GameObject("Buttons");
             this.buttons = new List<GameObject>();
 
             // Create the confirm button
@@ -147,6 +153,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
         }
 
+        public void SetScale(int newScale)
+        {
+            this.buttonWrapper.transform.localScale = new Vector3(newScale, newScale, 1);
+        }
+
         /// <summary>
         /// Add a button to the game from a GameObject
         /// </summary>
@@ -160,6 +171,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                 button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
             }
 
+            button.transform.root.parent = this.buttonWrapper.transform;
             button.SetActive(false);
             this.buttons.Add(button);
             return button;
