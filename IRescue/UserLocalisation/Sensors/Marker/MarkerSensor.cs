@@ -7,6 +7,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     using System;
     using System.Collections.Generic;
     using Core.DataTypes;
+    using Core.Distributions;
     using Core.Utils;
     using static MathNet.Numerics.Trig;
 
@@ -15,26 +16,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     /// </summary>
     public class MarkerSensor : IPositionSource, IOrientationSource
     {
-        /// <summary>
-        /// Error or the orientation in aprilTags
-        /// </summary>
-        private const float AprilTagsErrorOrientation = 2.0f;
-
-        /// <summary>
-        /// Error of the position in aprilTags.
-        /// </summary>
-        private const float AprilTagsErrorPosition = 0.1f;
-
-        /// <summary>
-        ///   Standard deviation of marker tracking.
-        /// </summary>
-        private readonly float standardDeviationOrientation;
-
-        /// <summary>
-        /// Standard deviation of the marker position tracking.
-        /// </summary>
-        private readonly float standardDeviationPosition;
-
         /// <summary>
         ///  The MarkerLocations.
         /// </summary>
@@ -51,6 +32,16 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private Measurement<Vector3>[] positions;
 
         /// <summary>
+        /// The type of probability distribution belonging to the measurements of the position.
+        /// </summary>
+        private IDistribution posDistType;
+
+        /// <summary>
+        /// The type of probability distribution belonging to the measurements of the orientation.
+        /// </summary>
+        private IDistribution oriDistType;
+
+        /// <summary>
         /// Current index pointer;
         /// </summary>
         private int pointer = 0;
@@ -63,14 +54,14 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="standardDeviationOrientation">the standard deviation of the orientation</param>
-        /// <param name="standardDeviationPosition">The standard deviation of the position</param>
-        /// <param name="markerLocations">The MarkerLocations.</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, MarkerLocations markerLocations)
+        /// <param name="path">url to the xml file</param>
+        /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
+        /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
+        public MarkerSensor(string path, IDistribution posDistType, IDistribution oriDistType)
         {
-            this.standardDeviationOrientation = standardDeviationOrientation + AprilTagsErrorOrientation;
-            this.standardDeviationPosition = standardDeviationPosition + AprilTagsErrorPosition;
-            this.markerLocations = markerLocations;
+            this.markerLocations = new MarkerLocations(path);
+            this.posDistType = posDistType;
+            this.oriDistType = oriDistType;
             this.orientations = new Measurement<Vector3>[this.bufferLength];
             this.positions = new Measurement<Vector3>[this.bufferLength];
             this.Measurements = 0;
@@ -79,14 +70,16 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class with a given buffer size.
         /// </summary>
-        /// <param name="standardDeviationOrientation">the standard deviation of the orientation of the sensor</param>
-        /// <param name="standardDeviationPosition">The standard deviation of the position of the sensor</param>
-        /// /// <param name="markerLocations">The MarkerLocations.</param>
+        /// <param name="path">url to the xml file</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, MarkerLocations markerLocations, int bufferLength)
-            : this(standardDeviationOrientation, standardDeviationPosition, markerLocations)
+        /// <param name="posDistType">The type of the distribution of the positions measurements</param>
+        /// <param name="oriDistType">The type of the distribution of the orientation measurements</param>
+        public MarkerSensor(string path, int bufferLength, IDistribution posDistType, IDistribution oriDistType)
+            : this(path, posDistType, oriDistType)
         {
             this.bufferLength = bufferLength;
+            this.orientations = new Measurement<Vector3>[this.bufferLength];
+            this.positions = new Measurement<Vector3>[this.bufferLength];
         }
 
         /// <summary>
@@ -117,11 +110,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
 
                     // TODO Could be faster => add method in Vector4 to create a Vector3 from it
                     Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-                    this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
+                    this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
 
                     RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
                     Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
-                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, this.standardDeviationOrientation, timeStamp);
+                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
 
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;

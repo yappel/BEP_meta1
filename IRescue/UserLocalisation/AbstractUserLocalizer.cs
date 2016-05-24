@@ -14,6 +14,20 @@ namespace IRescue.UserLocalisation
     public abstract class AbstractUserLocalizer
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractUserLocalizer"/> class.
+        /// </summary>
+        /// <param name="fieldsize">The maximum and minimum values of the positions</param>
+        protected AbstractUserLocalizer(FieldSize fieldsize)
+        {
+            this.Fieldsize = fieldsize;
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the playfield where to locate the user in.
+        /// </summary>
+        public FieldSize Fieldsize { get; set; }
+
+        /// <summary>
         ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
         /// </summary>
         /// <param name="timeStamp">The timestamp of the point in time to calculate the <see cref="Pose"/> at.</param>

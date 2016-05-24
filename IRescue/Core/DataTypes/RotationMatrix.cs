@@ -19,7 +19,8 @@ namespace IRescue.Core.DataTypes
         /// Creates an identity 3x3 matrix which corresponds with no rotation around 
         /// all 3 axis.
         /// </summary>
-        public RotationMatrix() : base(3, 3)
+        public RotationMatrix()
+            : base(3, 3)
         {
             this[0, 0] = 1;
             this[1, 1] = 1;
@@ -33,7 +34,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="xRotation">The rotation around the x axis in degrees.</param>
         /// <param name="yRotation">The rotation around the y axis in degrees.</param>
         /// <param name="zRotation">The rotation around the z axis in degrees.</param>
-        public RotationMatrix(float xRotation, float yRotation, float zRotation) : base(3, 3, CreateMatrixVector(xRotation, yRotation, zRotation))
+        public RotationMatrix(float xRotation, float yRotation, float zRotation)
+            : base(3, 3, CreateMatrixVector(xRotation, yRotation, zRotation))
         {
         }
 
