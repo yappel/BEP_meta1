@@ -35,7 +35,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext();
+            this.stateContext = new StateContext(this);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a back button is pressed.
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void BackButtonEvent(PointerEventData eventData)
+        public void BackButtonEvent()
         {
             this.stateContext.CurrentState.OnBackButton();
         }
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a confirm button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void ConfirmButtonEvent(PointerEventData eventData)
+        public void ConfirmButtonEvent()
         {
             this.stateContext.CurrentState.OnConfirmButton();
         }
@@ -80,7 +80,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a modify rotate button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void ModifyRotateButtonEvent(PointerEventData eventData)
+        public void ModifyRotateButtonEvent()
         {
             this.stateContext.CurrentState.OnRotateButton();
         }
@@ -89,7 +89,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a modify translate button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void ModifyTranslateButtonEvent(PointerEventData eventData)
+        public void ModifyTranslateButtonEvent()
         {
             this.stateContext.CurrentState.OnTranslateButton();
         }
@@ -98,7 +98,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a modify scale button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void ModifyScaleButtonEvent(PointerEventData eventData)
+        public void ModifyScaleButtonEvent()
         {
             this.stateContext.CurrentState.OnScaleButton();
         }
@@ -107,7 +107,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Event when a delete object button is pressed
         /// </summary>
         /// <param name="eventData">event data about the button press</param>
-        public void DeleteButtonEvent(PointerEventData eventData)
+        public void DeleteButtonEvent()
         {
             this.stateContext.CurrentState.OnDeleteButton();
         }

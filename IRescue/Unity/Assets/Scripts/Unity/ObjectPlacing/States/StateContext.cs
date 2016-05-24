@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using Assets.Unity.Navigation;
     using UnityEngine;
 
     /// <summary>
@@ -14,10 +13,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
+        /// <param name="controller">The controller which keeps track of the events</param>
         /// </summary>
-        public StateContext()
+        public StateContext(StateController controller)
         {
-            this.Buttons = new ButtonHandler();
+            this.Buttons = new ButtonHandler(controller);
             this.CurrentState = new NeutralState(this);
             this.SwapObject(Resources.Load<GameObject>("Objects/DefaultObject/Instance"));
             this.SelectedBuilding.SetActive(false);

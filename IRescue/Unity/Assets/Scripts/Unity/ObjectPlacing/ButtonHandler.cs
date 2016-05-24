@@ -4,8 +4,10 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using Assets.Unity.Navigation;
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -13,17 +15,70 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     public class ButtonHandler
     {
         /// <summary>
+        /// The location at which the objects are stored.
+        /// </summary>
+        private const string ObjectPath = "Objects";
+
+        /// <summary>
+        /// Path to the preview location
+        /// </summary>
+        private const string PreviewPath = "Objects/Previews/";
+
+        /// <summary>
+        /// Amount of columns allowed in the frame for object selecting
+        /// </summary>
+        private const int ColumnCount = 3;
+
+        /// <summary>
+        /// The width of an entry for the object selecting
+        /// </summary>
+        private const int EntryWidth = 160;
+
+        /// <summary>
+        /// The height of an entry for the object selecting
+        /// </summary>
+        private const int EntryHeight = 160;
+
+        /// <summary>
+        /// Amount of padding for an entry
+        /// </summary>
+        private const int Padding = 10;
+
+        /// <summary>
+        /// Width of the select frame displayed
+        /// </summary>
+        private const int FrameWidth = 270;
+
+        /// <summary>
+        /// The list of all buttons which are set to inactive on every state switch
+        /// </summary>
+        private List<GameObject> buttons;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
-        public ButtonHandler()
+        /// <param name="controller">The state controller which tracks events</param>
+        public ButtonHandler(StateController controller)
         {
-            this.ConfirmButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ConfirmButton")));
-            this.DeleteButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/DeleteButton")));
-            this.TranslateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/TranslateButton")));
-            this.RotateButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/RotateButton")));
-            this.ScaleButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ScaleButton")));
-            this.BackButton = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/BackButton")));
-            this.ResetButtons();
+            this.buttons = new List<GameObject>();
+
+            // Create the confirm button
+            this.ConfirmButton = this.AddButton("Prefabs/Buttons/ConfirmButton", () => controller.ConfirmButtonEvent());
+
+            // Create the delete button
+            this.DeleteButton = this.AddButton("Prefabs/Buttons/DeleteButton", () => controller.DeleteButtonEvent());
+
+            // Create the translate button
+            this.TranslateButton = this.AddButton("Prefabs/Buttons/TranslateButton", () => controller.ModifyTranslateButtonEvent());
+
+            // Create the rotate button
+            this.RotateButton = this.AddButton("Prefabs/Buttons/RotateButton", () => controller.ModifyRotateButtonEvent());
+
+            // Create the scale button
+            this.ScaleButton = this.AddButton("Prefabs/Buttons/ScaleButton", () => controller.ModifyScaleButtonEvent());
+
+            // Create the backbutton
+            this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => controller.BackButtonEvent());
         }
 
         /// <summary>
@@ -61,12 +116,38 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void ResetButtons()
         {
-            this.ScaleButton.SetActive(false);
-            this.RotateButton.SetActive(false);
-            this.TranslateButton.SetActive(false);
-            this.DeleteButton.SetActive(false);
-            this.ConfirmButton.SetActive(false);
-            this.BackButton.SetActive(false);
+            for (int i = 0; i < this.buttons.Count; i++)
+            {
+                this.buttons[i].SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Add a button to the game from a GameObject
+        /// </summary>
+        /// <param name="button">The initialized button game object</param>
+        /// <param name="action">The lambda of the action that should be taken on press</param>
+        /// <returns>The GameObject of the linked button that can be get in this method</returns>
+        private GameObject AddButton(GameObject button, UnityEngine.Events.UnityAction action)
+        {
+            if (button.transform.GetComponentInChildren<Button>() != null)
+            {
+                button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
+            }
+            button.SetActive(false);
+            this.buttons.Add(button);
+            return button;
+        }
+
+        /// <summary>
+        /// Add a button to the game from a path name.
+        /// </summary>
+        /// <param name="buttonPrefabName">The path and name of the button prefab</param>
+        /// <param name="action">The lambda of the action that should be taken on press</param>
+        /// <returns>The GameObject of the linked button that can be get in this method</returns>
+        private GameObject AddButton(string buttonPrefabName, UnityEngine.Events.UnityAction action)
+        {
+            return this.AddButton(this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>(buttonPrefabName))), action);
         }
 
         /// <summary>
@@ -76,7 +157,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <returns>The MGUI.Button game objects</returns>
         private GameObject GetButton(GameObject wrapper)
         {
-            return wrapper.transform.GetChild(0).GetChild(0).gameObject;
+            return wrapper.transform.GetChild(0).gameObject;
         }
     }
 }

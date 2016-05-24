@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using Assets.Unity.Navigation;
     using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
