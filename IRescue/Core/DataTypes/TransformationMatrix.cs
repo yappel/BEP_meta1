@@ -17,7 +17,7 @@ namespace IRescue.Core.DataTypes
         /// Creates an identity 4x4 matrix which corresponds with no rotation around 
         /// all 3 axis and no translation on the 3 axis. Defaults w to 1.
         /// </summary>
-        public TransformationMatrix() : base(4,4)
+        public TransformationMatrix() : base(4, 4)
         {
             this[0, 0] = 1;
             this[1, 1] = 1;

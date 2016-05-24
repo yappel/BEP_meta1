@@ -68,9 +68,9 @@ namespace Core.Test.DataTypes
         public void NoTranslationNoRotationTest()
         {
             this.transformation = new TransformationMatrix();
-            Vector4 res = new Vector4(1,2,3,4);
+            Vector4 res = new Vector4(1, 2, 3, 4);
             this.transformation.Multiply(res, res);
-            this.AssertVectorAreEqual(new Vector4(1,2,3,4), res);
+            this.AssertVectorAreEqual(new Vector4(1, 2, 3, 4), res);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Core.Test.DataTypes
         public void TransformationMatrixFromVector3Test()
         {
             this.transformation = new TransformationMatrix(new Vector3(3, 2, 1), new Vector3(0, 90, 0));
-            Vector4 res = new Vector4(1,2,3,4);
+            Vector4 res = new Vector4(1, 2, 3, 4);
             this.transformation.Multiply(res, res);
             this.AssertVectorAreEqual(new Vector4(15, 10, 3, 4), res);
         }
