@@ -21,30 +21,45 @@ namespace Assets.Scripts.Unity.SensorControllers
         ///   Return the acceleration source.
         /// </summary>
         /// <returns>The IAccelerationSource</returns>
-        public abstract IAccelerationSource GetAccelerationSource();
+        public virtual IAccelerationSource GetAccelerationSource()
+        {
+            return null;
+        }
 
         /// <summary>
         ///   Return the Displacement source.
         /// </summary>
         /// <returns>The IDisplacementSource</returns>
-        public abstract IDisplacementSource GetDisplacementSource();
+        public virtual IDisplacementSource GetDisplacementSource()
+        {
+            return null;
+        }
 
         /// <summary>
         ///   Return the Orientation source.
         /// </summary>
         /// <returns>The IOrientationSource</returns>
-        public abstract IOrientationSource GetOrientationSource();
+        public virtual IOrientationSource GetOrientationSource()
+        {
+            return null;
+        }
 
         /// <summary>
         ///   Return the position source.
         /// </summary>
         /// <returns>the IPositionSource</returns>
-        public abstract IPositionSource GetPositionSource();
+        public virtual IPositionSource GetPositionSource()
+        {
+            return null;
+        }
 
         /// <summary>
         ///   Return the velocity source.
         /// </summary>
         /// <returns>the IVelocitySource</returns>
-        public abstract IVelocitySource GetVelocitySource();
+        public virtual IVelocitySource GetVelocitySource()
+        {
+            return null;
+        }
     }
 }

@@ -18,11 +18,13 @@ public abstract class AbstractLocalizerCoupler
     /// <returns>if the controller was registered once or more</returns>
     public bool RegisterSource(AbstractSensorController sensor)
     {
-        return this.RegisterAccelerationReceiver(sensor.GetAccelerationSource()) ||
-            this.RegisterDisplacementReceiver(sensor.GetDisplacementSource()) ||
-            this.RegisterOrientationReceiver(sensor.GetOrientationSource()) ||
-            this.RegisterPositionReceiver(sensor.GetPositionSource()) ||
-            this.RegisterVelocityReceiver(sensor.GetVelocitySource());
+        bool res = false;
+        res = this.RegisterAccelerationReceiver(sensor.GetAccelerationSource()) || res;
+        res = this.RegisterDisplacementReceiver(sensor.GetDisplacementSource()) || res;
+        res = this.RegisterOrientationReceiver(sensor.GetOrientationSource()) || res;
+        res = this.RegisterPositionReceiver(sensor.GetPositionSource()) || res;
+        res = this.RegisterVelocityReceiver(sensor.GetVelocitySource()) || res;
+        return res; 
     }
 
     /// <summary>
