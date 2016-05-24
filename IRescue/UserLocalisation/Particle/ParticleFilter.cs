@@ -12,7 +12,7 @@ namespace IRescue.UserLocalisation.Particle
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
     using Core.DataTypes;
-    using MathNet.Numerics.Distributions;
+    using Core.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
     using PosePrediction;
@@ -67,6 +67,16 @@ namespace IRescue.UserLocalisation.Particle
         /// Array of the minimal particle values in each dimension.
         /// </summary>
         private float[] minima;
+
+        /// <summary>
+        /// List with all the distributions of the position measurements.
+        /// </summary>
+        private List<IDistribution> posDistributions;
+
+        /// <summary>
+        /// List with all the distributions of the orientation measurements.
+        /// </summary>
+        private List<IDistribution> oriDistributions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
@@ -130,7 +140,7 @@ namespace IRescue.UserLocalisation.Particle
         public Matrix<float> Measurementspos { get; set; }
 
         /// <summary>
-        /// Gets or sets the generator that is used generate a new set of Particles 
+        /// Gets or sets the generator that is used generate a new set of Particles.
         /// </summary>
         private IParticleGenerator Particlegen { get; set; }
 
@@ -264,7 +274,7 @@ namespace IRescue.UserLocalisation.Particle
                 return;
             }
 
-            this.AddWeights(margin, particles, 0, 2, measurements, weights);
+            this.AddWeights(margin, particles, 0, 2, measurements, this.posDistributions, weights);
         }
 
         /// <summary>
@@ -297,19 +307,20 @@ namespace IRescue.UserLocalisation.Particle
                 }
             }
 
-            this.AddWeights(margin, particles, 3, 5, measurements, weights);
+            this.AddWeights(margin, particles, 3, 5, measurements, this.oriDistributions, weights);
         }
 
         /// <summary>
-        ///  Generate a new Weights for the Particles for the dimensions in columns <see cref="colfrom"/> to <see cref="colto"/>, based on the likelihood that the particle value is the correct value.
+        ///  Generate a new Weights for the Particles for the dimensions in columns <paramref name="colfrom"/> to <paramref name="colto"/>, based on the likelihood that the particle value is the correct value.
         /// </summary>
         /// <param name="margin">The amount the X in the normal CDF calculation will be moved in both directions to calculate p(X)</param>
         /// <param name="particles">The matrix containing the values of the Particles</param>
         /// <param name="colfrom">The lower bound of the range of columns to calculate new Weights for</param>
         /// <param name="colto">The upper bound of the range of columns to calculate new Weights for</param>
         /// <param name="measurements">The matrix containing the measurements of the <see cref="IOrientationSource"/>s</param>
+        /// <param name="dists">List with the distributions of the measurements</param>
         /// <param name="weights">The matrix containing the current Weights of the Particles</param>
-        public void AddWeights(double margin, Matrix<float> particles, int colfrom, int colto, Matrix<float> measurements, Matrix<float> weights)
+        public void AddWeights(double margin, Matrix<float> particles, int colfrom, int colto, Matrix<float> measurements, List<IDistribution> dists, Matrix<float> weights)
         {
             for (int wcolumn = colfrom; wcolumn <= colto; wcolumn++)
             {
@@ -319,10 +330,8 @@ namespace IRescue.UserLocalisation.Particle
                     var p = 1d;
                     for (int measrow = 0; measrow < measurements.Column(wcolumn - colfrom).Count; measrow++)
                     {
-                        float std = measurements[measrow, 3];
                         float meas = measurements[measrow, wcolumn - colfrom];
-                        p = p * (Normal.CDF(particle, std, meas + margin) -
-                               Normal.CDF(particle, std, meas - margin));
+                        p = p * (dists[measrow].CDF(particle, meas + margin) - dists[measrow].CDF(particle, meas - margin));
                     }
 
                     weights[row, wcolumn] = (float)p;
@@ -331,7 +340,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Fills the array <see cref="arr"/> with values <see cref="value"/>
+        /// Fills the array <paramref name="arr"/> with values value
         /// </summary>
         /// <typeparam name="T">The type of the elements for the array</typeparam>
         /// <param name="arr">The array to fill</param>
@@ -380,16 +389,17 @@ namespace IRescue.UserLocalisation.Particle
         {
             List<float> measx = new List<float>(),
                 measy = new List<float>(),
-                measz = new List<float>(),
-                std = new List<float>();
+                measz = new List<float>();
+            List<IDistribution> dist = new List<IDistribution>();
             foreach (IOrientationSource orientationSource in this.orilist)
             {
                 List<Measurement<Vector3>> measall = orientationSource.GetOrientations(this.previousTS, timeStamp);
-                this.ProcessMeas(measx, measy, measz, std, measall);
+                this.ProcessMeas(measx, measy, measz, dist, measall);
             }
 
-            IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz).Concat(std);
-            this.Measurementsori = !std.Any() ? null : new DenseMatrix(std.Count, 4, concatenated.ToArray());
+            this.oriDistributions = dist;
+            IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz);
+            this.Measurementsori = !dist.Any() ? null : new DenseMatrix(dist.Count, 3, concatenated.ToArray());
         }
 
         /// <summary>
@@ -398,9 +408,9 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="measx">List to put the X data in.</param>
         /// <param name="measy">List to put the Y data in.</param>
         /// <param name="measz">List to put the Z data in.</param>
-        /// <param name="std">List to add the standard deviation.</param>
+        /// <param name="dists">List to add the probability distributions.</param>
         /// <param name="measall">List of measurements to process.</param>
-        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<float> std, List<Measurement<Vector3>> measall)
+        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<IDistribution> dists, List<Measurement<Vector3>> measall)
         {
             if (measall.Count <= 0)
             {
@@ -428,7 +438,7 @@ namespace IRescue.UserLocalisation.Particle
                 this.AddMeasurmentsToList(measurement.Data.X, measx);
                 this.AddMeasurmentsToList(measurement.Data.Y, measy);
                 this.AddMeasurmentsToList(measurement.Data.Z, measz);
-                this.AddMeasurmentsToList(measurement.Std, std);
+                dists.Add(measurement.DistributionType);
             }
         }
 
@@ -454,18 +464,17 @@ namespace IRescue.UserLocalisation.Particle
         private void RetrievePosMeasurements(long timeStamp)
         {
             ////If speedup needed change dimensions of matrices to remove need of temp storage lists
-            List<float> measx = new List<float>(),
-                measy = new List<float>(),
-                measz = new List<float>(),
-                std = new List<float>();
+            List<float> measx = new List<float>(), measy = new List<float>(), measz = new List<float>();
+            List<IDistribution> dist = new List<IDistribution>();
             foreach (IPositionSource positionSource in this.poslist)
             {
                 List<Measurement<Vector3>> measall = positionSource.GetPositions(this.previousTS, timeStamp);
-                this.ProcessMeas(measx, measy, measz, std, measall);
+                this.ProcessMeas(measx, measy, measz, dist, measall);
             }
 
-            IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz).Concat(std);
-            this.Measurementspos = !std.Any() ? null : new DenseMatrix(std.Count, 4, concatenated.ToArray());
+            this.posDistributions = dist;
+            IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz);
+            this.Measurementspos = !dist.Any() ? null : new DenseMatrix(dist.Count, 3, concatenated.ToArray());
         }
 
         /// <summary>

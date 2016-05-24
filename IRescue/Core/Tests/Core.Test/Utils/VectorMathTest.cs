@@ -26,7 +26,7 @@ namespace Core.Test
         }
 
         /// <summary>
-        /// Test that a simple 90 degrees rotation around the Y axis returns the correct result. 
+        /// Test that a simple 90 degrees rotation around the Y axis returns the correct result.
         /// </summary>
         [Test]
         public void RotateVectorSimpleYAxisRotationTest()
