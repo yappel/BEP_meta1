@@ -5,7 +5,6 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using IRescue.Core.Utils;
-    using UnityEngine;
 
     /// <summary>
     ///  Context for keeping track of the current states.
@@ -20,8 +19,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>
-        /// <param name="controller">The state controller which tracks events</param>
-        public StateContext(StateController controller)
+        /// <param name="controller">The event controller which keeps track of valid events</param>
+        public StateContext(GestureEventController controller)
         {
             this.Buttons = new ButtonHandler(controller);
             this.CurrentState = new NeutralState(this);

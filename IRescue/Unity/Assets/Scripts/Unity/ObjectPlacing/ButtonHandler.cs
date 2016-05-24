@@ -6,6 +6,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 {
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using States;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -58,7 +59,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Initializes a new instance of the <see cref="ButtonHandler"/> class
         /// </summary>
         /// <param name="controller">The state controller which tracks events</param>
-        public ButtonHandler(StateController controller)
+        public ButtonHandler(GestureEventController controller)
         {
             this.buttons = new List<GameObject>();
 
@@ -158,6 +159,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
             }
+
             button.SetActive(false);
             this.buttons.Add(button);
             return button;
@@ -194,7 +196,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="frameWidth">the preferred size of the frame</param>
         /// <returns>The Object select frame game object</returns>
         /// <param name="controller">The state controller which tracks events</param>
-        private GameObject InitObjectSelect(int columnSize, int entryWidth, int entryHeight, int padding, int frameWidth, StateController controller)
+        private GameObject InitObjectSelect(int columnSize, int entryWidth, int entryHeight, int padding, int frameWidth, GestureEventController controller)
         {
             GameObject objectSelect = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/ObjectSelect"));
             GameObject[] objects = Resources.LoadAll<GameObject>(ObjectPath);
@@ -242,7 +244,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="padding">padding to either sides of the entry</param>
         /// <param name="controller">The state controller which tracks events</param>
         private void AddScrollEntry(
-            GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, StateController controller)
+            GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, GestureEventController controller)
         {
             entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickButton(entry.transform, controller, name));
             entry.transform.FindChild("Sprite").GetComponent<Image>().sprite = this.CreateImage(name);
@@ -283,7 +285,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="entry">the object entry in the scroll pane</param>
         /// <param name="controller">the state controller which will receive the event call</param>
         /// <param name="name">the name of the object</param>
-        private void ClickButton(Transform entry, StateController controller, string name)
+        private void ClickButton(Transform entry, GestureEventController controller, string name)
         {
             foreach (Transform child in entry.parent.transform)
             {

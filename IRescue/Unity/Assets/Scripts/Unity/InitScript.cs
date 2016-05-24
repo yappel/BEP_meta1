@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(20, 20);
+            this.InitPlanes(200, 200);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void AddControllers()
         {
-            gameObject.AddComponent<StateController>().Init();
+            gameObject.AddComponent<GestureEventController>().Init();
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {

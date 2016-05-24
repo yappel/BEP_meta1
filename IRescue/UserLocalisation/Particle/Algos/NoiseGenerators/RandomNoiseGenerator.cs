@@ -27,7 +27,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NoiseGenerator"/> class.
+        /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
         /// </summary>
         /// <param name="min">THe minimum amount of noise added to a particle</param>
         /// <param name="max">The maximum amount of noise added to a particle</param>

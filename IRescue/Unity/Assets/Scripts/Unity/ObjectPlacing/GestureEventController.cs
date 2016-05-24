@@ -1,4 +1,4 @@
-﻿// <copyright file="StateController.cs" company="Delft University of Technology">
+﻿// <copyright file="GestureEventController.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
@@ -11,9 +11,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using UnityEngine.UI;
 
     /// <summary>
-    ///  Controller for holding track of the gestures and states.
+    /// This controller keeps track of gesture events and passes it to a statecontext.
     /// </summary>
-    public class StateController : MonoBehaviour
+    public class GestureEventController : MonoBehaviour
     {
         /// <summary>
         /// The time before buttons can be pressed after switching states.

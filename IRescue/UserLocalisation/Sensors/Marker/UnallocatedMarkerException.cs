@@ -11,10 +11,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     public class UnallocatedMarkerException : Exception
     {
         /// <summary>
-        ///   Initializes a new instance of the UnallocatedMarkerException class with a message.
+        /// Initializes a new instance of the <see cref="UnallocatedMarkerException"/> class.
         /// </summary>
         /// <param name="message">Custom message for the Exception.</param>
-        public UnallocatedMarkerException(string message) : base(message)
+        public UnallocatedMarkerException(string message)
+            : base(message)
         {
         }
     }

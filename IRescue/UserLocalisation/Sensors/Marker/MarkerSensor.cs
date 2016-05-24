@@ -7,33 +7,15 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     using System;
     using System.Collections.Generic;
     using Core.DataTypes;
+    using Core.Distributions;
     using Core.Utils;
+    using static MathNet.Numerics.Trig;
 
     /// <summary>
     ///  This class keeps track of the location based on Markers.
     /// </summary>
     public class MarkerSensor : IPositionSource, IOrientationSource
     {
-        /// <summary>
-        /// Error or the orientation in aprilTags
-        /// </summary>
-        private const float AprilTagsErrorOrientation = 2.0f;
-
-        /// <summary>
-        /// Error of the position in aprilTags.
-        /// </summary>
-        private const float AprilTagsErrorPosition = 0.1f;
-
-        /// <summary>
-        ///   Standard deviation of marker tracking.
-        /// </summary>
-        private readonly float standardDeviationOrientation;
-
-        /// <summary>
-        /// Standard deviation of the marker position tracking.
-        /// </summary>
-        private readonly float standardDeviationPosition;
-
         /// <summary>
         ///  The MarkerLocations.
         /// </summary>
@@ -50,6 +32,16 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private Measurement<Vector3>[] positions;
 
         /// <summary>
+        /// The type of probability distribution belonging to the measurements of the position.
+        /// </summary>
+        private IDistribution posDistType;
+
+        /// <summary>
+        /// The type of probability distribution belonging to the measurements of the orientation.
+        /// </summary>
+        private IDistribution oriDistType;
+
+        /// <summary>
         /// Current index pointer;
         /// </summary>
         private int pointer = 0;
@@ -58,18 +50,18 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Length of the buffer.
         /// </summary>
         private int bufferLength = 30;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="standardDeviationOrientation">the standard deviation of the orientation</param>
-        /// <param name="standardDeviationPosition">The standard deviation of the position</param>
-        /// <param name="path">url to the xml file</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition,  string path)
+        /// <param name="markerLocations">The MarkerLocations object storing all markers.</param>
+        /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
+        /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
+        public MarkerSensor(MarkerLocations markerLocations, IDistribution posDistType, IDistribution oriDistType)
         {
-            this.standardDeviationOrientation = standardDeviationOrientation + AprilTagsErrorOrientation;
-            this.standardDeviationPosition = standardDeviationPosition + AprilTagsErrorPosition;
-            this.markerLocations = new MarkerLocations(path);
+            this.markerLocations = markerLocations;
+            this.posDistType = posDistType;
+            this.oriDistType = oriDistType;
             this.orientations = new Measurement<Vector3>[this.bufferLength];
             this.positions = new Measurement<Vector3>[this.bufferLength];
             this.Measurements = 0;
@@ -78,14 +70,16 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class with a given buffer size.
         /// </summary>
-        /// <param name="standardDeviationOrientation">the standard deviation of the orientation of the sensor</param>
-        /// <param name="standardDeviationPosition">The standard deviation of the position of the sensor</param>
-        /// <param name="path">url to the xml file</param>
+        /// <param name="markerLocations">The object storing all world marker locations.</param>
         /// <param name="bufferLength">Length of the buffer</param>
-        public MarkerSensor(float standardDeviationOrientation, float standardDeviationPosition, string path, int bufferLength) 
-            : this(standardDeviationOrientation, standardDeviationPosition, path)
+        /// <param name="posDistType">The type of the distribution of the positions measurements</param>
+        /// <param name="oriDistType">The type of the distribution of the orientation measurements</param>
+        public MarkerSensor(MarkerLocations markerLocations, int bufferLength, IDistribution posDistType, IDistribution oriDistType)
+            : this(markerLocations, posDistType, oriDistType)
         {
             this.bufferLength = bufferLength;
+            this.orientations = new Measurement<Vector3>[this.bufferLength];
+            this.positions = new Measurement<Vector3>[this.bufferLength];
         }
 
         /// <summary>
@@ -94,26 +88,40 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public int Measurements { get; private set; }
 
         /// <summary>
-        ///   Update the locations derived from Markers.
+        /// Update the locations derived from Markers.
         /// </summary>
+        /// <param name="timeStamp">Time stamp at which the measurements were taken.</param>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-        public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds)
+        public void UpdateLocations(long timeStamp, Dictionary<int, Pose> visibleMarkerIds)
         {
-            long timeStamp = StopwatchSingleton.Time;
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
-                    Pose currentMarkerPose = this.markerLocations.GetMarker(pair.Key);
-                    Pose location = AbRelPositioning.GetLocation(currentMarkerPose, pair.Value);
-                    this.positions[this.pointer] = new Measurement<Vector3>(location.Position, this.standardDeviationPosition, timeStamp);
-                    this.orientations[this.pointer] = new Measurement<Vector3>(location.Orientation, this.standardDeviationOrientation, timeStamp);
+                    Pose markerWorldPose = this.markerLocations.GetMarker(pair.Key);
+                    Pose markerUserPose = pair.Value;
+
+                    TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
+                    TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
+                    TransformationMatrix transformationUserToWorld = new TransformationMatrix();
+                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
+                    Vector4 position = new Vector4(0, 0, 0, 1);
+                    transformationUserToWorld.Multiply(position, position);
+
+                    // TODO Could be faster => add method in Vector4 to create a Vector3 from it
+                    Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+                    this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
+
+                    RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
+                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
+                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
+
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
                     this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
                 }
                 catch (UnallocatedMarkerException e)
                 {
-                    Console.Error.WriteLine("ERROR: ", e.Message);
+                    Console.Error.WriteLine("ERROR: {0}", e.Message);
                 }
             }
         }
@@ -246,8 +254,6 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             for (int i = 0; i < length; i++)
             {
                 int index = this.GetIndex(i);
-
-                Console.WriteLine(this.GetIndex(i));
                 if (measurements[index].TimeStamp >= startTimeStamp && measurements[index].TimeStamp <= endTimeStamp)
                 {
                     timeMeasurements.Add(measurements[index]);
