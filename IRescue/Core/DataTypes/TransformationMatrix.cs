@@ -14,10 +14,11 @@ namespace IRescue.Core.DataTypes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
-        /// Creates an identity 4x4 matrix which corresponds with no rotation around 
+        /// Creates an identity 4x4 matrix which corresponds with no rotation around
         /// all 3 axis and no translation on the 3 axis. Defaults w to 1.
         /// </summary>
-        public TransformationMatrix() : base(4, 4)
+        public TransformationMatrix()
+            : base(4, 4)
         {
             this[0, 0] = 1;
             this[1, 1] = 1;
@@ -36,7 +37,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="yr">Y axis rotation in degrees.</param>
         /// <param name="zr">Z axis rotation in degrees.</param>
         /// <param name="w">W value.</param>
-        public TransformationMatrix(float xt, float yt, float zt, float xr, float yr, float zr, float w) : base(4, 4, CreateMatrixArray(xt, yt, zt, xr, yr, zr, w))
+        public TransformationMatrix(float xt, float yt, float zt, float xr, float yr, float zr, float w)
+            : base(4, 4, CreateMatrixArray(xt, yt, zt, xr, yr, zr, w))
         {
         }
 
@@ -51,7 +53,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="xr">X axis rotation in degrees.</param>
         /// <param name="yr">Y axis rotation in degrees.</param>
         /// <param name="zr">Z axis rotation in degrees.</param>
-        public TransformationMatrix(float xt, float yt, float zt, float xr, float yr, float zr) : this(xt, yt, zt, xr, yr, zr, 1)
+        public TransformationMatrix(float xt, float yt, float zt, float xr, float yr, float zr)
+            : this(xt, yt, zt, xr, yr, zr, 1)
         {
         }
 
@@ -62,7 +65,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="translation">The translation vector to use.</param>
         /// <param name="rotation">The rotation vector to use.</param>
         /// <param name="w">The w value of the transformation matrix.</param>
-        public TransformationMatrix(Vector3 translation, Vector3 rotation, float w) : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, w)
+        public TransformationMatrix(Vector3 translation, Vector3 rotation, float w)
+            : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, w)
         {
         }
 
@@ -73,7 +77,8 @@ namespace IRescue.Core.DataTypes
         /// </summary>
         /// <param name="translation">The translation vector to use.</param>
         /// <param name="rotation">The rotation vector to use.</param>
-        public TransformationMatrix(Vector3 translation, Vector3 rotation) : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, 1)
+        public TransformationMatrix(Vector3 translation, Vector3 rotation)
+            : this(translation.X, translation.Y, translation.Z, rotation.X, rotation.Y, rotation.Z, 1)
         {
         }
 

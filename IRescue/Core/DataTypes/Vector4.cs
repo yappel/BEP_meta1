@@ -15,7 +15,8 @@ namespace IRescue.Core.DataTypes
         /// <summary>
         /// Initializes a new instance of the <see cref="Vector4"/> class with 4 zeros.
         /// </summary>
-        public Vector4() : base(4)
+        public Vector4()
+            : base(4)
         {
         }
 
@@ -26,7 +27,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="y">The y value.</param>
         /// <param name="z">The z value.</param>
         /// <param name="w">The w value.</param>
-        public Vector4(float x, float y, float z, float w) : base(new float[] { x, y, z, w })
+        public Vector4(float x, float y, float z, float w)
+            : base(new float[] { x, y, z, w })
         {
         }
 
@@ -36,7 +38,8 @@ namespace IRescue.Core.DataTypes
         /// <param name="x">The x value.</param>
         /// <param name="y">The y value.</param>
         /// <param name="z">The z value.</param>
-        public Vector4(float x, float y, float z) : this(x, y, z, 1)
+        public Vector4(float x, float y, float z)
+            : this(x, y, z, 1)
         {
         }
 
@@ -44,7 +47,8 @@ namespace IRescue.Core.DataTypes
         /// Initializes a new instance of the <see cref="Vector4"/> class.
         /// </summary>
         /// <param name="vectorValues">Array with the x, y, z and w values</param>
-        public Vector4(float[] vectorValues) : base(vectorValues)
+        public Vector4(float[] vectorValues)
+            : base(vectorValues)
         {
             CheckLength(vectorValues);
         }
@@ -55,7 +59,8 @@ namespace IRescue.Core.DataTypes
         /// </summary>
         /// <param name="vector">The vector to copy into the new vector.</param>
         /// <param name="w">The w value.</param>
-        public Vector4(Vector3 vector, float w) : this()
+        public Vector4(Vector3 vector, float w)
+            : this()
         {
             this.SetSubVector(0, 3, vector);
             this[3] = w;
@@ -67,7 +72,8 @@ namespace IRescue.Core.DataTypes
         /// Sets the w value to default value 1.
         /// </summary>
         /// <param name="vector">The vector to copy into the new vector.</param>
-        public Vector4(Vector3 vector) : this(vector, 1)
+        public Vector4(Vector3 vector)
+            : this(vector, 1)
         {
         }
 

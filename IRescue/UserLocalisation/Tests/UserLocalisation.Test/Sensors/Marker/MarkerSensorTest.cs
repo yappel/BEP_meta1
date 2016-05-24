@@ -13,7 +13,7 @@ namespace UserLocalisation.Test.Sensors.Marker
 
     /// <summary>
     /// Test class for testing <see cref="MarkerSensor"/> class.
-    /// Tests all basic functionality and has a test case to verify that the correct 
+    /// Tests all basic functionality and has a test case to verify that the correct
     /// user position and orientation is returned from relative marker measurements.
     /// </summary>
     public class MarkerSensorTest
@@ -44,7 +44,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         private double vectorEpsilon = 0.0001;
 
         /// <summary>
-        /// Large set of relative measurements from markers, their world position/orientation and the user 
+        /// Large set of relative measurements from markers, their world position/orientation and the user
         /// position/orientation which should be returned.
         /// </summary>
         private float[][] bulkData = new float[][]
@@ -77,12 +77,12 @@ namespace UserLocalisation.Test.Sensors.Marker
         {
             this.mlocmoq = new MarkerLocations();
             this.mlocmoq.AddMarker(
-                0, 
+                0,
                 new Pose(
                     new Vector3(25, 13.52f, 5),
                     new Vector3(0, 0, 0)));
             this.mlocmoq.AddMarker(
-                1, 
+                1,
                 new Pose(
                     new Vector3(12, 21.12f, 13),
                     new Vector3(0, 0, 0)));
@@ -243,7 +243,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test that a simple relative and relative rotation of a marker return the correct 
+        /// Test that a simple relative and relative rotation of a marker return the correct
         /// position of the user in the world.
         /// </summary>
         [Test]
@@ -260,6 +260,10 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.AssertVectorAreEqual(new Vector3(2, 0, 2), this.sensor.GetLastPosition().Data, this.vectorEpsilon);
         }
 
+        /// <summary>
+        /// Test that getting an orientation and position with the time stamp from when
+        /// the time the measurement was added return the correct output.
+        /// </summary>
         [Test]
         public void GetMeasurementAtTimeStamp()
         {
@@ -293,7 +297,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test testing on several inputs to assure that the correct world position and orientation are computed 
+        /// Test testing on several inputs to assure that the correct world position and orientation are computed
         /// from the relative marker position and orientation. These values are more complex.
         /// </summary>
         [Test]
@@ -336,7 +340,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test the output for a measurement and an expected output for the 
+        /// Test the output for a measurement and an expected output for the
         /// <see cref="CombinedPositionAndOrientationInOutTest"/> test case.
         /// </summary>
         /// <param name="measurement">The measurement to add to the sensor.</param>
@@ -352,9 +356,9 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test that rotations are equal. As rotations can be achieved by different rotations in 
-        /// different orders around different axes the method creates a rotation matrix for the expected 
-        /// and actual values and compares the result of a multiplication with a reference vector. When 
+        /// Test that rotations are equal. As rotations can be achieved by different rotations in
+        /// different orders around different axes the method creates a rotation matrix for the expected
+        /// and actual values and compares the result of a multiplication with a reference vector. When
         /// the output of the multiplication is the same the orientation is also similar.
         /// </summary>
         /// <param name="expected">The expected rotation.</param>
