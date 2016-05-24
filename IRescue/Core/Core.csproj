@@ -57,9 +57,11 @@
   <ItemGroup>
     <Compile Include="Datatypes\FieldSize.cs" />
     <Compile Include="Datatypes\RotationMatrix.cs" />
+    <Compile Include="Datatypes\TransformationMatrix.cs" />
     <Compile Include="Datatypes\Vector3.cs" />
     <Compile Include="Datatypes\Pose.cs" />
     <Compile Include="Datatypes\Measurement.cs" />
+    <Compile Include="Datatypes\Vector4.cs" />
     <Compile Include="Distributions\IDistribution.cs" />
     <Compile Include="Distributions\Uniform.cs" />
     <Compile Include="Distributions\Normal.cs" />
