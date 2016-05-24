@@ -87,8 +87,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.InfoText = this.AddButton("Prefabs/Buttons/InfoText", () => { });
 
             // Create the object select frame
-            this.ObjectSelect = this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller));
-            this.buttons.Add(this.ObjectSelect);
+            this.ObjectSelect =  this.AddButton(this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller)), () => { });
         }
 
         /// <summary>
@@ -148,18 +147,31 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
-        /// Add a button to the game.
+        /// Add a button to the game from a GameObject
+        /// </summary>
+        /// <param name="button">The initialized button game object</param>
+        /// <param name="action">The lambda of the action that should be taken on press</param>
+        /// <returns>The GameObject of the linked button that can be get in this method</returns>
+        private GameObject AddButton(GameObject button, UnityEngine.Events.UnityAction action)
+        {
+            if (button.transform.GetComponentInChildren<Button>() != null)
+            {
+                button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
+            }
+            button.SetActive(false);
+            this.buttons.Add(button);
+            return button;
+        }
+
+        /// <summary>
+        /// Add a button to the game from a path name.
         /// </summary>
         /// <param name="buttonPrefabName">The path and name of the button prefab</param>
         /// <param name="action">The lambda of the action that should be taken on press</param>
         /// <returns>The GameObject of the linked button that can be get in this method</returns>
         private GameObject AddButton(string buttonPrefabName, UnityEngine.Events.UnityAction action)
         {
-            GameObject gameObject = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>(buttonPrefabName)));
-            gameObject.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
-            gameObject.SetActive(false);
-            this.buttons.Add(gameObject);
-            return gameObject;
+            return this.AddButton(this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>(buttonPrefabName))), action);
         }
 
         /// <summary>
