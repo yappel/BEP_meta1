@@ -3,6 +3,7 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -234,6 +235,19 @@ namespace IRescue.UserLocalisation.Particle
             float[] res = this.filter.WeightedAverage(ptcls, wgts);
             float[] expected = { 2, 3 };
             Assert.AreEqual(expected, res);
+        }
+
+        /// <summary>
+        /// Test if exception is thrown when NaN measurement value is given.
+        /// </summary>
+        [Test]
+        public void TestNaNMeasurment()
+        {
+            ParticleFilter pfilter = new ParticleFilter(this.fieldsize, 30, 0.001, 0.1f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
+            Mock<IOrientationSource> sourcemock = new Mock<IOrientationSource>();
+            sourcemock.Setup(foo => foo.GetOrientations(It.IsAny<long>(), It.IsAny<long>())).Returns(new List<Measurement<Vector3>>() { new Measurement<Vector3>(new Vector3(float.NaN, float.NaN, float.NaN), 1, this.dist.Object) });
+            pfilter.AddOrientationSource(sourcemock.Object);
+            Assert.Throws<ArithmeticException>(() => pfilter.CalculatePose(1));
         }
     }
 }
