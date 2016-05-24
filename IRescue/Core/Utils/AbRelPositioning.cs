@@ -37,7 +37,7 @@ namespace IRescue.Core.Utils
                 new Vector3(
                     absolutePose.Position.X + (distanceXZ * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
                     absolutePose.Position.Y + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Z))),
-                    absolutePose.Position.Z + (distanceXZ * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))), 
+                    absolutePose.Position.Z + (distanceXZ * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))),
                     orientation);
         }
 
@@ -59,7 +59,7 @@ namespace IRescue.Core.Utils
                 new Vector3(
                     absolutePose.Position.X + (distanceXY * (float)Math.Cos(Trig.DegreeToRadian(rotation.Y))),
                     absolutePose.Position.Y,
-                    absolutePose.Position.Z + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))), 
+                    absolutePose.Position.Z + (distanceXY * (float)Math.Sin(Trig.DegreeToRadian(rotation.Y)))),
                     orientation);
         }
 

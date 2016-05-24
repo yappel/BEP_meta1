@@ -10,6 +10,7 @@ namespace IRescue.UserLocalisation.Particle
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
     using Core.DataTypes;
+    using Core.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
     using Moq;
@@ -18,65 +19,70 @@ namespace IRescue.UserLocalisation.Particle
     using Sensors;
 
     /// <summary>
-    /// Test for the particles
+    ///     Test for the particles
     /// </summary>
     public class ParticleFilterTest
     {
         /// <summary>
-        /// Filter to use in tests.
+        ///     Default probability distribution.
         /// </summary>
-        private ParticleFilter filter;
+        private Mock<IDistribution> dist;
 
         /// <summary>
-        /// Particle generator mock
-        /// </summary>
-        private Mock<IParticleGenerator> ptclgen;
-
-        /// <summary>
-        /// Noise generator mock
-        /// </summary>
-        private Mock<INoiseGenerator> noisegen;
-
-        /// <summary>
-        /// Pose predictor mock
-        /// </summary>
-        private Mock<IPosePredictor> posepredictor;
-
-        /// <summary>
-        /// Resample mock
-        /// </summary>
-        private Mock<IResampler> resampler;
-
-        /// <summary>
-        /// Size of the field
+        ///     Size of the field
         /// </summary>
         private FieldSize fieldsize;
 
         /// <summary>
-        /// Particle list
+        ///     Filter to use in tests.
+        /// </summary>
+        private ParticleFilter filter;
+
+        /// <summary>
+        ///     Noise generator mock
+        /// </summary>
+        private Mock<INoiseGenerator> noisegen;
+
+        /// <summary>
+        ///     Particle list
         /// </summary>
         private float[] particles;
 
         /// <summary>
-        /// Initialization method
+        ///     Pose predictor mock
+        /// </summary>
+        private Mock<IPosePredictor> posepredictor;
+
+        /// <summary>
+        ///     Particle generator mock
+        /// </summary>
+        private Mock<IParticleGenerator> ptclgen;
+
+        /// <summary>
+        ///     Resample mock
+        /// </summary>
+        private Mock<IResampler> resampler;
+
+        /// <summary>
+        ///     Initialization method
         /// </summary>
         [SetUp]
         public void Init()
         {
+            this.dist = new Mock<IDistribution>();
             this.ptclgen = new Mock<IParticleGenerator>();
             this.noisegen = new Mock<INoiseGenerator>();
             this.posepredictor = new Mock<IPosePredictor>();
             this.resampler = new Mock<IResampler>();
-            this.fieldsize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
+            this.fieldsize = new FieldSize { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
             var particleamount = 30;
 
             float[] particles = new float[particleamount * 6];
             for (int i = 0; i < particleamount * 6; i++)
             {
                 particles[i] = 1;
+                this.particles = particles;
             }
-
-            this.particles = particles;
 
             this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(particles);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
@@ -86,23 +92,23 @@ namespace IRescue.UserLocalisation.Particle
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>>
             {
-                new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 0.1f, 0)
+                new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 0, this.dist.Object)
             };
             possourcemock.Setup(foo => foo.GetPositions(It.IsAny<long>(), It.IsAny<long>()))
-               .Returns(returnlist);
+                .Returns(returnlist);
             Mock<IOrientationSource> orisourcemock = new Mock<IOrientationSource>();
             List<Measurement<Vector3>> returnlist2 = new List<Measurement<Vector3>>
             {
-                new Measurement<Vector3>(new Vector3(40f, 40f, 40f), 0.1f, 0)
+                new Measurement<Vector3>(new Vector3(40f, 40f, 40f), 0, this.dist.Object)
             };
             orisourcemock.Setup(foo => foo.GetOrientations(It.IsAny<long>(), It.IsAny<long>()))
-               .Returns(returnlist2);
+                .Returns(returnlist2);
             this.filter.AddPositionSource(possourcemock.Object);
             this.filter.AddOrientationSource(orisourcemock.Object);
         }
 
         /// <summary>
-        /// Test if normalizing the Weights in a matrix works correctly
+        ///     Test if normalizing the Weights in a matrix works correctly
         /// </summary>
         [Test]
         public void TestNormalizeWeights()
@@ -116,7 +122,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test if Particles get the right weight
+        ///     Test if Particles get the right weight
         /// </summary>
         [Test]
         public void TestParticleWeighting()
@@ -124,27 +130,33 @@ namespace IRescue.UserLocalisation.Particle
             int lpcount = 1;
             Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
             Matrix<float> localweigh = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
-            Matrix<float> localmeas = new DenseMatrix(lpcount, 4, new float[] { 1, 1, 1, 0.1f });
-            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, localweigh);
+            Matrix<float> localmeas = new DenseMatrix(lpcount, 4, new[] { 1, 1, 1, 0.1f });
+            List<IDistribution> dists = new List<IDistribution>();
+            for (int i = 0; i < lpcount; i++)
+            {
+                dists.Add(new Normal(0.1));
+            }
+
+            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, dists, localweigh);
             Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
             ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
         }
 
         /// <summary>
-        /// Test if the weighted average gets calculated correctly.
+        ///     Test if the weighted average gets calculated correctly.
         /// </summary>
         [Test]
         public void TestWeightedAverage()
         {
             Matrix<float> ptcls = new DenseMatrix(2, 2, new float[] { 1, 4, 2, 4 });
-            Matrix<float> wgts = new DenseMatrix(2, 2, new float[] { 2 / 3f, 1 / 3f, 0.5f, 0.5f });
+            Matrix<float> wgts = new DenseMatrix(2, 2, new[] { 2 / 3f, 1 / 3f, 0.5f, 0.5f });
             float[] res = this.filter.WeightedAverage(ptcls, wgts);
-            float[] expected = new float[] { 2, 3 };
+            float[] expected = { 2, 3 };
             Assert.AreEqual(expected, res);
         }
 
         /// <summary>
-        /// Test if the filter doesn't crash.
+        ///     Test if the filter doesn't crash.
         /// </summary>
         [Test]
         public void TestParticleFilterRun()
@@ -158,7 +170,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test if the filter doesn't crash when there are no sources.
+        ///     Test if the filter doesn't crash when there are no sources.
         /// </summary>
         [Test]
         public void TestParticleFilterRunWithoutSources()
@@ -175,7 +187,7 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test if the amount of Particles is correct through the different steps.
+        ///     Test if the amount of Particles is correct through the different steps.
         /// </summary>
         [Test]
         public void ParticleFilterUnits()
@@ -184,8 +196,14 @@ namespace IRescue.UserLocalisation.Particle
             Assert.AreEqual(6, this.filter.Particles.ColumnCount);
             this.filter.RetrieveMeasurements(1);
             Assert.AreEqual(30, this.filter.Particles.RowCount);
+            List<IDistribution> dists = new List<IDistribution>();
+            for (int i = 0; i < this.filter.Measurementspos.RowCount; i++)
+            {
+                dists.Add(this.dist.Object);
+            }
+
             this.filter.AddWeights(
-                20, this.filter.Particles, 0, 3, this.filter.Measurementspos, this.filter.Weights);
+                20, this.filter.Particles, 0, 2, this.filter.Measurementspos, dists, this.filter.Weights);
             Assert.AreEqual(30, this.filter.Particles.RowCount);
             Assert.AreEqual(6, this.filter.Particles.ColumnCount);
             this.filter.NormalizeWeightsAll(this.filter.Weights);

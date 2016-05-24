@@ -9,7 +9,7 @@ namespace UserLocalisation.Test.Sensors.Marker
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Sensors.Marker;
     using NUnit.Framework;
-    
+
     /// <summary>
     /// Test for MarkerLocations
     /// </summary>
@@ -51,7 +51,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             {
                 this.markerLocations.GetMarker(1);
             }
-                catch (UnallocatedMarkerException)
+            catch (UnallocatedMarkerException)
             {
                 Assert.Pass();
             }
