@@ -4,14 +4,11 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
-    using System;
-
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
     using Vector3 = IRescue.Core.DataTypes.Vector3;
-    using IRescue.Core.Distributions;
 
     /// <summary>
     ///   This class keeps track of visible markers and the probable user location based on that.
