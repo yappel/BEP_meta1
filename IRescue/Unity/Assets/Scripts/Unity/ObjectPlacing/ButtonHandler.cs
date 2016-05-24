@@ -245,7 +245,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, StateController controller)
         {
             entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickButton(entry.transform, controller, name));
-            entry.transform.GetComponentInChildren<Image>().sprite = this.CreateImage(name);
+            entry.transform.FindChild("Sprite").GetComponent<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
@@ -285,13 +285,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="name">the name of the object</param>
         private void ClickButton(Transform entry, StateController controller, string name)
         {
-            Text[] entries = entry.parent.GetComponentsInChildren<Text>();
-            for (int i = 0; i < entries.Length; i++)
+            foreach (Transform child in entry.parent.transform)
             {
-                entries[i].color = Color.white;
+                child.GetComponent<Image>().enabled = false;
             }
 
-            entry.GetComponentInChildren<Text>().color = Color.yellow;
+            entry.GetComponent<Image>().enabled = true;
             controller.SelectObjectButtonEvent(name);
         }
     }
