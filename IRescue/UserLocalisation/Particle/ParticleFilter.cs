@@ -97,7 +97,8 @@ namespace IRescue.UserLocalisation.Particle
             IParticleGenerator prtclgen,
             IPosePredictor posePredictor,
             INoiseGenerator noisegen,
-            IResampler resampler) : base(fieldsize)
+            IResampler resampler)
+            : base(fieldsize)
         {
             this.poslist = new List<IPositionSource>();
             this.orilist = new List<IOrientationSource>();
