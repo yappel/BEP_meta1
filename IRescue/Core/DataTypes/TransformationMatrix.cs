@@ -14,11 +14,14 @@ namespace IRescue.Core.DataTypes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
-        /// Creates an empty 4x4 matrix which corresponds with no rotation around 
+        /// Creates an identity 4x4 matrix which corresponds with no rotation around 
         /// all 3 axis and no translation on the 3 axis. Defaults w to 1.
         /// </summary>
-        public TransformationMatrix() : base(4, 4)
+        public TransformationMatrix() : base(4,4)
         {
+            this[0, 0] = 1;
+            this[1, 1] = 1;
+            this[2, 2] = 1;
             this[3, 3] = 1;
         }
 

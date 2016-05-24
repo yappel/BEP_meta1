@@ -42,11 +42,59 @@ namespace Core.Test.DataTypes
             this.transformation = new TransformationMatrix(0, 0, 0, 45, 90, 30);
             Vector4 res = new Vector4(1, 2, 3, 1);
             this.transformation.Multiply(res, res);
-            System.Diagnostics.Debug.WriteLine("x=" + res.X + " y=" + res.Y + " z=" + res.Z + " w=" + res.W);
-            Assert.AreEqual(3.000000000000000, res.X);
-            Assert.AreEqual(1.483563916494110, res.Y);
-            Assert.AreEqual(1.673032607475615, res.Z);
-            Assert.AreEqual(1, res.W);
+            Assert.AreEqual(3.4154, res.X, 0.0001);
+            Assert.AreEqual(1.1554, res.Y, 0.0001);
+            Assert.AreEqual(-1.0000, res.Z, 0.0001);
+            Assert.AreEqual(1, res.W, 0.0001);
+        }
+
+        /// <summary>
+        /// Test that a simple rotation and translation combination results in the correct vector.
+        /// </summary>
+        [Test]
+        public void SimpleRotationTranslationTest()
+        {
+            this.transformation = new TransformationMatrix(1, 2, 3, 0, 90, 0);
+            Vector4 res = new Vector4(1, 1, 1, 1);
+            this.transformation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector4(2, 3, 2, 1), res);
+        }
+
+        /// <summary>
+        /// Test that a transformation matrix with no arguments creates a diagonal matrix.
+        /// Multiplying with a vector returns that same vector.
+        /// </summary>
+        [Test]
+        public void NoTranslationNoRotationTest()
+        {
+            this.transformation = new TransformationMatrix();
+            Vector4 res = new Vector4(1,2,3,4);
+            this.transformation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector4(1,2,3,4), res);
+        }
+
+        /// <summary>
+        /// Test that a transformation matrix created from 2 Vector3 vectors returns the correct result.
+        /// </summary>
+        [Test]
+        public void TransformationMatrixFromVector3Test()
+        {
+            this.transformation = new TransformationMatrix(new Vector3(3, 2, 1), new Vector3(0, 90, 0));
+            Vector4 res = new Vector4(1,2,3,4);
+            this.transformation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector4(15, 10, 3, 4), res);
+        }
+
+        /// <summary>
+        /// Test that a transformation matrix created from 2 Vector3 vectors and w value returns the correct result.
+        /// </summary>
+        [Test]
+        public void TransformationMatrixFromVector3AndWTest()
+        {
+            this.transformation = new TransformationMatrix(new Vector3(3, 2, 1), new Vector3(0, 90, 0), 2);
+            Vector4 res = new Vector4(1, 2, 3, 4);
+            this.transformation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector4(15, 10, 3, 8), res);
         }
 
         /// <summary>
@@ -59,6 +107,19 @@ namespace Core.Test.DataTypes
             RotationMatrix rot = this.transformation.GetRotation();
             RotationMatrix expected = new RotationMatrix(45, 90, 30);
             Assert.AreEqual(expected, rot);
+        }
+
+        /// <summary>
+        /// Assert that two vectors are equal.
+        /// </summary>
+        /// <param name="expected">The expected result.</param>
+        /// <param name="actual">The actual result.</param>
+        private void AssertVectorAreEqual(Vector4 expected, Vector4 actual)
+        {
+            Assert.AreEqual(expected.X, actual.X);
+            Assert.AreEqual(expected.Y, actual.Y);
+            Assert.AreEqual(expected.Z, actual.Z);
+            Assert.AreEqual(expected.W, actual.W);
         }
     }
 }
