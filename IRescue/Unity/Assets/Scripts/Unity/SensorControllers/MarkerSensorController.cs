@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Unity.SensorControllers;
 using IRescue.Core.DataTypes;
+using IRescue.Core.Distributions;
 using IRescue.UserLocalisation.Sensors;
 using IRescue.UserLocalisation.Sensors.Marker;
 using Meta;
@@ -51,7 +52,7 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor(this.orientationStd, this.positionStd, new MarkerLocations(Path));
+        this.markerSensor = new MarkerSensor(new MarkerLocations(Path), new Normal(this.orientationStd), new Normal(this.positionStd));
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }
