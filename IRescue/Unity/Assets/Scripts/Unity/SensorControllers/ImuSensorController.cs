@@ -9,6 +9,7 @@ namespace Assets.Scripts.Unity.SensorControllers
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
     using Vector3 = IRescue.Core.DataTypes.Vector3;
+    using IRescue.Core.Distributions;
 
     /// <summary>
     ///   This class keeps track of visible markers and the probable user location based on that.
@@ -40,7 +41,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// </summary>
         public override void Init()
         {
-            this.imuSource = new IMUSource(this.accelerationStd, this.orientationStd, this.bufferSize);
+            this.imuSource = new IMUSource(new Normal(this.accelerationStd), new Uniform(this.orientationStd), this.bufferSize);
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ using IRescue.UserLocalisation.Sensors.Marker;
 using Meta;
 using UnityEngine;
 using Vector3 = IRescue.Core.DataTypes.Vector3;
+using IRescue.Core.Distributions;
 
 /// <summary>
 ///   This class keeps track of visible markers and the probable user location based on that.
@@ -51,7 +52,7 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     public override void Init()
     {
-        this.markerSensor = new MarkerSensor(this.orientationStd, this.positionStd, Path);
+        this.markerSensor = new MarkerSensor(Path, new Normal(this.positionStd), new Uniform(this.orientationStd));
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }
