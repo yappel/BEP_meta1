@@ -115,7 +115,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                     Vector4 position = new Vector4(0, 0, 0, 1);
                     transformationUserToWorld.Multiply(position, position);
 
-                    // Could be faster => add method in Vector4 to create a Vector3 from it
+                    // TODO Could be faster => add method in Vector4 to create a Vector3 from it
                     Vector3 pos = new Vector3(position.X, position.Y, position.Z);
                     this.positions[this.pointer] = new Measurement<Vector3>(pos, this.standardDeviationPosition, timeStamp);
 

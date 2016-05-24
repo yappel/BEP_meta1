@@ -78,7 +78,6 @@
     <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IMU\IMUSourceTest.cs" />
-    <Compile Include="Sensors\Marker\MarkerSensorInOutTests.cs" />
     <Compile Include="Sensors\Marker\MarkerLocationsTest.cs" />
     <Compile Include="Sensors\Marker\MarkerSensorTest.cs" />
   </ItemGroup>
