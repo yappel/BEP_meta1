@@ -316,10 +316,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                     return new Vector3();
                 }
 
-                if (hits[i].distance < minDistance && hits[i].transform.gameObject.GetComponent<GroundPlane>() != null)
+                if (hits[i].distance < minDistance && (hits[i].transform.gameObject.GetComponent<GroundPlane>() != null || hits[i].transform.gameObject.GetComponent<MetaBody>() != null))
                 {
                     minDistance = hits[i].distance;
-                    res = hits[i].point;
+                    res = hits[i].transform.root.gameObject.GetComponent<GroundPlane>().gameObject.transform.InverseTransformPoint(res);
                     o = hits[i].transform.gameObject;
                 }
             }

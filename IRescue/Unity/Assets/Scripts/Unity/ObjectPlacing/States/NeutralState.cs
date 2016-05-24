@@ -43,9 +43,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (time - this.pointTime < 1750)
                 {
-                    GameObject newBuilding = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(this.StateContext.SelectedBuilding));
-                    newBuilding.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, newBuilding));
+                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding));
                 }
                 else
                 {

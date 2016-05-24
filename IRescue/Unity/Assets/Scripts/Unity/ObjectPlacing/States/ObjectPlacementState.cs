@@ -69,6 +69,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
+        /// <param name="gameObjectPath">Path to the wanted object to place</param>
+        public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath) 
+            : this(stateContext, location, CreateObject(gameObjectPath))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class. The object will be scaled to 1 meter big.
+        /// </summary>
+        /// <param name="stateContext">State context</param>
+        /// <param name="location">First indicated position of the placement</param>
         /// <param name="gameObject">The game object that has to be placed or moved</param>
         public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
         {
@@ -79,11 +90,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Move";
                 this.previousPosition = gameObject.transform.position;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
-                UnityEngine.Object.Destroy(gameObject.GetComponent<GroundPlane>());
-            }
-            else
-            {
-                this.SetScale(gameObject);
             }
 
             this.hoverTime = StopwatchSingleton.Time;
@@ -154,8 +160,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void PlaceBuilding()
         {
-            this.gameObject.AddComponent<GroundPlane>();
-            this.gameObject.AddComponent<MetaBody>();
+            MetaBody mb = this.gameObject.AddComponent<MetaBody>();
+            mb.maxScaleRatio = 100;
             this.ChangeOutlineRender(this.defaultShader);
             this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
         }
@@ -177,10 +183,23 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Initialize a game objects
+        /// </summary>
+        /// <param name="gameObjectPath">the path to the object</param>
+        /// <returns>The initialized game object</returns>
+        private static GameObject CreateObject(string gameObjectPath)
+        {
+            GameObject newObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(gameObjectPath));
+            SetScale(newObject);
+            newObject.gameObject.transform.parent = GameObject.Find("GroundPlane").transform;
+            return newObject;
+        }
+
+        /// <summary>
         /// Set the scale of the game object to have a width or height of max 1 meter
         /// </summary>
         /// <param name="gameObject">the game object that will be placed</param>
-        private void SetScale(GameObject gameObject)
+        private static void SetScale(GameObject gameObject)
         {
             Bounds totalBounds = gameObject.GetComponentInChildren<Renderer>().bounds;
             Renderer[] colliders = gameObject.GetComponentsInChildren<Renderer>();

@@ -35,12 +35,12 @@ namespace Assets.Scripts.Unity
         public void Start()
         {
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
+            this.InitPlanes(200, 200);
             this.AddControllers();
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(200, 200);
         }
 
         /// <summary>
