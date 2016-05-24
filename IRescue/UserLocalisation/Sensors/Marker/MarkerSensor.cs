@@ -97,11 +97,10 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Update the locations derived from Markers.
         /// </summary>
+        /// <param name="timeStamp">Time stamp at which the measurement was taken.</param>
         /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
-        public void UpdateLocations(Dictionary<int, Pose> visibleMarkerIds)
+        public void UpdateLocations(long timeStamp, Dictionary<int, Pose> visibleMarkerIds)
         {
-            // TODO should be specified outside of class?
-            long timeStamp = StopwatchSingleton.Time;
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try

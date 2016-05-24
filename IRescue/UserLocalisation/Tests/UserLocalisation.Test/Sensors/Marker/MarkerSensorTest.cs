@@ -26,6 +26,11 @@ namespace UserLocalisation.Test.Sensors.Marker
         private float std = 20.5f;
 
         /// <summary>
+        /// The default time stamp to use for measurements.
+        /// </summary>
+        private long defaultTimeStamp = 1;
+
+        /// <summary>
         /// Error margin for the rotation
         /// </summary>
         private float epsilon = 2;
@@ -66,7 +71,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(2, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
@@ -80,7 +85,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(-1337, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(270, this.sensor.GetLastOrientation().Data.X, this.epsilon);
         }
 
@@ -94,7 +99,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(18f, this.sensor.GetLastPosition().Data.X, this.epsilonP);
         }
 
@@ -108,7 +113,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(2, this.sensor.GetPositions(0, long.MaxValue).Count);
         }
 
@@ -122,7 +127,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(2, this.sensor.GetAllPositions().Count);
         }
 
@@ -136,7 +141,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(910, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.Null(this.sensor.GetOrientation(-50));
         }
 
@@ -150,7 +155,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(2, this.sensor.GetOrientations(0, long.MaxValue).Count);
         }
 
@@ -164,7 +169,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(2, this.sensor.GetAllOrientations().Count);
         }
 
@@ -178,7 +183,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.Null(this.sensor.GetPosition(-50));
         }
 
@@ -193,11 +198,11 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
             Assert.AreEqual(6, this.sensor.GetAllOrientations().Count);
         }
 
@@ -212,12 +217,12 @@ namespace UserLocalisation.Test.Sensors.Marker
             dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
             Pose pose2 = new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270));
             dic.Add(0, pose2);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(dic);
-            this.sensor.UpdateLocations(new Dictionary<int, Pose>());
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, new Dictionary<int, Pose>());
             Assert.AreEqual(6, this.sensor.GetAllOrientations().Count);
         }
 
@@ -235,7 +240,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, rel);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(1, dic);
             this.AssertVectorAreEqual(new Vector3(2, 0, 2), this.sensor.GetLastPosition().Data);
         }
 
@@ -249,7 +254,7 @@ namespace UserLocalisation.Test.Sensors.Marker
             this.sensor = new MarkerSensor(this.std, this.std, mloc, 5);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(1, rel);
-            this.sensor.UpdateLocations(dic);
+            this.sensor.UpdateLocations(1, dic);
             this.AssertVectorAreEqual(new Vector3(3, 0, 2), this.sensor.GetLastPosition().Data);
         }
 

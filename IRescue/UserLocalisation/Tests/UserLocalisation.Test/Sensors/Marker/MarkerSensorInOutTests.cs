@@ -79,7 +79,7 @@ namespace IRescue.UserLocalisation.Particle
             MarkerSensor sensor = new MarkerSensor(0, 0, this.mloc);
             Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
             dic.Add(i, meting);
-            sensor.UpdateLocations(dic);
+            sensor.UpdateLocations(1, dic);
             this.AssertVectorAreEqual(output.Position, sensor.GetLastPosition().Data);
             this.AssertVectorAreEqual(output.Orientation, sensor.GetLastOrientation().Data);
         }
