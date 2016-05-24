@@ -84,7 +84,16 @@ namespace IRescue.UserLocalisation.Particle
                 this.particles = particles;
             }
 
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(particles);
+            float[] particles2 = new float[particleamount * 1];
+            for (int i = 0; i < particleamount; i++)
+            {
+                particles2[i] = 1;
+            }
+
+            this.particles = particles;
+
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 6)).Returns(particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 1)).Returns(particles2);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
 
             this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
@@ -128,16 +137,16 @@ namespace IRescue.UserLocalisation.Particle
         public void TestParticleWeighting()
         {
             int lpcount = 1;
-            Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
+            Matrix<float> localparts = new DenseMatrix(lpcount, 3, new float[] { 0.5f, 0.5f, 0.5f });
             Matrix<float> localweigh = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
-            Matrix<float> localmeas = new DenseMatrix(lpcount, 4, new[] { 1, 1, 1, 0.1f });
+            Matrix<float> localmeas = new DenseMatrix(lpcount, 3, new[] { 1, 1, 1f });
             List<IDistribution> dists = new List<IDistribution>();
             for (int i = 0; i < lpcount; i++)
             {
                 dists.Add(new Normal(0.1));
             }
 
-            this.filter.AddWeights(0.01, localparts, 0, 3, localmeas, dists, localweigh);
+            this.filter.AddWeights(0.01, localparts, 0, 2, localmeas, dists, localweigh);
             Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
             ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
         }
@@ -176,7 +185,7 @@ namespace IRescue.UserLocalisation.Particle
         public void TestParticleFilterRunWithoutSources()
         {
             ParticleFilter filterr = new ParticleFilter(this.fieldsize, 30, 0.001, 0.01f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<double[]>(), It.IsAny<double[]>())).Returns(this.particles);
+            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(this.particles);
             this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
             for (int i = 0; i < 1000; i++)
             {

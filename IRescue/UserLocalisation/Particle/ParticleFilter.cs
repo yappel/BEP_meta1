@@ -4,8 +4,10 @@
 
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Algos.NoiseGenerators;
     using Algos.ParticleGenerators;
     using Algos.Resamplers;
@@ -29,7 +31,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <summary>
         /// The amount of degrees in a circle.
         /// </summary>
-        private const double ORIENTATIONMAX = 360;
+        private const float ORIENTATIONMAX = 360;
 
         /// <summary>
         /// List containing the added <see cref="IOrientationSource"/>s
@@ -52,14 +54,19 @@ namespace IRescue.UserLocalisation.Particle
         private long previousTS = 0;
 
         /// <summary>
-        /// The size of the playfield where to locate the user in.
-        /// </summary>
-        private FieldSize fieldsize;
-
-        /// <summary>
         /// The maximum amount that can be added or subtracted from the value of a particle by the <see cref="INoiseGenerator"/>.
         /// </summary>
         private float noisesize;
+
+        /// <summary>
+        /// Array of the range of possible particle values in each dimension.
+        /// </summary>
+        private float[] ranges;
+
+        /// <summary>
+        /// Array of the minimal particle values in each dimension.
+        /// </summary>
+        private float[] minima;
 
         /// <summary>
         /// List with all the distributions of the position measurements.
@@ -90,7 +97,7 @@ namespace IRescue.UserLocalisation.Particle
             IParticleGenerator prtclgen,
             IPosePredictor posePredictor,
             INoiseGenerator noisegen,
-            IResampler resampler)
+            IResampler resampler) : base(fieldsize)
         {
             this.poslist = new List<IPositionSource>();
             this.orilist = new List<IOrientationSource>();
@@ -99,22 +106,17 @@ namespace IRescue.UserLocalisation.Particle
             this.Resampler = resampler;
             this.Noisegen = noisegen;
             this.probabilityMargin = probabilityMargin;
-            this.fieldsize = fieldsize;
             this.noisesize = noisesize;
-
-            // Create particle matrix
-            var particlearray = this.Particlegen.Generate(
-                particleamount,
-                DIMENSIONSAMOUNT,
-                new double[] { this.fieldsize.Xmin, this.fieldsize.Ymin, this.fieldsize.Zmin, 0d, 0d, 0d },
-                new double[] { this.fieldsize.Xmax, this.fieldsize.Ymax, this.fieldsize.Zmax, ORIENTATIONMAX, ORIENTATIONMAX, ORIENTATIONMAX });
-            this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
-
-            // Create weights matrix
-            float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
-            FillArray(initweights, 1f);
-            this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
-            this.NormalizeWeightsAll(this.Weights);
+            this.GenerateFreshParticles(particleamount);
+            this.ranges = new float[]
+            {
+                this.Fieldsize.Xmax - this.Fieldsize.Xmin, this.Fieldsize.Ymax - this.Fieldsize.Ymin,
+                this.Fieldsize.Zmax - this.Fieldsize.Zmin,  ORIENTATIONMAX,  ORIENTATIONMAX, ORIENTATIONMAX
+            };
+            this.minima = new float[]
+             {
+                this.Fieldsize.Xmin, this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0, 0, 0
+             };
         }
 
         /// <summary>
@@ -166,10 +168,10 @@ namespace IRescue.UserLocalisation.Particle
         {
             this.RetrieveMeasurements(timeStamp);
             this.Resample();
-            this.Predict(timeStamp);
             this.Update();
             this.previousTS = timeStamp;
-            return this.GetResult(timeStamp);
+            Pose res = this.GetResult(timeStamp);
+            return res;
         }
 
         /// <summary>
@@ -196,9 +198,9 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="matrix">The matrix containing the values to perform the action on.</param>
         public void ContainParticles(Matrix<float> matrix)
         {
-            this.ContainParticles(matrix, 0, this.fieldsize.Xmin, this.fieldsize.Xmax);
-            this.ContainParticles(matrix, 1, this.fieldsize.Ymin, this.fieldsize.Ymax);
-            this.ContainParticles(matrix, 2, this.fieldsize.Zmin, this.fieldsize.Zmax);
+            this.ContainParticles(matrix, 0);
+            this.ContainParticles(matrix, 1);
+            this.ContainParticles(matrix, 2);
         }
 
         /// <summary>
@@ -210,7 +212,8 @@ namespace IRescue.UserLocalisation.Particle
         public float[] WeightedAverage(Matrix<float> particles, Matrix<float> weights)
         {
             Matrix<float> particlesdupe = particles.Clone();
-            particles.PointwiseMultiply(weights, particlesdupe);
+            Matrix<float> weightsdupe = weights.Clone();
+            particles.PointwiseMultiply(weightsdupe, particlesdupe);
             return particlesdupe.ColumnSums().ToArray();
         }
 
@@ -223,8 +226,16 @@ namespace IRescue.UserLocalisation.Particle
             int columncount = 0;
             foreach (Vector<float> dimension in weights.EnumerateColumns())
             {
-                this.NormalizeWeights(dimension);
-                weights.SetColumn(columncount, dimension);
+                if (Math.Abs(dimension.Sum()) < float.Epsilon)
+                {
+                    this.GenerateFreshParticlesDimension(columncount);
+                }
+                else
+                {
+                    this.NormalizeWeights(dimension);
+                    weights.SetColumn(columncount, dimension);
+                }
+
                 columncount++;
             }
         }
@@ -311,19 +322,19 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="weights">The matrix containing the current Weights of the Particles</param>
         public void AddWeights(double margin, Matrix<float> particles, int colfrom, int colto, Matrix<float> measurements, List<IDistribution> dists, Matrix<float> weights)
         {
-            for (int i = colfrom; i < colto; i++)
+            for (int wcolumn = colfrom; wcolumn <= colto; wcolumn++)
             {
-                for (int index = 0; index < particles.Column(i).Count; index++)
+                for (int row = 0; row < particles.Column(wcolumn).Count; row++)
                 {
-                    float particle = particles.Column(i)[index];
+                    float particle = (particles[row, wcolumn] * this.ranges[wcolumn]) + this.minima[wcolumn];
                     var p = 1d;
-                    for (int j = 0; j < measurements.Column(colto - colfrom).Count; j++)
+                    for (int measrow = 0; measrow < measurements.Column(wcolumn - colfrom).Count; measrow++)
                     {
-                        float meas = measurements[j, i - colfrom];
-                        p = p * (dists[j].CDF(particle, meas + margin) - dists[j].CDF(particle, meas - margin));
+                        float meas = measurements[measrow, wcolumn - colfrom];
+                        p = p * (dists[measrow].CDF(particle, meas + margin) - dists[measrow].CDF(particle, meas - margin));
                     }
 
-                    weights[index, i] = (float)p;
+                    weights[row, wcolumn] = (float)p;
                 }
             }
         }
@@ -347,27 +358,27 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         /// <param name="matrix">THe matrix to check the values from</param>
         /// <param name="columnindex">What column to check</param>
-        /// <param name="min">The minimum value</param>
-        /// <param name="max">THe maximum value</param>
-        private void ContainParticles(Matrix<float> matrix, int columnindex, float min, float max)
+        private void ContainParticles(Matrix<float> matrix, int columnindex)
         {
             Vector<float> particles = matrix.Column(columnindex);
-            particles.Map(p =>
+            particles.Map(
+                p =>
             {
-                if (p > max)
+                if (p > 1f)
                 {
-                    return max;
+                    return 1;
                 }
-                else if (p < 0)
+                else if (p < 0f)
                 {
-                    return min;
+                    return 0;
                 }
                 else
                 {
                     return p;
                 }
-            });
-            matrix.SetColumn(0, particles.ToArray());
+            },
+                particles);
+            matrix.SetColumn(columnindex, particles.ToArray());
         }
 
         /// <summary>
@@ -383,18 +394,67 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IOrientationSource orientationSource in this.orilist)
             {
                 List<Measurement<Vector3>> measall = orientationSource.GetOrientations(this.previousTS, timeStamp);
-                foreach (Measurement<Vector3> meas in measall)
-                {
-                    measx.Add(meas.Data.X);
-                    measy.Add(meas.Data.Y);
-                    measz.Add(meas.Data.Z);
-                    dist.Add(meas.DistributionType);
-                }
+                this.ProcessMeas(measx, measy, measz, dist, measall);
             }
 
             this.oriDistributions = dist;
             IEnumerable<float> concatenated = measx.Concat(measy).Concat(measz);
             this.Measurementsori = !dist.Any() ? null : new DenseMatrix(dist.Count, 3, concatenated.ToArray());
+        }
+
+        /// <summary>
+        /// Get the latest measurement data and put it into the lists.
+        /// </summary>
+        /// <param name="measx">List to put the X data in.</param>
+        /// <param name="measy">List to put the Y data in.</param>
+        /// <param name="measz">List to put the Z data in.</param>
+        /// <param name="dists">List to add the probability distributions.</param>
+        /// <param name="measall">List of measurements to process.</param>
+        private void ProcessMeas(List<float> measx, List<float> measy, List<float> measz, List<IDistribution> dists, List<Measurement<Vector3>> measall)
+        {
+            if (measall.Count <= 0)
+            {
+                return;
+            }
+
+            List<Measurement<Vector3>> measlist = new List<Measurement<Vector3>>();
+            long ts = -1;
+            foreach (Measurement<Vector3> meas in measall)
+            {
+                if (ts <= meas.TimeStamp)
+                {
+                    if (ts < meas.TimeStamp)
+                    {
+                        measlist.Clear();
+                    }
+
+                    measlist.Add(meas);
+                    ts = meas.TimeStamp;
+                }
+            }
+
+            foreach (Measurement<Vector3> measurement in measlist)
+            {
+                this.AddMeasurmentsToList(measurement.Data.X, measx);
+                this.AddMeasurmentsToList(measurement.Data.Y, measy);
+                this.AddMeasurmentsToList(measurement.Data.Z, measz);
+                dists.Add(measurement.DistributionType);
+            }
+        }
+
+        /// <summary>
+        /// Checks if a the measured value is a number and adds it to the given list.
+        /// </summary>
+        /// <param name="meas">The measured value</param>
+        /// <param name="measlist">The list to add the value to</param>
+        private void AddMeasurmentsToList(float meas, List<float> measlist)
+        {
+            if (float.IsNaN(meas))
+            {
+                throw new ArithmeticException("One of the measurements or the deviation was NaN");
+            }
+
+            measlist.Add(meas);
         }
 
         /// <summary>
@@ -409,13 +469,7 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IPositionSource positionSource in this.poslist)
             {
                 List<Measurement<Vector3>> measall = positionSource.GetPositions(this.previousTS, timeStamp);
-                foreach (Measurement<Vector3> meas in measall)
-                {
-                    measx.Add(meas.Data.X);
-                    measy.Add(meas.Data.Y);
-                    measz.Add(meas.Data.Z);
-                    dist.Add(meas.DistributionType);
-                }
+                this.ProcessMeas(measx, measy, measz, dist, measall);
             }
 
             this.posDistributions = dist;
@@ -445,7 +499,14 @@ namespace IRescue.UserLocalisation.Particle
             {
                 for (int r = 0; r < this.Particles.RowCount; r++)
                 {
-                    transmatrixarray[(this.Particles.RowCount * c) + r] = translation[c];
+                    if (c < 3)
+                    {
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = translation[c] / this.ranges[c];
+                    }
+                    else
+                    {
+                        transmatrixarray[(this.Particles.RowCount * c) + r] = this.Mod(translation[c], ORIENTATIONMAX) / this.ranges[c];
+                    }
                 }
             }
 
@@ -472,10 +533,41 @@ namespace IRescue.UserLocalisation.Particle
         {
             float[] averages = this.WeightedAverage(this.Particles, this.Weights);
             Pose result = new Pose(
-                new Vector3(averages[0], averages[1], averages[2]),
-                new Vector3(averages[3], averages[4], averages[5]));
+                new Vector3((averages[0] * this.ranges[0]) - this.minima[0], (averages[1] * this.ranges[1]) - this.minima[1], (averages[2] * this.ranges[2]) - this.minima[2]),
+                new Vector3((averages[3] * this.ranges[3]) - this.minima[3], (averages[4] * this.ranges[4]) - this.minima[4], (averages[5] * this.ranges[5]) - this.minima[5]));
             this.PosePredictor.AddPoseData(timeStamp, result);
             return result;
+        }
+
+        /// <summary>
+        /// Creates new particles in all dimensions.
+        /// </summary>
+        /// <param name="particleamount">Amount of particles per dimension</param>
+        private void GenerateFreshParticles(int particleamount)
+        {
+            // Create particle matrix
+            var particlearray = this.Particlegen.Generate(
+                particleamount,
+                DIMENSIONSAMOUNT);
+            this.Particles = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, particlearray);
+
+            // Create weights matrix
+            float[] initweights = new float[particleamount * DIMENSIONSAMOUNT];
+            FillArray(initweights, 1f / particleamount);
+            this.Weights = new DenseMatrix(particleamount, DIMENSIONSAMOUNT, initweights);
+        }
+
+        /// <summary>
+        /// Creates new particles in one dimensions.
+        /// </summary>
+        /// <param name="dimension">The dimension to create new particles for</param>
+        private void GenerateFreshParticlesDimension(int dimension)
+        {
+            float[] newparticles = this.Particlegen.Generate(this.Weights.RowCount, 1);
+            this.Particles.SetColumn(dimension, newparticles);
+            float[] initweights = new float[this.Weights.RowCount];
+            FillArray(initweights, 1f / this.Weights.RowCount);
+            this.Weights.SetColumn(dimension, initweights);
         }
 
         /// <summary>
