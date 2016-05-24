@@ -18,23 +18,26 @@ namespace IRescue.Core.DataTypes
         /// <param name="x">x value</param>
         /// <param name="y">y value</param>
         /// <param name="z">z value</param>
-        public Vector3(float x, float y, float z) : base(new float[] { x, y, z })
+        public Vector3(float x, float y, float z)
+            : base(new float[] { x, y, z })
         {
         }
 
         /// <summary>
-        ///  Initializes a new instance of the Vector3 class.
+        /// Initializes a new instance of the <see cref="Vector3"/> class.
         /// </summary>
         /// <param name="vectorValues">array with the x, y and z values</param>
-        public Vector3(float[] vectorValues) : base(vectorValues)
+        public Vector3(float[] vectorValues)
+            : base(vectorValues)
         {
             CheckLength(vectorValues);
         }
 
         /// <summary>
-        ///  Initializes a new instance of the Vector3 class with 3 zeros.
+        /// Initializes a new instance of the <see cref="Vector3"/> class with 3 zeros.
         /// </summary>
-        public Vector3() : base(3)
+        public Vector3()
+            : base(3)
         {
         }
 

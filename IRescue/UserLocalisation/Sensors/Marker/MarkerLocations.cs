@@ -22,7 +22,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private Dictionary<int, Pose> markers;
 
         /// <summary>
-        ///   Initializes a new instance of the MarkerLocations class with the markers from a defines file.
+        /// Initializes a new instance of the <see cref="MarkerLocations"/> class with the markers from a defines file.
         /// </summary>
         /// <param name="path">Path to the xml file</param>
         public MarkerLocations(string path)
@@ -32,6 +32,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="MarkerLocations"/> class.
         ///   Initializes a new instance of the MarkerLocations class without any predefined markers.
         /// </summary>
         public MarkerLocations()
@@ -60,7 +61,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             {
                 return this.markers[id];
             }
-            else 
+            else
             {
                 throw new UnallocatedMarkerException("Marker with id=" + id + " was tracked but not initialized in the XML");
             }
@@ -106,7 +107,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                 float.Parse(xmlRotation.SelectSingleNode("x").InnerText, CultureInfo.InvariantCulture),
                 float.Parse(xmlRotation.SelectSingleNode("y").InnerText, CultureInfo.InvariantCulture),
                 float.Parse(xmlRotation.SelectSingleNode("z").InnerText, CultureInfo.InvariantCulture));
-      
+
             return new Pose(position, rotation);
         }
     }
