@@ -99,7 +99,15 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="posePredictor">The class that predicts the next Pose, which is used to move the particles</param>
         /// <param name="noisegen">The noise generator the generate the noise that is added to the particles</param>
         /// <param name="resampler">The resample class that eliminates the particles with small weights</param>
-        public ParticleFilter(FieldSize fieldsize, int particleamount, double probabilityMargin, float noisesize, IParticleGenerator prtclgen, IPosePredictor posePredictor, INoiseGenerator noisegen, IResampler resampler)
+        public ParticleFilter(
+            FieldSize fieldsize,
+            int particleamount,
+            double probabilityMargin,
+            float noisesize,
+            IParticleGenerator prtclgen,
+            IPosePredictor posePredictor,
+            INoiseGenerator noisegen,
+            IResampler resampler)
             : base(fieldsize)
         {
             this.poslist = new List<IPositionSource>();
