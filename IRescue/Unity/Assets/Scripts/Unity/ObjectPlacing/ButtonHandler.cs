@@ -5,10 +5,9 @@
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
     using System.Collections.Generic;
-    using System.Linq.Expressions;
-    using States;
     using UnityEngine;
     using UnityEngine.UI;
+    using Meta;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -67,6 +66,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public ButtonHandler(GestureEventController controller)
         {
             this.buttonWrapper = new GameObject("Buttons");
+            this.buttonWrapper.AddComponent<MetaBody>().hud = true;
             this.buttons = new List<GameObject>();
 
             // Create the confirm button
@@ -153,7 +153,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
         }
 
-        public void SetScale(int newScale)
+        public void SetScale(float newScale)
         {
             this.buttonWrapper.transform.localScale = new Vector3(newScale, newScale, 1);
         }

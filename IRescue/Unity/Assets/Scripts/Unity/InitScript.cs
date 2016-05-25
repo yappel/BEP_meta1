@@ -34,6 +34,8 @@ namespace Assets.Scripts.Unity
         /// </summary>
         public void Start()
         {
+            // Start in 2d mode
+            Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.InitPlanes(200, 200);
             this.AddControllers();
