@@ -9,7 +9,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using UnityEngine;
     using UnityEngine.UI;
     using System.IO;
-
+    using System;
     /// <summary>
     ///  Controller for holding track of the gestures and states.
     /// </summary>
@@ -156,6 +156,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
+        /// Reset the load frame panel.
+        /// </summary>
+        /// <param name="context">he context that keeps track of the state</param>
+        public void RefreshLoadPanel(StateContext context)
+        {
+            this.buttons.Remove(this.LoadScrollButton);
+            this.LoadScrollButton = this.AddButton(this.GetButton(this.InitLoadScrollPane(80, 416, context)), () => { });
+        }
+
+        /// <summary>
         /// Active a button
         /// </summary>
         /// <param name="gameObject">the button to active</param>
@@ -227,24 +237,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
             string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
+            FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
+            Array.Sort<FileSystemInfo>(files, delegate (FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
-            float height = filePaths.Length * entryHeight;
+            float height = files.Length * entryHeight;
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(),
                 new Vector3(0, -height - 40),
                 new Vector2(0, height + 40));
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
-            for (int i = 0; i < filePaths.Length; i++)
+            for (int i = 0; i < files.Length; i++)
             {
-                GameObject x = GameObject.Instantiate(scrollViewEntry);
-                x.name = Path.GetFileName(filePaths[i]).Replace(".xml", "");
-                x.transform.SetParent(content.transform);
-                x.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(filePaths[i]).ToString();
-                x.transform.GetChild(1).GetComponent<Text>().text = Path.GetFileName(filePaths[i]).Replace(".xml", "");
-                x.transform.localPosition = new Vector3(10 - frameWidth / 2, (i + 1) * entryHeight - 20);
-                x.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                x.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickLoadButton(x.transform, context, x.name));
+                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, context, files[i].FullName, i);
             }
 
             UnityEngine.Object.Destroy(scrollViewEntry);
@@ -261,6 +266,27 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             transform.localPosition = localPosition;
             transform.sizeDelta = sizeDelta;
+        }
+
+        /// <summary>
+        /// Add an entry to the load scroll pane
+        /// </summary>
+        /// <param name="entry">the new entry</param>
+        /// <param name="parent">the parent to set, the content of the scroll pane</param>
+        /// <param name="frameWidth">the width of the scroll pane</param>
+        /// <param name="entryHeight">the height of the entry</param>
+        /// <param name="context">the state context which keeps track of the current state</param>
+        /// <param name="path">the path to the file</param>
+        /// <param name="i">the index of the call</param>
+        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, StateContext context, string path, int i)
+        {
+            entry.name = Path.GetFileName(path).Replace(".xml", "");
+            entry.transform.SetParent(parent);
+            entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
+            entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
+            entry.transform.localPosition = new Vector3(10 - frameWidth / 2, (i + 1) * entryHeight - 20);
+            entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickLoadButton(entry.transform, context, entry.name));
         }
 
         /// <summary>

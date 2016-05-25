@@ -55,6 +55,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 string saveName = StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text.Replace(" ", "").Replace("\\", "").Replace("/", "");
                 this.SaveGame(SaveFile + saveName + ".xml");
                 this.StateContext.SaveFilePath = saveName;
+                this.StateContext.Buttons.RefreshLoadPanel(this.StateContext);
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
             catch (Exception)
