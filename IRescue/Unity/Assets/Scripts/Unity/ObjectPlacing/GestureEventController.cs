@@ -18,7 +18,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// The time before buttons can be pressed after switching states.
         /// </summary>
-        private const int TimeBeforeAction = 1200;
+        private const int TimeBeforeAction = 2000;
+
+        /// <summary>
+        /// The scale of the buttons for 2d.
+        /// </summary>
+        private const float TwoDScale = 1.8f;
 
         /// <summary>
         /// Coupled state context.
@@ -45,8 +50,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Bool if watching in 3d or not;
         /// </summary>
         private bool threeDMode = true;
-
-        private const float TwoDScale = 1.8f;
 
         /// <summary>
         /// Method called on start. Initialize the StateContext

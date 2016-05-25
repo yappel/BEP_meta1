@@ -15,6 +15,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class ObjectPlacementState : AbstractState
     {
         /// <summary>
+        /// Time in miliseconds required to point steadily to place the building
+        /// </summary>
+        private const int TimeToPlace = 3000;
+
+        /// <summary>
+        /// The preferred size of a created building in meters
+        /// </summary>
+        private const float PreferredInitSize = 0.5f;
+
+        /// <summary>
         ///  The time that will be kept to not immediately place buildings.
         /// </summary>
         private long hoverTime;
@@ -108,7 +118,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 10f))
+            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 30f))
             {
                 this.ChangeOutlineRender(this.yellowOutline);
                 this.hoverTime = time;
@@ -119,11 +129,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             this.gameObject.transform.position = position;
-            if (time - this.hoverTime > 2750)
+            if (time - this.hoverTime > TimeToPlace + 250)
             {
                 this.hoverTime = time;
             }
-            else if (time - this.hoverTime > 2500)
+            else if (time - this.hoverTime > TimeToPlace)
             {
                 this.PlaceBuilding();
             }
@@ -208,8 +218,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 totalBounds.Encapsulate(colliders[i].bounds);
             }
+
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
-            float boundScale = 1 / Mathf.Max(bound.z, bound.x);
+            float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x);
             gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);
         }
     }
