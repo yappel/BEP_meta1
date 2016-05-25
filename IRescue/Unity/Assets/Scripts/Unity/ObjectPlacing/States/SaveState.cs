@@ -14,6 +14,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// </summary>
     public class SaveState : AbstractState
     {
+        /// <summary>
+        /// The folder where the save files are located from Unity/
+        /// </summary>
         private const string SaveFile = "Saves/";
 
         /// <summary>
@@ -73,7 +76,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteStartElement("objects");
             foreach (Transform building in GameObject.FindObjectOfType<GroundPlane>().transform)
             {
-                this.WriteObject(writer, building.name.Replace("(clone)", "").Trim(), building.localPosition, building.localEulerAngles);
+                this.WriteObject(writer, building.name.Replace("(clone)", "").Trim(), building.localPosition, building.localEulerAngles, building.localScale);
             }
 
             writer.WriteEndElement();
@@ -87,9 +90,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="writer">the xml writer</param>
         /// <param name="objectName">name of the prefab name that is the origin of the game object</param>
-        /// <param name="position">the position of the object</param>
-        /// <param name="orientation">the orientation for the object</param>
-        private void WriteObject(XmlTextWriter writer, string objectName, Vector3 position, Vector3 orientation)
+        /// <param name="position">the local position of the object</param>
+        /// <param name="orientation">the local orientation for the object</param>
+        /// <param name="scale">The local scale of the object</param>
+        private void WriteObject(XmlTextWriter writer, string objectName, Vector3 position, Vector3 orientation, Vector3 scale)
         {
             writer.WriteStartElement("object");
             writer.WriteStartElement("mesh");
@@ -100,6 +104,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteEndElement();
             writer.WriteStartElement("orientation");
             this.WriteVector(writer, orientation);
+            writer.WriteEndElement();
+            writer.WriteStartElement("scale");
+            this.WriteVector(writer, scale);
             writer.WriteEndElement();
             writer.WriteEndElement();
         }
