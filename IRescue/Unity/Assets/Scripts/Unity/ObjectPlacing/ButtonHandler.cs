@@ -8,6 +8,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using States;
     using UnityEngine;
     using UnityEngine.UI;
+    using System.IO;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -90,7 +91,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.TextInput = this.AddButton("Prefabs/Buttons/TextInput", () => { });
 
             // Create the load scroll pane
-            this.LoadScrollButton = this.AddButton("Prefabs/Buttons/LoadScrollButton", () => { });
+            this.LoadScrollButton = this.AddButton(this.GetButton(this.InitLoadScrollPane(80, 416, context)), () => { });
         }
 
         /// <summary>
@@ -212,6 +213,71 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private GameObject GetButton(GameObject wrapper)
         {
             return wrapper.transform.GetChild(0).gameObject;
+        }
+        
+        /// <summary>
+        /// Initialized the load select frame
+        /// </summary>
+        /// <param name="entryHeight">the height of an entry</param>
+        /// <param name="padding">the padding of an entry to either sides</param>
+        /// <param name="frameWidth">the preferred size of the frame</param>
+        /// <returns>The Object select frame game object</returns>
+        /// <param name="context">The state context which tracks the current state</param>
+        private GameObject InitLoadScrollPane(int entryHeight, int frameWidth, StateContext context)
+        {
+            GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
+            string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
+            GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
+            GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
+            float height = filePaths.Length * entryHeight;
+            this.SetRectTransform(
+                content.GetComponent<RectTransform>(),
+                new Vector3(0, -height - 40),
+                new Vector2(0, height + 40));
+            GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
+            for (int i = 0; i < filePaths.Length; i++)
+            {
+                GameObject x = GameObject.Instantiate(scrollViewEntry);
+                x.name = Path.GetFileName(filePaths[i]).Replace(".xml", "");
+                x.transform.SetParent(content.transform);
+                x.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(filePaths[i]).ToString();
+                x.transform.GetChild(1).GetComponent<Text>().text = Path.GetFileName(filePaths[i]).Replace(".xml", "");
+                x.transform.localPosition = new Vector3(10 - frameWidth / 2, (i + 1) * entryHeight - 20);
+                x.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+                x.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickLoadButton(x.transform, context, x.name));
+            }
+
+            UnityEngine.Object.Destroy(scrollViewEntry);
+            return scollButton;
+        }
+
+        /// <summary>
+        /// Edit a rectangle transform
+        /// </summary>
+        /// <param name="transform">the rectangle transform to modify</param>
+        /// <param name="localPosition">the new local position</param>
+        /// <param name="sizeDelta">the new size delta</param>
+        private void SetRectTransform(RectTransform transform, Vector3 localPosition, Vector2 sizeDelta)
+        {
+            transform.localPosition = localPosition;
+            transform.sizeDelta = sizeDelta;
+        }
+
+        /// <summary>
+        /// Button listener, click the button and highlight the load entry
+        /// </summary>
+        /// <param name="entry">the object entry in the scroll pane</param>
+        /// <param name="controller">the state controller which will receive the event call</param>
+        /// <param name="name">the name of the object</param>
+        private void ClickLoadButton(Transform entry, StateContext context, string name)
+        {
+            foreach (Transform child in entry.parent.transform)
+            {
+                child.GetChild(2).GetComponent<Image>().color = Color.white;
+            }
+
+            entry.GetChild(2).GetComponent<Image>().color = Color.yellow;
+            context.SaveFilePath = name;
         }
     }
 }

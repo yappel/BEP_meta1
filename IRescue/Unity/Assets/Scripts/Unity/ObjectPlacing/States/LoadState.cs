@@ -16,6 +16,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class LoadState : AbstractState
     {
         /// <summary>
+        /// The previous loaded file
+        /// </summary>
+        private string prevSave;
+
+        /// <summary>
         /// The folder where the save files are located from Unity/
         /// </summary>
         private const string SaveFile = "Saves/";
@@ -26,6 +31,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public LoadState(StateContext stateContext) : base(stateContext)
         {
+            this.prevSave = stateContext.SaveFilePath;
             this.StateContext.Buttons.SetActive(new GameObject[] { this.StateContext.Buttons.ConfirmButton, this.StateContext.Buttons.BackButton, this.StateContext.Buttons.LoadScrollButton });
         }
 
@@ -36,9 +42,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             try
             {
-                this.DestroyObjects();
-                this.StateContext.SaveFilePath = this.LoadGame();
-                this.StateContext.SetState(new NeutralState(this.StateContext));
+                if (this.prevSave != this.StateContext.SaveFilePath)
+                {
+                    this.DestroyObjects();
+                    this.LoadGame();
+                    this.StateContext.SetState(new NeutralState(this.StateContext));
+                }
             }
             catch (Exception e)
             {
@@ -52,17 +61,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
+            this.StateContext.SaveFilePath = this.prevSave;
             this.StateContext.SetState(new NeutralState(this.StateContext));
         }
 
         /// <summary>
         /// Load a game file, place all objects in the game
         /// </summary>
-        private string LoadGame()
+        private void LoadGame()
         {
-            string path = "x";
+            string path = this.StateContext.SaveFilePath;
             this.LoadObjects(SaveFile + path + ".xml", GameObject.FindObjectOfType<GroundPlane>().transform);
-            return path;
         }
 
         /// <summary>
