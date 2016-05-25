@@ -38,11 +38,12 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
             Vector3 averagePos = new Vector3();
             Vector3 averageOri = new Vector3();
             float count = 0;
+            List<int> toremove = new List<int>();
             foreach (Result result in this.buffer)
             {
                 if (result.TimeStamp + this.buffersize < timeStamp)
                 {
-                    this.buffer.Remove(result);
+                    toremove.Add(this.buffer.IndexOf(result));
                 }
                 else
                 {
@@ -52,8 +53,13 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
                 }
             }
 
+            foreach (int i in toremove)
+            {
+                this.buffer.RemoveAt(i);
+            }
+
             averagePos.Divide(count, averagePos);
-            averageOri.Divide(count, averagePos);
+            averageOri.Divide(count, averageOri);
             return new Pose(averagePos, averageOri);
         }
     }

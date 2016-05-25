@@ -83,6 +83,7 @@
     <Compile Include="Particle\Resamplers\MultinomialResamplerTest.cs" />
     <Compile Include="Particle\ParticleGenerators\RandomGeneratorTest.cs" />
     <Compile Include="Particle\ParticleFilterTest.cs" />
+    <Compile Include="Particle\Smoothers\MovingAverageSmootherTest.cs" />
     <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IMU\IMUSourceTest.cs" />
