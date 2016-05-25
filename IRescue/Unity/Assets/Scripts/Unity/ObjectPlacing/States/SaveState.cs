@@ -27,7 +27,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.StateContext.SaveFilePath != null)
             {
-                this.SaveGame(this.StateContext.SaveFilePath);
+                this.SaveGame(SaveFile + this.StateContext.SaveFilePath + ".xml");
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
             else
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteStartElement("objects");
             foreach (Transform building in GameObject.FindObjectOfType<GroundPlane>().transform)
             {
-                this.WriteObject(writer, building.name.Replace("(clone)", "").Trim(), building.localPosition, building.localEulerAngles, building.localScale);
+                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", "").Trim(), building.localPosition, building.localEulerAngles, building.localScale);
             }
 
             writer.WriteEndElement();
@@ -96,7 +96,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private void WriteObject(XmlTextWriter writer, string objectName, Vector3 position, Vector3 orientation, Vector3 scale)
         {
             writer.WriteStartElement("object");
-            writer.WriteStartElement("mesh");
+            writer.WriteStartElement("path");
             writer.WriteString(objectName);
             writer.WriteEndElement();
             writer.WriteStartElement("position");
