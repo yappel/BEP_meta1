@@ -46,6 +46,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         private bool threeDMode = true;
 
+        private const float TwoDScale = 1.8f;
+
         /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
@@ -175,7 +177,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             if (threeDMode && Meta.MetaCameraMode.monocular)
             {
                 this.threeDMode = false;
-                this.stateContext.Buttons.SetScale(3);
+                this.stateContext.Buttons.SetScale(TwoDScale);
             }
             else if (!threeDMode && !Meta.MetaCameraMode.monocular)
             {
