@@ -28,6 +28,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public NeutralState(StateContext stateContext) : base(stateContext)
         {
+            this.StateContext.Buttons.SetActive(new GameObject[] { this.StateContext.Buttons.SaveButton, this.StateContext.Buttons.LoadButton });
             this.pointTime = StopwatchSingleton.Time;
         }
 

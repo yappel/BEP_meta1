@@ -79,6 +79,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 
             // Create the backbutton
             this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => context.CurrentState.OnBackButton());
+            
+            // Create the savebutton
+            this.SaveButton = this.AddButton("Prefabs/Buttons/SaveButton", () => context.CurrentState.OnSaveButton());
+
+            // Create the loadbutton
+            this.LoadButton = this.AddButton("Prefabs/Buttons/LoadButton", () => context.CurrentState.OnLoadButton());
+
+            // Create the textinput
+            this.TextInput = this.AddButton("Prefabs/Buttons/TextInput", () => { });
+
+            // Create the load scroll pane
+            this.LoadScrollButton = this.AddButton("Prefabs/Buttons/LoadScrollButton", () => { });
         }
 
         /// <summary>
@@ -112,6 +124,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public GameObject DeleteButton { get; private set; }
 
         /// <summary>
+        /// Gets the save button
+        /// </summary>
+        public GameObject SaveButton { get; private set; }
+
+        /// <summary>
+        /// Gets the load button
+        /// </summary>
+        public GameObject LoadButton { get; private set; }
+
+        /// <summary>
+        /// Gets the text input button
+        /// </summary>
+        public GameObject TextInput { get; private set; }
+
+        /// <summary>
+        /// Gets the load scroll button
+        /// </summary>
+        public GameObject LoadScrollButton { get; private set; }
+
+        /// <summary>
         /// Set all buttons to inactive, making them invisible.
         /// </summary>
         public void ResetButtons()
@@ -119,6 +151,27 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             for (int i = 0; i < this.buttons.Count; i++)
             {
                 this.buttons[i].SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Active a button
+        /// </summary>
+        /// <param name="gameObject">the button to active</param>
+        public void SetActive(GameObject gameObject)
+        {
+            gameObject.SetActive(true);
+        }
+
+        /// <summary>
+        /// Set multiple buttons to active
+        /// </summary>
+        /// <param name="gameObjects">array of buttons to active</param>
+        public void SetActive(GameObject[] gameObjects)
+        {
+            for (int i = 0; i < gameObjects.Length; i++)
+            {
+                this.SetActive(gameObjects[i]);
             }
         }
 
