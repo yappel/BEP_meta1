@@ -8,11 +8,15 @@ namespace Assets.Scripts.Unity
     using System.Collections.Generic;
     using System.Linq;
     using Enums;
+
+    using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation;
     using ObjectPlacing;
     using SensorControllers;
     using SourceCouplers;
     using UnityEngine;
+
+    using Vector3 = UnityEngine.Vector3;
 
     /// <summary>
     ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
@@ -41,6 +45,9 @@ namespace Assets.Scripts.Unity
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
             this.InitPlanes(5, 5);
+
+            GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            plane.AddComponent<WorldBox>().Init(coupler.GetLocalizer(), new FieldSize());
         }
 
         /// <summary>

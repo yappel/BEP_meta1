@@ -31,17 +31,27 @@ namespace Assets.Scripts.Unity
         // Use this for initialization
         void Start()
         {
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.parent = this.transform;
+            cube.transform.localPosition = new UnityEngine.Vector3(1.5f, 1.5f, 3);
+            cube.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
 
         // Update is called once per frame
         void Update()
         {
-            Pose pose = localizer.CalculatePose(StopwatchSingleton.Time);
-            Quaternion rotation = Quaternion.Euler(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
-            Matrix4x4 m = Matrix4x4.identity;
-            UnityEngine.Vector3 translation = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
-            UnityEngine.Vector3 scale = new UnityEngine.Vector3(1, 1, 1);
-            m.SetTRS(translation, rotation, scale);
+            Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
+            UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
+            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
+
+            Debug.Log("Pos: " + pos.ToString());
+            Debug.Log("Rot: " + rot.ToString());
+            
+            rot = new UnityEngine.Vector3(0,0,0);
+
+            Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
+            this.transform.position = -1 * (rotation * pos);
+            this.transform.rotation = rotation;
         }
     }
 }

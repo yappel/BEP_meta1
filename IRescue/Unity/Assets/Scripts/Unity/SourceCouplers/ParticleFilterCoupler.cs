@@ -27,13 +27,13 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// </summary>
     public ParticleFilterCoupler()
     {
-        FieldSize fieldSize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
+        FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
         int particleamount = 30;
         RandomParticleGenerator prtclgen = new RandomParticleGenerator(new SystemRandomSource());
         LinearPosePredicter posePredictor = new LinearPosePredicter();
         RandomNoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
         MultinomialResampler resampler = new MultinomialResampler();
-        this.localizer = new ParticleFilter(fieldSize, particleamount, 0.005f, 0.0f, prtclgen, posePredictor, noisegen, resampler);
+        this.localizer = new ParticleFilter(fieldSize, particleamount, 0.005f, 0.25f, prtclgen, posePredictor, noisegen, resampler);
     }
 
     /// <summary>

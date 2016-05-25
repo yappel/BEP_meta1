@@ -80,7 +80,14 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     public void Update()
     {
-        this.markerSensor.UpdateLocations(IRescue.Core.Utils.StopwatchSingleton.Time, this.GetVisibleMarkers());
+        long t = IRescue.Core.Utils.StopwatchSingleton.Time;
+        this.markerSensor.UpdateLocations(t, this.GetVisibleMarkers());
+        List<Measurement<Vector3>> list = this.markerSensor.GetPositions(t, t);
+        Debug.Log("Time: " + t);
+        foreach (Measurement<Vector3> mes in list)
+        {
+            Debug.Log("x=" + mes.Data.X + " y=" + mes.Data.Y + " z=" + mes.Data.Z);
+        }
     }
 
     /// <summary>
@@ -114,7 +121,7 @@ public class MarkerSensorController : AbstractSensorController
 
             Vector3 rotation = new Vector3(
                 this.markerTransform.eulerAngles.x - MetaOrientation.x, 
-                this.markerTransform.eulerAngles.y - MetaOrientation.y, 
+                180 + this.markerTransform.eulerAngles.y - MetaOrientation.y, 
                 this.markerTransform.eulerAngles.z - MetaOrientation.z);
             visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }

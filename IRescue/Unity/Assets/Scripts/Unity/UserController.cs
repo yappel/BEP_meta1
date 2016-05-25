@@ -34,8 +34,9 @@ namespace Assets.Scripts.Unity
         {
             Pose pose = this.localizer.CalculatePose(IRescue.Core.Utils.StopwatchSingleton.Time);
             Transform metaFrame = this.transform.GetChild(0);
-            metaFrame.position = this.TransformVector(pose.Position);
-            metaFrame.eulerAngles = this.TransformVector(pose.Orientation);
+
+            // metaFrame.position = this.TransformVector(pose.Position);
+            // metaFrame.eulerAngles = this.TransformVector(new IRescue.Core.DataTypes.Vector3(0, 0, 0));
         }
 
         /// <summary>
