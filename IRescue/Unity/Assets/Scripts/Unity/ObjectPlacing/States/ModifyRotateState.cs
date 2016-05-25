@@ -37,7 +37,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.grabbableDistance = float.MaxValue;
             mb.moveObjectOnGrab = false;
             mb.rotateObjectOnTwoHandedGrab = true;
-            this.originalOrientation = gameObject.transform.eulerAngles;
+            this.originalOrientation = gameObject.transform.localEulerAngles;
             this.StateContext.Buttons.BackButton.SetActive(true);
             this.StateContext.Buttons.InfoText.SetActive(true);
             this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Rotate";
@@ -61,7 +61,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void RunLateUpdate()
         {
-            this.gameObject.transform.eulerAngles = new Vector3(this.originalOrientation.x, this.gameObject.transform.eulerAngles.y, this.originalOrientation.z);
+            this.gameObject.transform.localEulerAngles = new Vector3(this.originalOrientation.x, this.gameObject.transform.localEulerAngles.y, this.originalOrientation.z);
         }
     }
 }

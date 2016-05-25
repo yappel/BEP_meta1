@@ -73,6 +73,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath) 
             : this(stateContext, location, CreateObject(gameObjectPath))
         {
+            this.gameObject.transform.localRotation = Quaternion.identity;
         }
 
         /// <summary>
@@ -207,7 +208,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 totalBounds.Encapsulate(colliders[i].bounds);
             }
-
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
             float boundScale = 1 / Mathf.Max(bound.z, bound.x);
             gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);

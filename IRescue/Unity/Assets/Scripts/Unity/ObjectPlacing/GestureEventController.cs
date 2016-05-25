@@ -321,7 +321,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                 if (hits[i].distance < minDistance && (hits[i].transform.gameObject.GetComponent<GroundPlane>() != null || hits[i].transform.gameObject.GetComponent<MetaBody>() != null))
                 {
                     minDistance = hits[i].distance;
-                    res = hits[i].transform.root.gameObject.GetComponent<GroundPlane>().gameObject.transform.InverseTransformPoint(res);
+                    res = hits[i].point;
                     o = hits[i].transform.gameObject;
                 }
             }
