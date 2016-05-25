@@ -10,6 +10,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using UnityEngine.UI;
     using System.IO;
     using System;
+
     /// <summary>
     ///  Controller for holding track of the gestures and states.
     /// </summary>
