@@ -4,10 +4,10 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using Meta;
     using System;
     using System.Globalization;
     using System.Xml;
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -16,14 +16,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class LoadState : AbstractState
     {
         /// <summary>
-        /// The previous loaded file
-        /// </summary>
-        private string prevSave;
-
-        /// <summary>
         /// The folder where the save files are located from Unity/
         /// </summary>
         private const string SaveFile = "Saves/";
+
+        /// <summary>
+        /// The previous loaded file
+        /// </summary>
+        private string prevSave;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadState"/> class.

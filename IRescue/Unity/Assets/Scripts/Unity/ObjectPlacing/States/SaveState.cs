@@ -5,8 +5,8 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using System;
-    using UnityEngine;
     using System.Xml;
+    using UnityEngine;
     using UnityEngine.UI;
 
     /// <summary>
@@ -52,7 +52,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             try
             {
-                string saveName = StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text.Replace(" ", "").Replace("\\", "").Replace("/", "");
+                string saveName = StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text.Replace(" ", string.Empty).Replace("\\", string.Empty).Replace("/", string.Empty);
                 this.SaveGame(SaveFile + saveName + ".xml");
                 this.StateContext.SaveFilePath = saveName;
                 this.StateContext.Buttons.RefreshLoadPanel(this.StateContext);
@@ -65,9 +65,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Write all object gameobjects to a file
+        /// Write all object game objects to a file
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">The path to which will be saved, should contain full path and end with .xml</param>
         private void SaveGame(string path)
         {
             XmlTextWriter writer = new XmlTextWriter(path, System.Text.Encoding.UTF8);
@@ -77,7 +77,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteStartElement("objects");
             foreach (Transform building in GameObject.FindObjectOfType<GroundPlane>().transform)
             {
-                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", "").Trim(), building.localPosition, building.localEulerAngles, building.localScale);
+                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", string.Empty).Trim(), building.localPosition, building.localEulerAngles, building.localScale);
             }
 
             writer.WriteEndElement();

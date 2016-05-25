@@ -23,7 +23,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// The path to the save file if something is loaded. Is null otherwise
+        /// Gets or sets the path to the save file if something is loaded. Is null otherwise
         /// </summary>
         public string SaveFilePath { get; set; }
 

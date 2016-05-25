@@ -4,12 +4,12 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using States;
     using UnityEngine;
     using UnityEngine.UI;
-    using System.IO;
-    using System;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -225,21 +225,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             return wrapper.transform.GetChild(0).gameObject;
         }
-        
+
         /// <summary>
         /// Initialized the load select frame
         /// </summary>
         /// <param name="entryHeight">the height of an entry</param>
-        /// <param name="padding">the padding of an entry to either sides</param>
-        /// <param name="frameWidth">the preferred size of the frame</param>
-        /// <returns>The Object select frame game object</returns>
+        /// <param name="frameWidth">The width of the frame of the load scroll panel</param>
         /// <param name="context">The state context which tracks the current state</param>
+        /// <returns>The Object select frame game object</returns>
         private GameObject InitLoadScrollPane(int entryHeight, int frameWidth, StateContext context)
         {
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
             string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
             FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
-            Array.Sort<FileSystemInfo>(files, delegate (FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
+            Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
             float height = files.Length * entryHeight;
@@ -281,11 +280,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="i">the index of the call</param>
         private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, StateContext context, string path, int i)
         {
-            entry.name = Path.GetFileName(path).Replace(".xml", "");
+            entry.name = Path.GetFileName(path).Replace(".xml", string.Empty);
             entry.transform.SetParent(parent);
             entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
             entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
-            entry.transform.localPosition = new Vector3(10 - frameWidth / 2, (i + 1) * entryHeight - 20);
+            entry.transform.localPosition = new Vector3(10 - (frameWidth / 2), ((i + 1) * entryHeight) - 20);
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickLoadButton(entry.transform, context, entry.name));
         }
@@ -294,7 +293,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Button listener, click the button and highlight the load entry
         /// </summary>
         /// <param name="entry">the object entry in the scroll pane</param>
-        /// <param name="controller">the state controller which will receive the event call</param>
+        /// <param name="context">the state context which will receive the event call</param>
         /// <param name="name">the name of the object</param>
         private void ClickLoadButton(Transform entry, StateContext context, string name)
         {
