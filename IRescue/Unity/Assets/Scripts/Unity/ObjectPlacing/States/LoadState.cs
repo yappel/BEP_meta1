@@ -15,6 +15,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public LoadState(StateContext stateContext) : base(stateContext)
         {
+            this.StateContext.Buttons.ConfirmButton.SetActive(true);
+            this.StateContext.Buttons.BackButton.SetActive(true);
+            this.StateContext.Buttons.LoadScrollButton.SetActive(true);
+        }
+
+        public override void OnConfirmButton()
+        {
+            // TODO load objects
+            this.StateContext.SaveFilePath = "SOMETHING";
+            this.StateContext.SetState(new NeutralState(this.StateContext));
+        }
+
+        /// <summary>
+        /// Return to the neutral state.
+        /// </summary>
+        public override void OnBackButton()
+        {
+            this.StateContext.SetState(new NeutralState(this.StateContext));
         }
     }
 }

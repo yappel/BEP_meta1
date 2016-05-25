@@ -64,6 +64,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Method when the save button has been pressed.
+        /// </summary>
+        public virtual void OnSaveButton()
+        {
+        }
+
+        /// <summary>
+        /// Method when the load button has been pressed.
+        /// </summary>
+        public virtual void OnLoadButton()
+        {
+        }
+
+        /// <summary>
         /// Method when a grab event has occurred. A closed fist.
         /// </summary>
         /// <param name="hand">The hand(s) which perform a grab gesture</param>

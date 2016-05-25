@@ -23,6 +23,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// The path to the save file if something is loaded. Is null otherwise
+        /// </summary>
+        public string SaveFilePath { get; set; }
+
+        /// <summary>
         /// Gets or sets the selected building
         /// </summary>
         public GameObject SelectedBuilding { get; set; }

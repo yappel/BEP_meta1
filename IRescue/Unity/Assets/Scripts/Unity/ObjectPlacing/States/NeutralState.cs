@@ -32,6 +32,22 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Go to the save state
+        /// </summary>
+        public override void OnSaveButton()
+        {
+            this.StateContext.SetState(new SaveState(this.StateContext));
+        }
+
+        /// <summary>
+        /// Go to the load state
+        /// </summary>
+        public override void OnLoadButton()
+        {
+            this.StateContext.SetState(new LoadState(this.StateContext));
+        }
+
+        /// <summary>
         /// Sets the state to an object placement state after pointing for 1.5 second.
         /// </summary>
         /// <param name="position">Position of the building to be placed</param>
