@@ -13,6 +13,9 @@ namespace IRescue.UserLocalisation.Particle
     using Algos.Resamplers;
     using Core.DataTypes;
     using Core.Distributions;
+
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
+
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
     using PosePrediction;
@@ -78,6 +81,8 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         private List<IDistribution> oriDistributions;
 
+        private ISmoother smoother;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
         /// </summary>
@@ -118,6 +123,7 @@ namespace IRescue.UserLocalisation.Particle
              {
                 this.Fieldsize.Xmin, this.Fieldsize.Ymin, this.Fieldsize.Zmin, 0, 0, 0
              };
+            this.smoother = new MovingAverageSmoother(1000);
         }
 
         /// <summary>
@@ -537,7 +543,7 @@ namespace IRescue.UserLocalisation.Particle
                 new Vector3((averages[0] * this.ranges[0]) - this.minima[0], (averages[1] * this.ranges[1]) - this.minima[1], (averages[2] * this.ranges[2]) - this.minima[2]),
                 new Vector3((averages[3] * this.ranges[3]) - this.minima[3], (averages[4] * this.ranges[4]) - this.minima[4], (averages[5] * this.ranges[5]) - this.minima[5]));
             this.PosePredictor.AddPoseData(timeStamp, result);
-            return result;
+            return this.smoother.GetSmoothedResult(result, timeStamp);
         }
 
         /// <summary>

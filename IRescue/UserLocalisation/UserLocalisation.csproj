@@ -68,6 +68,9 @@
     <Compile Include="Particle\Algos\ParticleGenerators\RandomParticleGenerator.cs" />
     <Compile Include="Particle\Algos\Resamplers\MultinomialResampler.cs" />
     <Compile Include="Particle\Algos\Resamplers\IResampler.cs" />
+    <Compile Include="Particle\Algos\Smoothers\ISmoother.cs" />
+    <Compile Include="Particle\Algos\Smoothers\MovingAverageSmoother.cs" />
+    <Compile Include="Particle\Algos\Smoothers\Result.cs" />
     <Compile Include="Particle\ParticleFilter.cs" />
     <Compile Include="PosePrediction\IPosePredictor.cs" />
     <Compile Include="PosePrediction\LinearPosePredicter.cs" />
