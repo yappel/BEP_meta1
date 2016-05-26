@@ -5,9 +5,9 @@
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
     using System.Collections.Generic;
+    using Meta;
     using UnityEngine;
     using UnityEngine.UI;
-    using Meta;
 
     /// <summary>
     ///  Controller for holding track of the gestures and states.
@@ -94,7 +94,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.InfoText = this.AddButton("Prefabs/Buttons/InfoText", () => { });
 
             // Create the object select frame
-            this.ObjectSelect =  this.AddButton(this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller)), () => { });
+            this.ObjectSelect = this.AddButton(this.GetButton(this.InitObjectSelect(ColumnCount, EntryWidth, EntryHeight, Padding, FrameWidth, controller)), () => { });
         }
 
         /// <summary>
@@ -153,6 +153,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
         }
 
+        /// <summary>
+        /// Set the new scale of the buttons
+        /// </summary>
+        /// <param name="newScale">new transform scale</param>
         public void SetScale(float newScale)
         {
             this.buttonWrapper.transform.localScale = new Vector3(newScale, newScale, 1);
@@ -216,8 +220,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             this.SetRectTransform(scrollViewVertical.GetComponent<RectTransform>(), new Vector3(-80, -35, 0), new Vector2((entryWidth + (2 * padding)) * columnSize, frameWidth));
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
             this.SetRectTransform(
-                content.GetComponent<RectTransform>(), 
-                new Vector3(-frameWidth, -(230 + (entryWidth * (1 + Mathf.Floor(objects.Length / columnSize))))), 
+                content.GetComponent<RectTransform>(),
+                new Vector3(-frameWidth, 135 - ((entryHeight + (2 * padding)) * (1 + Mathf.Floor(objects.Length / columnSize)))),
                 new Vector2((entryWidth + (2 * padding)) * columnSize, (entryHeight + (2 * padding)) * (1 + Mathf.Floor(objects.Length / columnSize))));
             float deductY = content.GetComponent<RectTransform>().sizeDelta.y;
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
@@ -258,18 +262,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private void AddScrollEntry(
             GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding, GestureEventController controller)
         {
-            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickButton(entry.transform, controller, name));
-            entry.transform.FindChild("Sprite").GetComponent<Image>().sprite = this.CreateImage(name);
+            Transform image = entry.transform.GetChild(0);
+            image.GetComponent<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             entry.GetComponent<RectTransform>().localPosition = new Vector3(
-                padding + (Mathf.Floor(i % columnSize) * (entryWidth + (2 * padding))), 
-                -((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
+                (entryWidth / 2) + padding + (Mathf.Floor(i % columnSize) * (entryWidth + (2 * padding))),
+                (entryWidth / 2) - ((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
             entry.transform.GetComponentInChildren<Text>().text = name;
+            entry.AddComponent<Selector>().Init(controller);
             if (name == "DefaultObject")
             {
-                this.ClickButton(entry.transform, controller, name);
+                entry.GetComponent<Selector>().OnPointerDown(null);
             }
         }
 
@@ -289,23 +294,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 return Resources.Load<Sprite>(PreviewPath + "DefaultPreview");
             }
-        }
-
-        /// <summary>
-        /// Button listener, click the button and highlight the text
-        /// </summary>
-        /// <param name="entry">the object entry in the scroll pane</param>
-        /// <param name="controller">the state controller which will receive the event call</param>
-        /// <param name="name">the name of the object</param>
-        private void ClickButton(Transform entry, GestureEventController controller, string name)
-        {
-            foreach (Transform child in entry.parent.transform)
-            {
-                child.GetComponent<Image>().enabled = false;
-            }
-
-            entry.GetComponent<Image>().enabled = true;
-            controller.SelectObjectButtonEvent(name);
         }
     }
 }

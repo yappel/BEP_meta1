@@ -15,7 +15,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class ObjectPlacementState : AbstractState
     {
         /// <summary>
-        /// Time in miliseconds required to point steadily to place the building
+        /// Time in milliseconds required to point steadily to place the building
         /// </summary>
         private const int TimeToPlace = 3000;
 
@@ -167,33 +167,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Place a new building at the pointed location.
-        /// </summary>
-        private void PlaceBuilding()
-        {
-            MetaBody mb = this.gameObject.AddComponent<MetaBody>();
-            mb.maxScaleRatio = 100;
-            this.ChangeOutlineRender(this.defaultShader);
-            this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
-        }
-
-        /// <summary>
-        /// Change the outline color
-        /// </summary>
-        /// <param name="shader">New outline shade</param>
-        private void ChangeOutlineRender(Shader shader)
-        {
-            if (shader != this.currentShader)
-            {
-                for (int i = 0; i < this.colorRenders.Length; i++)
-                {
-                    this.currentShader = shader;
-                    this.colorRenders[i].material.shader = shader;
-                }
-            }
-        }
-
-        /// <summary>
         /// Initialize a game objects
         /// </summary>
         /// <param name="gameObjectPath">the path to the object</param>
@@ -222,6 +195,33 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
             float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x);
             gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);
+        }
+
+        /// <summary>
+        /// Place a new building at the pointed location.
+        /// </summary>
+        private void PlaceBuilding()
+        {
+            MetaBody mb = this.gameObject.AddComponent<MetaBody>();
+            mb.maxScaleRatio = 100;
+            this.ChangeOutlineRender(this.defaultShader);
+            this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Change the outline color
+        /// </summary>
+        /// <param name="shader">New outline shade</param>
+        private void ChangeOutlineRender(Shader shader)
+        {
+            if (shader != this.currentShader)
+            {
+                for (int i = 0; i < this.colorRenders.Length; i++)
+                {
+                    this.currentShader = shader;
+                    this.colorRenders[i].material.shader = shader;
+                }
+            }
         }
     }
 }

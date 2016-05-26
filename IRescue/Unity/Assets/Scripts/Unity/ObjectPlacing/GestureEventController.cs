@@ -11,7 +11,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using UnityEngine.UI;
 
     /// <summary>
-    /// This controller keeps track of gesture events and passes it to a statecontext.
+    /// This controller keeps track of gesture events and passes it to a state context.
     /// </summary>
     public class GestureEventController : MonoBehaviour
     {
@@ -47,7 +47,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private bool canSwitchState;
 
         /// <summary>
-        /// Bool if watching in 3d or not;
+        /// Boolean if watching in 3d or not;
         /// </summary>
         private bool threeDMode = true;
 
@@ -177,12 +177,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         private void MonoStereo()
         {
-            if (threeDMode && Meta.MetaCameraMode.monocular)
+            if (this.threeDMode && Meta.MetaCameraMode.monocular)
             {
                 this.threeDMode = false;
                 this.stateContext.Buttons.SetScale(TwoDScale);
             }
-            else if (!threeDMode && !Meta.MetaCameraMode.monocular)
+            else if (!this.threeDMode && !Meta.MetaCameraMode.monocular)
             {
                 this.threeDMode = true;
                 this.stateContext.Buttons.SetScale(1);
