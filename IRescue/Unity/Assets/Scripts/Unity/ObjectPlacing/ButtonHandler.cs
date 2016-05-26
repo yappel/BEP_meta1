@@ -90,6 +90,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             // Create the toggle button
             this.ToggleButton = this.AddButton("Prefabs/Buttons/ToggleButton", () => controller.ToggleButtonEvent());
 
+            // Create the Copy button
+            this.CopyButton = this.AddButton("Prefabs/Buttons/CopyButton", () => controller.CopyButtonEvent());
+
             // Create the info text
             this.InfoText = this.AddButton("Prefabs/Buttons/InfoText", () => { });
 
@@ -131,6 +134,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// Gets the delete button
         /// </summary>
         public GameObject DeleteButton { get; private set; }
+
+        /// <summary>
+        /// Gets the copy button
+        /// </summary>
+        public GameObject CopyButton { get; private set; }
 
         /// <summary>
         /// Gets the object select button

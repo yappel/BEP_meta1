@@ -64,6 +64,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Method called when a copy button has been pressed
+        /// </summary>
+        public virtual void OnCopyButton()
+        {
+        }
+
+        /// <summary>
         /// Method called when a delete button has been pressed
         /// </summary>
         public virtual void OnDeleteButton()

@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -43,6 +44,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.StateContext.Buttons.TranslateButton.SetActive(true);
             this.StateContext.Buttons.RotateButton.SetActive(true);
             this.StateContext.Buttons.ScaleButton.SetActive(true);
+            this.StateContext.Buttons.CopyButton.SetActive(true);
             this.gameObject = gameObject;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
             this.ChangeOutlineRender(this.greenOutline);
@@ -88,6 +90,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnScaleButton()
         {
             this.StateContext.SetState(new ModifyScaleState(this.StateContext, this.gameObject));
+        }
+
+        /// <summary>
+        /// Copy the objet and go to the object placing state.
+        /// </summary>
+        public override void OnCopyButton()
+        {
+            this.ChangeOutlineRender(this.defaultShader);
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, "Objects/" + this.gameObject.name.Replace("(Clone)", string.Empty).Trim()));
         }
 
         /// <summary>
