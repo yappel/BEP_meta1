@@ -97,8 +97,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnCopyButton()
         {
+            GameObject newBuilding = UnityEngine.Object.Instantiate<GameObject>(this.gameObject);
+            newBuilding.transform.parent = this.gameObject.transform.parent;
+            newBuilding.name = this.gameObject.name;
+            newBuilding.transform.localScale = this.gameObject.transform.localScale;
+            UnityEngine.Object.Destroy(newBuilding.GetComponent<MetaBody>());
             this.ChangeOutlineRender(this.defaultShader);
-            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, "Objects/" + this.gameObject.name.Replace("(Clone)", string.Empty).Trim()));
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding));
         }
 
         /// <summary>
