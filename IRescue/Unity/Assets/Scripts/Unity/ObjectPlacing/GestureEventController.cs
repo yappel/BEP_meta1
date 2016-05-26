@@ -166,7 +166,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
         public void SelectObjectButtonEvent(string resourcePath)
         {
-            if (this.canSwitchState)
+            if (this.stateContext != null)
             {
                 this.stateContext.SwapObject("Objects/" + resourcePath);
             }
@@ -291,7 +291,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
             {
-                if (gameObject.GetComponent<MetaBody>() == null)
+                if (gameObject.GetComponentInParent<BuildingPlane>() == null)
                 {
                     this.stateContext.CurrentState.OnPoint(point);
                 }
@@ -321,7 +321,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                     return new Vector3();
                 }
 
-                if (hits[i].distance < minDistance && (hits[i].transform.gameObject.GetComponent<GroundPlane>() != null || hits[i].transform.gameObject.GetComponent<MetaBody>() != null))
+                if (hits[i].distance < minDistance && (hits[i].transform.gameObject.GetComponent<GroundPlane>() != null || hits[i].transform.gameObject.GetComponentInParent<BuildingPlane>() != null))
                 {
                     minDistance = hits[i].distance;
                     res = hits[i].point;

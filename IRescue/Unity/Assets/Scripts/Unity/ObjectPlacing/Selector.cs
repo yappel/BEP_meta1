@@ -37,7 +37,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 child.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.white;
             }
-
+            
             this.transform.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.yellow;
             this.controller.SelectObjectButtonEvent(this.name);
         }
