@@ -258,6 +258,7 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(System.Math.Sqrt(2), ((Normal)res.DistributionType).Stddev, 0.0001);
         }
 
+        /// <summary>
         /// Test that get last velocity returns the correct velocity when data is supplied and the
         /// time stamp is smaller than one second.
         /// </summary>
