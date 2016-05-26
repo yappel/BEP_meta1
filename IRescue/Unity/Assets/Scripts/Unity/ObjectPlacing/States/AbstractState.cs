@@ -71,6 +71,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
         }
 
+        /// <summary>
         /// Method when a point event has occurred to place a building (ground plane). A single finger fully extended.
         /// </summary>
         /// <param name="position">The position pointed towards</param>
