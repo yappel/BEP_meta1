@@ -80,7 +80,10 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     public void Update()
     {
-        this.markerSensor.UpdateLocations(IRescue.Core.Utils.StopwatchSingleton.Time, this.GetVisibleMarkers());
+        if (this.ImuInitialized())
+        {
+            this.markerSensor.UpdateLocations(IRescue.Core.Utils.StopwatchSingleton.Time, this.GetVisibleMarkers());
+        }
     }
 
     /// <summary>
