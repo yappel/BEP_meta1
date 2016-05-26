@@ -15,17 +15,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     public class LoadSelector : MonoBehaviour, IPointerDownHandler
     {
         /// <summary>
-        /// Controller to call the event
+        /// load state which listens to this button
         /// </summary>
-        private StateContext controller;
+        private LoadState state;
 
         /// <summary>
         /// Set the controller
         /// </summary>
-        /// <param name="controller">gesture controller that will receive the event call</param>
-        public void Init(StateContext controller)
+        /// <param name="state">the state which can load a game</param>
+        public void Init(LoadState state)
         {
-            this.controller = controller;
+            this.state = state;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
 
             this.transform.GetChild(2).GetComponent<Image>().color = Color.yellow;
-            this.controller.SaveFilePath = this.name;
+            this.state.StateContext.SaveFilePath = this.name;
         }
     }
 }

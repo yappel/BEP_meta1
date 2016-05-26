@@ -20,6 +20,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private const string SaveFile = "Saves/";
 
         /// <summary>
+        /// The game object which displays the save name
+        /// </summary>
+        private GameObject saveStringInput;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SaveState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
@@ -32,37 +37,43 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
             else
             {
-                this.StateContext.Buttons.SetActive(new GameObject[] { this.StateContext.Buttons.BackButton, this.StateContext.Buttons.SaveButton, this.StateContext.Buttons.TextInput });
-                this.StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text = DateTime.Now.ToString("yyyyMMddHHmm");
+                this.InitButton("SaveButton", () => this.OnSaveButton());
+                this.InitButton("BackButton", () => this.OnBackButton());
+                this.saveStringInput = this.InitTextPane("TextInput", DateTime.Now.ToString("yyyyMMddHHmm"));
             }
         }
 
         /// <summary>
         /// Return to the neutral state
         /// </summary>
-        public override void OnBackButton()
+        public void OnBackButton()
         {
-            Meta.MetaKeyboard.Instance.enabled = false;
-            this.StateContext.SetState(new NeutralState(this.StateContext));
+            if (this.CanSwitchState())
+            {
+                Meta.MetaKeyboard.Instance.enabled = false;
+                this.StateContext.SetState(new NeutralState(this.StateContext));
+            }
         }
 
         /// <summary>
         /// Save the game and return to the neutral state
         /// </summary>
-        public override void OnSaveButton()
+        public void OnSaveButton()
         {
-            Meta.MetaKeyboard.Instance.enabled = false;
-            try
+            if (this.CanSwitchState())
             {
-                string saveName = StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text.Replace(" ", string.Empty).Replace("\\", string.Empty).Replace("/", string.Empty);
-                this.SaveGame(SaveFile + saveName + ".xml");
-                this.StateContext.SaveFilePath = saveName;
-                this.StateContext.Buttons.RefreshLoadPanel(this.StateContext);
-                this.StateContext.SetState(new NeutralState(this.StateContext));
-            }
-            catch (Exception)
-            {
-                this.StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text = "Invalid name, try using a different one!";
+                Meta.MetaKeyboard.Instance.enabled = false;
+                try
+                {
+                    string saveName = this.saveStringInput.GetComponentInChildren<Text>().text.Replace(" ", string.Empty).Replace("\\", string.Empty).Replace("/", string.Empty);
+                    this.SaveGame(SaveFile + saveName + ".xml");
+                    this.StateContext.SaveFilePath = saveName;
+                    this.StateContext.SetState(new NeutralState(this.StateContext));
+                }
+                catch (Exception)
+                {
+                    this.saveStringInput.GetComponentInChildren<Text>().text = "Invalid name, try using a different one!";
+                }
             }
         }
 

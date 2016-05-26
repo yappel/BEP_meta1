@@ -88,20 +88,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
-        /// Method when the save button has been pressed.
-        /// </summary>
-        public virtual void OnSaveButton()
-        {
-        }
-
-        /// <summary>
-        /// Method when the load button has been pressed.
-        /// </summary>
-        public virtual void OnLoadButton()
-        {
-        }
-
-        /// <summary>
         /// Run an update on the state.
         /// </summary>
         public virtual void RunUpdate()
@@ -140,7 +126,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="buttonName">The name of the button located in Prefabs/Buttons/</param>
         /// <param name="action">The lambda calculus</param>
-        protected void InitButton(string buttonName, UnityEngine.Events.UnityAction action)
+        /// <returns>The created button game object</returns>
+        protected GameObject InitButton(string buttonName, UnityEngine.Events.UnityAction action)
         {
             GameObject button = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + buttonName)));
             if (button.transform.GetComponentInChildren<Button>() != null)
@@ -150,6 +137,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             
             this.buttons.Add(button);
             button.transform.SetParent(ButtonWrapper.Wrapper, false);
+            return button;
         }
 
         /// <summary>
@@ -157,12 +145,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         /// <param name="textPaneName">the name of the text pane in Prefabs/Buttons/</param>
         /// <param name="text">The text to set in the pane</param>
-        protected void InitTextPane(string textPaneName, string text)
+        /// <returns>The created button game object</returns>
+        protected GameObject InitTextPane(string textPaneName, string text)
         {
             GameObject button = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + textPaneName));
             button.GetComponentInChildren<Text>().text = text;
             this.buttons.Add(button);
             button.transform.SetParent(ButtonWrapper.Wrapper, false);
+            return button;
         }
 
         /// <summary>
