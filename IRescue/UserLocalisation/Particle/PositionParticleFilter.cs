@@ -81,7 +81,6 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IPositionSource source in this.positionSources)
             {
                 ////TODO fix interface of sources
-                this.measurements.Add(source.GetLastPosition());
                 this.measurements.AddRange(source.GetPositionsClosestTo(this.currentTimeStamp, this.currentTimeStamp - this.previousTimeStamp));
             }
         }
