@@ -40,12 +40,12 @@ namespace UserLocalisation.Test.Sensors.IMU
         /// <summary>
         /// The default type of probability distribution belonging to the measurements of the acceleration.
         /// </summary>
-        private Mock<IDistribution> accDistType;
+        private Mock<Normal> accDistType;
 
         /// <summary>
         /// The default type of probability distribution belonging to the measurements of the orientation.
         /// </summary>
-        private Mock<IDistribution> oriDistType;
+        private Mock<Normal> oriDistType;
 
         /// <summary>
         /// The default buffer size value used in the source.
@@ -58,8 +58,8 @@ namespace UserLocalisation.Test.Sensors.IMU
         [SetUp]
         public void SetUp()
         {
-            this.accDistType = new Mock<IDistribution>();
-            this.oriDistType = new Mock<IDistribution>();
+            this.accDistType = new Mock<Normal>(1);
+            this.oriDistType = new Mock<Normal>(1);
             this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, this.bufferSize, new Vector3(new float[] { 0, 0, 0 }));
             this.zeroOrientation = new Vector3(0, 0, 0);
             this.standardAcceleration = new Vector3(1, 2, 3);
@@ -241,6 +241,18 @@ namespace UserLocalisation.Test.Sensors.IMU
             Measurement<Vector3> res = this.source.GetLastVelocity();
             this.AssertVectorAreEqual(new Vector3(0.5f, 1, 1.5f), res.Data);
             Assert.AreEqual(1000, res.TimeStamp);
+        }
+
+        [Test]
+        public void VelocityCorrectStdTest()
+        {
+            this.source = new IMUSource(new Normal(1), new Normal(1), 5);
+            Vector3 acc0 = new Vector3(0, 0, 0);
+            Vector3 acc1 = new Vector3(1, 2, 3);
+            this.source.AddMeasurements(0, acc0, this.zeroOrientation);
+            this.source.AddMeasurements(1000, acc1, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetLastVelocity();
+            Assert.AreEqual(System.Math.Sqrt(2), ((Normal) res.DistributionType).Stddev, 0.0001);
         }
 
         /// <summary>

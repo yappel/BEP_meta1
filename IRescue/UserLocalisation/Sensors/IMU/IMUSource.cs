@@ -4,6 +4,7 @@
 
 namespace IRescue.UserLocalisation.Sensors.IMU
 {
+    using System;
     using System.Collections.Generic;
     using Core.DataTypes;
     using Core.Distributions;
@@ -19,7 +20,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <summary>
         ///     The type of probability distribution belonging to the measurements of the acceleration.
         /// </summary>
-        private IDistribution accDistType;
+        private Normal accDistType;
 
         /// <summary>
         ///     Array storing the acceleration measurements with size of <see cref="measurementBufferSize" />.
@@ -49,7 +50,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <summary>
         ///     The type of probability distribution belonging to the measurements of the orientation.
         /// </summary>
-        private IDistribution oriDistType;
+        private Normal oriDistType;
 
         /// <summary>
         ///     Array storing the orientation measurements with a size of <see cref="measurementBufferSize" />.
@@ -65,6 +66,11 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         ///     Array storing all derived velocity measurements with size of <see cref="measurementBufferSize" />.
         /// </summary>
         private Vector3[] velocity;
+
+        /// <summary>
+        ///     Array storing the standard deviations of all derived velocity measurements with size of <see cref="measurementBufferSize"/>.
+        /// </summary>
+        private float[] velocityStd;
 
         /// <summary>
         ///     Pointer to the last added velocity measurement.
@@ -87,7 +93,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="accDistType">The type of probability distribution belonging to the measurements of the acceleration.</param>
         /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
-        public IMUSource(IDistribution accDistType, IDistribution oriDistType, int measurementBufferSize)
+        public IMUSource(Normal accDistType, Normal oriDistType, int measurementBufferSize)
         {
             if (measurementBufferSize > 0)
             {
@@ -106,6 +112,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             this.velocity[0] = new Vector3(0, 0, 0);
             this.velocitySize = 1;
             this.velocityPointer = 0;
+            this.velocityStd = new float[this.measurementBufferSize];
+            this.velocityStd[0] = 0;
         }
 
         /// <summary>
@@ -118,7 +126,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
         /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
-        public IMUSource(IDistribution accDistType, IDistribution oriDistType, int measurementBufferSize, Vector3 gravity)
+        public IMUSource(Normal accDistType, Normal oriDistType, int measurementBufferSize, Vector3 gravity)
             : this(accDistType, oriDistType, measurementBufferSize)
         {
             this.gravity = gravity;
@@ -134,7 +142,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="measurementBufferSize">The number of measurements to store in a buffer.</param>
         /// <param name="gravity">The gravity acceleration vector to use in the world.</param>
         /// <param name="startVelocity">The starting velocity of the IMU.</param>
-        public IMUSource(IDistribution accDistType, IDistribution oriDistType, int measurementBufferSize, Vector3 gravity, Vector3 startVelocity)
+        public IMUSource(Normal accDistType, Normal oriDistType, int measurementBufferSize, Vector3 gravity, Vector3 startVelocity)
             : this(accDistType, oriDistType, measurementBufferSize, gravity)
         {
             this.velocity[0] = startVelocity;
@@ -228,6 +236,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             List<Measurement<Vector3>> vel = this.GetVelocities(startTimeStamp, endTimeStamp);
             Vector3 displacement = new Vector3(0, 0, 0);
             Vector3 temp = new Vector3(0, 0, 0);
+            float std = 0;
             if (vel.Count > 0)
             {
                 for (int i = 0; i < vel.Count - 1; i++)
@@ -240,10 +249,10 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                     temp.Divide(2, temp);
                     temp.Multiply(this.MilliSecondsToSeconds(t2 - t1), temp);
                     displacement.Add(temp, displacement);
+                    std += (float) Math.Pow(((Normal)vel[i].DistributionType).Stddev, 2);
                 }
-
-                //// TODO create distribution for displacement and fix time
-                return new Measurement<Vector3>(displacement, vel[vel.Count - 1].TimeStamp, this.accDistType);
+                std = (float)Math.Sqrt(std + Math.Pow(((Normal)vel[vel.Count - 1].DistributionType).Stddev, 2));
+                return new Measurement<Vector3>(displacement, vel[vel.Count - 1].TimeStamp, new Normal(std));
             }
 
             //// TODO fix std and time
@@ -332,8 +341,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         {
             if (this.velocitySize > 0)
             {
-                ////TODO create distribution for velocity
-                return new Measurement<Vector3>(this.velocity[this.velocityPointer], this.timeStamps[this.velocityPointer], this.accDistType);
+                return new Measurement<Vector3>(this.velocity[this.velocityPointer], this.timeStamps[this.velocityPointer], new Normal(this.velocityStd[this.velocityPointer]));
             }
 
             return null;
@@ -352,8 +360,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 {
                     if (this.timeStamps[i] == timeStamp)
                     {
-                        ////TODO create distribution for velocity
-                        return new Measurement<Vector3>(this.velocity[i], timeStamp, this.accDistType);
+                        return new Measurement<Vector3>(this.velocity[i], timeStamp, new Normal(this.velocityStd[i]));
                     }
                 }
             }
@@ -376,8 +383,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 int index = this.Mod(first + i, this.measurementBufferSize);
                 if (this.timeStamps[index] >= startTimeStamp && this.timeStamps[index] <= endTimeStamp)
                 {
-                    // TODO create distribution for velocity
-                    res.Add(new Measurement<Vector3>(this.velocity[index], this.timeStamps[index], this.accDistType));
+                    res.Add(new Measurement<Vector3>(this.velocity[index], this.timeStamps[index], new Normal(this.velocityStd[index])));
                 }
             }
 
@@ -395,8 +401,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             for (int i = 0; i < this.velocitySize; i++)
             {
                 int index = this.Mod(first + i, this.measurementBufferSize);
-                //// TODO create distribution for velocity
-                res.Add(new Measurement<Vector3>(this.velocity[index], this.timeStamps[index], this.accDistType));
+                res.Add(new Measurement<Vector3>(this.velocity[index], this.timeStamps[index], new Normal(this.velocityStd[index])));
             }
 
             return res;
@@ -423,13 +428,16 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 this.measurementSize++;
             }
 
-            //// If there are more than 2 measurements, calculate velocity
+            //// If there are more than 2 measurements, calculate velocity and velocity std.
             if (this.measurementSize > 1)
             {
                 this.velocityPointer = this.Mod(this.velocityPointer + 1, this.measurementBufferSize);
                 Vector3 vel = this.CalculateDeltaV(this.accelerations[this.Mod(this.measurementPointer - 1, this.measurementBufferSize)], this.accelerations[this.measurementPointer], this.timeStamps[this.Mod(this.measurementPointer - 1, this.measurementBufferSize)], this.timeStamps[this.measurementPointer]);
                 vel.Add(this.velocity[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)], vel);
                 this.velocity[this.velocityPointer] = vel;
+                this.velocityStd[this.velocityPointer] =
+                    this.velocityStd[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)]
+                    + (float)Math.Sqrt(2 * Math.Pow(this.accDistType.Stddev, 2));
                 if (this.velocitySize < this.measurementBufferSize)
                 {
                     this.velocitySize++;
