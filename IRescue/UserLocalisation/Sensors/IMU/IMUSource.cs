@@ -487,9 +487,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// </summary>
         /// <param name="ms">The milliseconds to convert.</param>
         /// <returns>Converted milliseconds in seconds</returns>
-        private long MilliSecondsToSeconds(long ms)
+        private float MilliSecondsToSeconds(long ms)
         {
-            return ms / 1000;
+            return ms / 1000f;
         }
 
         /// <summary>
