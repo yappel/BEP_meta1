@@ -244,6 +244,22 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that get last velocity returns the correct velocity when data is supplied and the
+        /// time stamp is smaller than one second.
+        /// </summary>
+        [Test]
+        public void GetLastVelocityMillisecondsTest()
+        {
+            Vector3 acc0 = new Vector3(0, 0, 0);
+            Vector3 acc1 = new Vector3(1, 2, 3);
+            this.source.AddMeasurements(0, acc0, this.zeroOrientation);
+            this.source.AddMeasurements(100, acc1, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetLastVelocity();
+            this.AssertVectorAreEqual(new Vector3(0.05f, 0.1f, 0.15f), res.Data);
+            Assert.AreEqual(100, res.TimeStamp);
+        }
+
+        /// <summary>
         /// Test that get velocity at a specified time stamp returns the correct velocity.
         /// </summary>
         [Test]
