@@ -3,6 +3,8 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Interface for classes able to generate particles.
     /// </summary>
@@ -14,6 +16,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// <param name="amount"> The amount of Particles to generate for every dimension</param>
         /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
         /// <returns>List with generated particle values</returns>
-        float[] Generate(int amount, int dimensions);
+        float[] Generate(int amount, float min, float max);
     }
 }

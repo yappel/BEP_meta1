@@ -4,6 +4,9 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
 {
+    using System.Linq;
+
+    using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.Random;
 
@@ -15,13 +18,13 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
         /// <summary>
         /// The random number generator to generate the noise with.
         /// </summary>
-        private RandomSource rng;
+        private IContinuousDistribution rng;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
         /// </summary>
         /// <param name="rng">The random number generator to generate the noise with</param>
-        public RandomNoiseGenerator(RandomSource rng)
+        public RandomNoiseGenerator(IContinuousDistribution rng)
         {
             this.rng = rng;
         }
@@ -32,9 +35,16 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
         /// <param name="min">THe minimum amount of noise added to a particle</param>
         /// <param name="max">The maximum amount of noise added to a particle</param>
         /// <param name="particles">The particle to add noise to.</param>
-        public void GenerateNoise(float min, float max, Matrix<float> particles)
+        public void GenerateNoise(float min, float max, AbstractParticleController particles)
         {
-            particles.SetSubMatrix(0, 0, particles.Map(p => (float)(p + min + (this.rng.NextDouble() * (max - min)))));
+            float[] noisearray = Enumerable.Repeat(0, particles.Count).Select(i => (float)(min + (this.rng.Sample() * (max - min)))).ToArray();
+            particles.AddToValues(noisearray);
+        }
+
+        public void GenerateNoise(float percentage, AbstractParticleController particles)
+        {
+            float noisesize = percentage * (particles.maxValue - particles.minValue);
+            this.GenerateNoise(-noisesize, noisesize, particles);
         }
     }
 }

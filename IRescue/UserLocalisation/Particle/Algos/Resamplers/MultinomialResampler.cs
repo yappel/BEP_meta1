@@ -5,6 +5,8 @@
 namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
 {
     using System;
+    using System.Collections.Generic;
+
     using MathNet.Numerics.LinearAlgebra;
 
     /// <summary>
@@ -22,7 +24,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         /// </summary>
         public MultinomialResampler()
         {
-           random = new Random();
+            random = new Random();
         }
 
         /// <summary>
@@ -30,36 +32,26 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         /// </summary>
         /// <param name="particles">The Particles to resample</param>
         /// <param name="weights">The Weights of the Particles</param>
-        public void Resample(Matrix<float> particles, Matrix<float> weights)
+        public void Resample(AbstractParticleController parCon)
         {
-            int j = 0;
-            foreach (Vector<float> column in weights.EnumerateColumns())
+            int[] indexes = Multinomial(parCon);
+            float[] newParticleValues = new float[indexes.Length];
+            for (int i = 0; i < newParticleValues.Length; i++)
             {
-                int[] indexes = Multinomial(column);
-                float[] newparticles = new float[particles.RowCount];
-                float[] newweights = new float[particles.RowCount];
-
-                for (int i = 0; i < particles.RowCount; i++)
-                {
-                    newparticles[i] = particles[indexes[i], j];
-                    newweights[i] = weights[indexes[i], j];
-                }
-
-                particles.SetColumn(j, newparticles);
-                weights.SetColumn(j, newweights);
-                j++;
+                newParticleValues[i] = parCon.GetValueAt(i);
             }
+            parCon.Values = newParticleValues;
         }
 
         /// <summary>
-        /// Selects a list of indexes of the Particles that will survive the resampling.
+        /// Selects a list of indexes of the Particles that survived the resampling.
         /// </summary>
         /// <param name="weights">The Weights of the Particles in a certain dimension</param>
         /// <returns>The list with indexes of the Particles that are chosen by the resample algorithm</returns>
-        private static int[] Multinomial(Vector<float> weights)
+        private static int[] Multinomial(AbstractParticleController particles)
         {
-            int[] listout = new int[weights.Count];
-            CumSum(weights);
+            int[] listout = new int[particles.Count];
+            IList<float> weights = CumSum(particles.Weights);
             weights[weights.Count - 1] = 1;
             int i = 0;
             while (i < weights.Count)
@@ -82,15 +74,15 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         /// Calculates the cumulative sum of the values in a vector.
         /// </summary>
         /// <param name="list">The values to calculate with.</param>
-        private static void CumSum(Vector<float> list)
+        private static IList<float> CumSum(IList<float> list)
         {
-            for (int i = 0; i < list.Count; i++)
+            float[] output = new float[list.Count];
+            list.CopyTo(output, 0);
+            for (int i = 1; i < list.Count; i++)
             {
-                if (i > 0)
-                {
-                    list[i] = list[i - 1] + list[i];
-                }
+                output[i] = output[i - 1] + output[i];
             }
+            return output;
         }
     }
 }

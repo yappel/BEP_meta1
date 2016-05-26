@@ -4,6 +4,8 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
 {
+    using System.Collections.Generic;
+
     using MathNet.Numerics.LinearAlgebra;
 
     /// <summary>
@@ -14,8 +16,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         /// <summary>
         /// Resamples the particles so the ones with low weights do not survive.
         /// </summary>
-        /// <param name="particles">The particles to resample</param>
-        /// <param name="weights">The weights of the particles</param>
-        void Resample(Matrix<float> particles, Matrix<float> weights);
+        /// <param name="particles">The class that controls the particles</param>
+        void Resample(AbstractParticleController particles);
     }
 }

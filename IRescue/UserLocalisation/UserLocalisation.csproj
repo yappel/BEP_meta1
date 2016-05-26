@@ -61,7 +61,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractUserLocalizer.cs" />
+    <Compile Include="AbstractParticleFilter.cs" />
+    <Compile Include="IUserLocalizer.cs" />
+    <Compile Include="Particle\AbstractParticleController.cs" />
+    <Compile Include="Particle\CircularParticleController.cs" />
+    <Compile Include="Particle\LinearParticleController.cs" />
+    <Compile Include="Particle\PositionParticleFilter.cs" />
+    <Compile Include="Particle\OrientationParticleFilter.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />

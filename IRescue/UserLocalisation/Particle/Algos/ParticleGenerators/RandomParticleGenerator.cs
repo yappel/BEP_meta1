@@ -4,6 +4,9 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
+    using System.Linq;
+
+    using MathNet.Numerics.Distributions;
     using MathNet.Numerics.Random;
 
     /// <summary>
@@ -12,15 +15,15 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
     public class RandomParticleGenerator : IParticleGenerator
     {
         /// <summary>
-        /// The random number generator to generate the Particles with
+        /// The random number generator that generates a number between 0.0 and 1.0.
         /// </summary>
-        private RandomSource rng;
+        private IContinuousDistribution rng;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomParticleGenerator"/> class.
         /// </summary>
-        /// <param name="rng">The random number generator to generate the Particles with</param>
-        public RandomParticleGenerator(RandomSource rng)
+        /// <param name="rng">The random number generator that generates a number between 0.0 and 1.0.</param>
+        public RandomParticleGenerator(IContinuousDistribution rng)
         {
             this.rng = rng;
         }
@@ -31,18 +34,14 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// <param name="amount"> The amount of Particles to generate for every dimension</param>
         /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
         /// <returns>A list of particle values</returns>
-        public float[] Generate(int amount, int dimensions)
+        public float[] Generate(int amount, float min, float max)
         {
-            float[] result = new float[amount * dimensions];
-            for (int i = 0; i < dimensions; i++)
-            {
-                for (int j = 0; j < amount; j++)
-                {
-                    result[(i * amount) + j] = (float)this.rng.NextDouble();
-                }
-            }
+            return Enumerable.Repeat(0, amount).Select(i => this.RandNum(min, max)).ToArray();
+        }
 
-            return result;
+        private float RandNum(float min, float max)
+        {
+            return (float)((this.rng.Sample() * (max - min)) + min);
         }
     }
 }

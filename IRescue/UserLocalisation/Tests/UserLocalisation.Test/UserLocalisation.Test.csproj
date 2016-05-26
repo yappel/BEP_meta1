@@ -79,9 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Particle\NoiseGenerators\RandomNoiseGeneratorTest.cs" />
-    <Compile Include="Particle\Resamplers\MultinomialResamplerTest.cs" />
-    <Compile Include="Particle\ParticleGenerators\RandomGeneratorTest.cs" />
     <Compile Include="Particle\ParticleFilterTest.cs" />
     <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,6 +114,11 @@
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Particle\NoiseGenerators\" />
+    <Folder Include="Particle\ParticleGenerators\" />
+    <Folder Include="Particle\Resamplers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
