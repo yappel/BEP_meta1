@@ -87,8 +87,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.translateModification = gameObject.GetComponent<BuildingPlane>() != null;
             if (this.translateModification)
             {
-                this.StateContext.Buttons.InfoText.SetActive(true);
-                this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Move";
+                this.InitTextPane("InfoText", "Move");
                 this.previousPosition = gameObject.transform.position;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
@@ -96,7 +95,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
-            this.StateContext.Buttons.BackButton.SetActive(true);
+            this.InitButton("BackButton", () => this.OnBackButton());
             this.gameObject.transform.position = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
@@ -143,17 +142,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Go back to the neutral or modify state based on the state that called it.
         /// </summary>
-        public override void OnBackButton()
+        public void OnBackButton()
         {
-            if (this.translateModification)
+            if (this.CanSwitchState())
             {
-                this.gameObject.transform.position = this.previousPosition;
-                this.PlaceBuilding();
-            }
-            else
-            {
-                UnityEngine.Object.Destroy(this.gameObject);
-                this.StateContext.SetState(new NeutralState(this.StateContext));
+                if (this.translateModification)
+                {
+                    this.gameObject.transform.position = this.previousPosition;
+                    this.PlaceBuilding();
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(this.gameObject);
+                    this.StateContext.SetState(new NeutralState(this.StateContext));
+                }
             }
         }
 

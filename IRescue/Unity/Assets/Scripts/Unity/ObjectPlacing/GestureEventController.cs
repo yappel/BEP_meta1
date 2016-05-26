@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using IRescue.Core.Utils;
     using Meta;
     using States;
     using UnityEngine;
@@ -41,12 +40,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private bool validRightHand;
 
         /// <summary>
-        /// Boolean to keep track if a state can be changed.
-        /// Used to stop immediate transitions from one state to another.
-        /// </summary>
-        private bool canSwitchState;
-
-        /// <summary>
         /// Boolean if watching in 3d or not;
         /// </summary>
         private bool threeDMode = true;
@@ -66,13 +59,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             this.MonoStereo();
             this.stateContext.CurrentState.RunUpdate();
-            if (this.CanSwitch())
-            {
-                this.GrabEvent();
-                this.OpenEvent();
-                this.PinchEvent();
-                this.PointEvent();
-            }
+            this.GrabEvent();
+            this.OpenEvent();
+            this.PinchEvent();
+            this.PointEvent();
         }
 
         /// <summary>
@@ -84,95 +74,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
-        /// Event when a back button is pressed.
-        /// </summary>
-        public void BackButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnBackButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a toggle button is pressed.
-        /// </summary>
-        public void ToggleButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnToggleButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a confirm button is pressed
-        /// </summary>
-        public void ConfirmButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnConfirmButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a modify rotate button is pressed
-        /// </summary>
-        public void ModifyRotateButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnRotateButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a modify translate button is pressed
-        /// </summary>
-        public void ModifyTranslateButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnTranslateButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a modify scale button is pressed
-        /// </summary>
-        public void ModifyScaleButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnScaleButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when a delete object button is pressed
-        /// </summary>
-        public void DeleteButtonEvent()
-        {
-            if (this.canSwitchState)
-            {
-                this.stateContext.CurrentState.OnDeleteButton();
-            }
-        }
-
-        /// <summary>
-        /// Event when another object has been selected
-        /// </summary>
-        /// <param name="resourcePath">Name of the object, which is located in /Resources/Objects/ that should be loaded</param>
-        public void SelectObjectButtonEvent(string resourcePath)
-        {
-            if (this.stateContext != null)
-            {
-                this.stateContext.SwapObject("Objects/" + resourcePath);
-            }
-        }
-
-        /// <summary>
         /// Changes the button size if the monocular state changes.
         /// </summary>
         private void MonoStereo()
@@ -180,12 +81,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             if (this.threeDMode && Meta.MetaCameraMode.monocular)
             {
                 this.threeDMode = false;
-                this.stateContext.Buttons.SetScale(TwoDScale);
+                ButtonWrapper.SetScale(TwoDScale);
             }
             else if (!this.threeDMode && !Meta.MetaCameraMode.monocular)
             {
                 this.threeDMode = true;
-                this.stateContext.Buttons.SetScale(1);
+                ButtonWrapper.SetScale(1);
             }
         }
 
@@ -331,16 +232,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 
             gameObject = o;
             return res;
-        }
-
-        /// <summary>
-        /// Check if enough time passed since switching between states.
-        /// </summary>
-        /// <returns>boolean if enough time has passed</returns>
-        private bool CanSwitch()
-        {
-            this.canSwitchState = StopwatchSingleton.Time - this.stateContext.PreviousSwitchTime > TimeBeforeAction;
-            return this.canSwitchState;
         }
     }
 }
