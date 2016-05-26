@@ -106,6 +106,17 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         }
 
         /// <summary>
+        /// Event when a copy button is pressed.
+        /// </summary>
+        public void CopyButtonEvent()
+        {
+            if (this.canSwitchState)
+            {
+                this.stateContext.CurrentState.OnCopyButton();
+            }
+        }
+
+        /// <summary>
         /// Event when a confirm button is pressed
         /// </summary>
         public void ConfirmButtonEvent()
