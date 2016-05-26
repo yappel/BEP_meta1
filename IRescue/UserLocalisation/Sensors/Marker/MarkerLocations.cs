@@ -85,7 +85,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             }
             catch (Exception ex) when (ex is IOException || ex is NullReferenceException || ex is XmlException)
             {
-                Console.WriteLine("ERROR: ", ex.Message);
+                Console.WriteLine("ERROR: {0}", ex.Message);
                 throw;
             }
         }
