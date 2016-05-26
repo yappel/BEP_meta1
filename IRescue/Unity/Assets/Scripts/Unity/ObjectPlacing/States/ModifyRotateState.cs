@@ -38,22 +38,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.moveObjectOnGrab = false;
             mb.rotateObjectOnTwoHandedGrab = true;
             this.originalOrientation = gameObject.transform.localEulerAngles;
-            this.StateContext.Buttons.BackButton.SetActive(true);
-            this.StateContext.Buttons.InfoText.SetActive(true);
-            this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Rotate";
+            this.InitButton("BackButton", () => this.OnBackButton());
+            this.InitTextPane("InfoText", "Rotate");
         }
 
         /// <summary>
         /// Return to the modify state
         /// </summary>
-        public override void OnBackButton()
+        public void OnBackButton()
         {
-            MetaBody mb = this.gameObject.GetComponent<MetaBody>();
-            mb.useDefaultGrabSettings = true;
-            mb.grabbableDistance = 0.1f;
-            mb.grabbable = false;
-            mb.rotateObjectOnTwoHandedGrab = false;
-            this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            if (this.CanSwitchState())
+            {
+                MetaBody mb = this.gameObject.GetComponent<MetaBody>();
+                mb.useDefaultGrabSettings = true;
+                mb.grabbableDistance = 0.1f;
+                mb.grabbable = false;
+                mb.rotateObjectOnTwoHandedGrab = false;
+                this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            }
         }
 
         /// <summary>

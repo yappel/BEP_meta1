@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using States;
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.UI;
@@ -16,15 +17,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// <summary>
         /// Controller to call the event
         /// </summary>
-        private GestureEventController controller;
+        private ObjectSelectState state;
 
         /// <summary>
         /// Set the controller
         /// </summary>
-        /// <param name="controller">gesture controller that will receive the event call</param>
-        public void Init(GestureEventController controller)
+        /// <param name="state">the object select state which will receive the event</param>
+        public void Init(ObjectSelectState state)
         {
-            this.controller = controller;
+            this.state = state;
         }
 
         /// <summary>
@@ -37,9 +38,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 child.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.white;
             }
-
+            
             this.transform.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.yellow;
-            this.controller.SelectObjectButtonEvent(this.name);
+            this.state.SelectObjectButtonEvent(this.name);
         }
     }
 }

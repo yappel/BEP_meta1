@@ -22,7 +22,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="controller">The event controller which keeps track of valid events</param>
         public StateContext(GestureEventController controller)
         {
-            this.Buttons = new ButtonHandler(controller);
             this.CurrentState = new NeutralState(this);
             this.SwapObject(DefaultObjectPath);
         }
@@ -38,11 +37,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public string SelectedBuilding { get; set; }
 
         /// <summary>
-        /// Gets the button handler
-        /// </summary>
-        public ButtonHandler Buttons { get; private set; }
-
-        /// <summary>
         /// Gets the currentState.
         /// </summary>
         public AbstractState CurrentState { get; private set; }
@@ -54,6 +48,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public void SetState(AbstractState newState)
         {
             this.PreviousSwitchTime = StopwatchSingleton.Time;
+            this.CurrentState.DiscardState();
             this.CurrentState = newState;
         }
 

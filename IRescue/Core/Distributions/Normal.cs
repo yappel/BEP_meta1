@@ -10,18 +10,18 @@ namespace IRescue.Core.Distributions
     public class Normal : IDistribution
     {
         /// <summary>
-        ///     The standard deviation.
-        /// </summary>
-        private readonly double stddev;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="Normal" /> class.
         /// </summary>
         /// <param name="stddev">The standard deviation of the distribution</param>
         public Normal(double stddev)
         {
-            this.stddev = stddev;
+            this.Stddev = stddev;
         }
+
+        /// <summary>
+        ///     Gets or sets the standard deviation.
+        /// </summary>
+        public double Stddev { get; set; }
 
         /// <summary>
         ///     Computes the cumulative distribution (CDF) of the distribution at x given a certain mean, i.e. P(X ≤ x | μ = mean).
@@ -31,7 +31,7 @@ namespace IRescue.Core.Distributions
         /// <returns>The cumulative distribution at location x.</returns>
         public double CDF(double mean, double x)
         {
-            return MathNet.Numerics.Distributions.Normal.CDF(mean, this.stddev, x);
+            return MathNet.Numerics.Distributions.Normal.CDF(mean, this.Stddev, x);
         }
     }
 }

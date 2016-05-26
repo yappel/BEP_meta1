@@ -33,7 +33,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public NeutralState(StateContext stateContext) : base(stateContext)
         {
-            this.StateContext.Buttons.ToggleButton.SetActive(true);
+            this.InitButton("ToggleButton", () => this.OnToggleButton());
             this.pointTime = StopwatchSingleton.Time;
         }
 
@@ -76,9 +76,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Show to dropdown with objects that can be selected for placement.
         /// </summary>
-        public override void OnToggleButton()
+        public void OnToggleButton()
         {
-            this.StateContext.SetState(new ObjectSelectState(this.StateContext));
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new ObjectSelectState(this.StateContext));
+            }
         }
     }
 }

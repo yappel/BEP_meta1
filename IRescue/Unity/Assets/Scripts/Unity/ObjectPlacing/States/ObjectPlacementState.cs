@@ -47,22 +47,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// The render components that can be adjusted for the outline
         /// </summary>
-        private Renderer[] colorRenders;
+        private MeshRenderer[] colorRenders;
 
         /// <summary>
         /// The current outline shade
         /// </summary>
-        private Shader currentShader;
-
-        /// <summary>
-        /// Red outline shade
-        /// </summary>
-        private Shader redOutline = Shader.Find("Outlined/Diffuse_R");
-
-        /// <summary>
-        /// Yellow outline shade
-        /// </summary>
-        private Shader yellowOutline = Shader.Find("Outlined/Diffuse_Y");
+        private Color currentColor;
 
         /// <summary>
         /// Red outline shade
@@ -94,20 +84,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">The game object that has to be placed or moved</param>
         public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
         {
-            this.translateModification = gameObject.GetComponent<MetaBody>() != null;
+            this.translateModification = gameObject.GetComponent<BuildingPlane>() != null;
             if (this.translateModification)
             {
-                this.StateContext.Buttons.InfoText.SetActive(true);
-                this.StateContext.Buttons.InfoText.GetComponentInChildren<Text>().text = "Move";
+                this.InitTextPane("InfoText", "Move");
                 this.previousPosition = gameObject.transform.position;
+                UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
             }
 
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
-            this.StateContext.Buttons.BackButton.SetActive(true);
+            this.InitButton("BackButton", () => this.OnBackButton());
             this.gameObject.transform.position = location;
-            this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
+            this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
         }
 
@@ -120,12 +110,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             long time = StopwatchSingleton.Time;
             if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 30f))
             {
-                this.ChangeOutlineRender(this.yellowOutline);
+                this.ChangeOutlineRender(Color.yellow);
                 this.hoverTime = time;
             }
             else
             {
-                this.ChangeOutlineRender(this.greenOutline);
+                this.ChangeOutlineRender(Color.green);
             }
 
             this.gameObject.transform.position = position;
@@ -146,23 +136,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(GameObject gameObject)
         {
             this.hoverTime = StopwatchSingleton.Time;
-            this.ChangeOutlineRender(this.redOutline);
+            this.ChangeOutlineRender(Color.red);
         }
 
         /// <summary>
         /// Go back to the neutral or modify state based on the state that called it.
         /// </summary>
-        public override void OnBackButton()
+        public void OnBackButton()
         {
-            if (this.translateModification)
+            if (this.CanSwitchState())
             {
-                this.gameObject.transform.position = this.previousPosition;
-                this.PlaceBuilding();
-            }
-            else
-            {
-                UnityEngine.Object.Destroy(this.gameObject);
-                this.StateContext.SetState(new NeutralState(this.StateContext));
+                if (this.translateModification)
+                {
+                    this.gameObject.transform.position = this.previousPosition;
+                    this.PlaceBuilding();
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(this.gameObject);
+                    this.StateContext.SetState(new NeutralState(this.StateContext));
+                }
             }
         }
 
@@ -202,6 +195,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void PlaceBuilding()
         {
+            this.gameObject.AddComponent<BuildingPlane>();
             MetaBody mb = this.gameObject.AddComponent<MetaBody>();
             mb.maxScaleRatio = 100;
             this.ChangeOutlineRender(this.defaultShader);
@@ -214,12 +208,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="shader">New outline shade</param>
         private void ChangeOutlineRender(Shader shader)
         {
-            if (shader != this.currentShader)
+            for (int i = 0; i < this.colorRenders.Length; i++)
+            {
+                this.colorRenders[i].material.shader = shader;
+            }
+        }
+
+        /// <summary>
+        /// Change the outline color
+        /// </summary>
+        /// <param name="color">New outline color</param>
+        private void ChangeOutlineRender(Color color)
+        {
+            if (color != this.currentColor)
             {
                 for (int i = 0; i < this.colorRenders.Length; i++)
                 {
-                    this.currentShader = shader;
-                    this.colorRenders[i].material.shader = shader;
+                    this.currentColor = color;
+                    this.colorRenders[i].material.SetColor("_OutlineColor", color);
                 }
             }
         }
