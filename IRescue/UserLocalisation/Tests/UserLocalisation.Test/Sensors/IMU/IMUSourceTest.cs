@@ -243,6 +243,9 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(1000, res.TimeStamp);
         }
 
+        /// <summary>
+        /// Test that velocity standard deviation is correctly returned after combining the acceleration measurements.
+        /// </summary>
         [Test]
         public void VelocityCorrectStdTest()
         {
