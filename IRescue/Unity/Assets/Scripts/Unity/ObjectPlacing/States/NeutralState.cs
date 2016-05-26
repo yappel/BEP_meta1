@@ -13,6 +13,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class NeutralState : AbstractState
     {
         /// <summary>
+        /// The time you need to point before placing a building
+        /// </summary>
+        private const int TimeToPoint = 3000;
+
+        /// <summary>
         /// The time that is being pointed.
         /// </summary>
         private long pointTime;
@@ -28,46 +33,54 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public NeutralState(StateContext stateContext) : base(stateContext)
         {
+            this.InitButton("ToggleButton", () => this.OnToggleButton());
             this.pointTime = StopwatchSingleton.Time;
         }
 
         /// <summary>
-        /// Sets the state to an object placement state after pointing for 1.5 second.
+        /// Sets the state to an object placement state after pointing for 3 second.
         /// </summary>
         /// <param name="position">Position of the building to be placed</param>
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            if (time - this.pointTime > 1500)
+            this.pointObjectTime = 0;
+            if (time - this.pointTime > TimeToPoint + 250)
             {
-                if (time - this.pointTime < 1750)
-                {
-                    this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, UnityEngine.Object.Instantiate(this.StateContext.SelectedBuilding)));
-                }
-                else
-                {
-                    this.pointTime = time;
-                }
+                this.pointTime = time;
+            }
+            else if (time - this.pointTime > TimeToPoint)
+            {
+                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding));
             }
         }
 
         /// <summary>
-        /// Sets the state to modify an object after 1.5 seconds.
+        /// Sets the state to modify an object after 3 seconds.
         /// </summary>
         /// <param name="gameObject">Object pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
             long time = StopwatchSingleton.Time;
-            if (time - this.pointObjectTime > 1500)
+            this.pointTime = 0;
+            if (time - this.pointObjectTime > TimeToPoint + 250)
             {
-                if (time - this.pointObjectTime < 1750)
-                {
-                    this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
-                }
-                else
-                {
-                    this.pointObjectTime = time;
-                }
+                this.pointObjectTime = time;
+            } 
+            else if (time - this.pointObjectTime > TimeToPoint)
+            {
+                this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
+            }
+        }
+
+        /// <summary>
+        /// Show to dropdown with objects that can be selected for placement.
+        /// </summary>
+        public void OnToggleButton()
+        {
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new ObjectSelectState(this.StateContext));
             }
         }
     }
