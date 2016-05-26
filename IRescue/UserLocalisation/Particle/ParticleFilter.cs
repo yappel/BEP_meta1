@@ -612,9 +612,9 @@ namespace IRescue.UserLocalisation.Particle
         {
             ////If speedup needed change dimensions of matrices to remove need of temp storage lists
             List<float> measx = new List<float>(), measy = new List<float>(), measz = new List<float>();
-            foreach (IPositionSource positionSource in this.poslist)
+            for (int i = 0; i < this.poslist.Count; i++)
             {
-                List<Measurement<Vector3>> measall = positionSource.GetPositions(this.previousTS, timeStamp);
+                List<Measurement<Vector3>> measall = this.poslist[i].GetPositions(this.previousTS, timeStamp);
                 this.ProcessMeas(measx, measy, measz, dist, measall);
             }
 
