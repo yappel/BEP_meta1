@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractParticleFilter.cs" />
+    <Compile Include="Particle\AbstractParticleFilter.cs" />
     <Compile Include="IUserLocalizer.cs" />
     <Compile Include="Particle\AbstractParticleController.cs" />
     <Compile Include="Particle\CircularParticleController.cs" />

@@ -4,6 +4,7 @@
 
 namespace IRescue.UserLocalisation.Sensors.IMU
 {
+    using System;
     using System.Collections.Generic;
     using Core.DataTypes;
     using Core.Distributions;
@@ -164,6 +165,35 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         }
 
         /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetAccelerationClosestTo(long timeStamp, long range)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.accelerations.Length; i++)
+            {
+                Measurement<Vector3> measurement = new Measurement<Vector3>(this.accelerations[i], this.timeStamps[i], this.accDistType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
         ///     Get the acceleration measurements from the specified starting time stamp up to and including the ending time stamp.
         /// </summary>
         /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
@@ -303,6 +333,35 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         }
 
         /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.orientations.Length; i++)
+            {
+                Measurement<Vector3> measurement = new Measurement<Vector3>(this.orientations[i], this.timeStamps[i], this.oriDistType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
         ///     Get the orientation measurements from the specified starting time stamp up to and including the ending time stamp.
         /// </summary>
         /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
@@ -359,6 +418,36 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetVelocityClosestTo(long timeStamp, long range)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.velocity.Length; i++)
+            {
+                ////TODO fix dist type.
+                Measurement<Vector3> measurement = new Measurement<Vector3>(this.velocity[i], this.timeStamps[i], this.accDistType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
         }
 
         /// <summary>

@@ -32,8 +32,7 @@ namespace IRescue.UserLocalisation.Particle
         {
             foreach (IOrientationSource source in this.orientationSources)
             {
-                ////TODO interface changes
-                this.measurements.Add(source.GetLastOrientation());
+                this.measurements.AddRange(source.GetOrientationClosestTo(this.currentTimeStamp, this.currentTimeStamp - this.previousTimeStamp));
             }
         }
 
