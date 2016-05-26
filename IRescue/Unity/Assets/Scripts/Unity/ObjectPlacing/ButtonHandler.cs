@@ -241,7 +241,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
-            float height = files.Length * entryHeight;
+            float height = files.Length * (entryHeight + 10);
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(),
                 new Vector3(0, -height - 40),
@@ -284,26 +284,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             entry.transform.SetParent(parent);
             entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
             entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
-            entry.transform.localPosition = new Vector3(10 - (frameWidth / 2), ((i + 1) * entryHeight) - 20);
+            entry.transform.localPosition = new Vector3(0, ((i + 1) * (entryHeight + 10)) - 20);
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-            entry.transform.GetComponentInChildren<Button>().onClick.AddListener(() => this.ClickLoadButton(entry.transform, context, entry.name));
-        }
-
-        /// <summary>
-        /// Button listener, click the button and highlight the load entry
-        /// </summary>
-        /// <param name="entry">the object entry in the scroll pane</param>
-        /// <param name="context">the state context which will receive the event call</param>
-        /// <param name="name">the name of the object</param>
-        private void ClickLoadButton(Transform entry, StateContext context, string name)
-        {
-            foreach (Transform child in entry.parent.transform)
-            {
-                child.GetChild(2).GetComponent<Image>().color = Color.white;
-            }
-
-            entry.GetChild(2).GetComponent<Image>().color = Color.yellow;
-            context.SaveFilePath = name;
+            entry.AddComponent<LoadSelector>().Init(context);
         }
     }
 }

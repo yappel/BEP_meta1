@@ -42,6 +42,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnBackButton()
         {
+            Meta.MetaKeyboard.Instance.enabled = false;
             this.StateContext.SetState(new NeutralState(this.StateContext));
         }
 
@@ -50,6 +51,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void OnSaveButton()
         {
+            Meta.MetaKeyboard.Instance.enabled = false;
             try
             {
                 string saveName = StateContext.Buttons.TextInput.GetComponentInChildren<Text>().text.Replace(" ", string.Empty).Replace("\\", string.Empty).Replace("/", string.Empty);
