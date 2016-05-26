@@ -4,7 +4,9 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using States;
     using UnityEngine;
     using UnityEngine.UI;
@@ -79,6 +81,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 
             // Create the backbutton
             this.BackButton = this.AddButton("Prefabs/Buttons/BackButton", () => context.CurrentState.OnBackButton());
+            
+            // Create the savebutton
+            this.SaveButton = this.AddButton("Prefabs/Buttons/SaveButton", () => context.CurrentState.OnSaveButton());
+
+            // Create the loadbutton
+            this.LoadButton = this.AddButton("Prefabs/Buttons/LoadButton", () => context.CurrentState.OnLoadButton());
+
+            // Create the textinput
+            this.TextInput = this.AddButton("Prefabs/Buttons/TextInput", () => { });
+
+            // Create the load scroll pane
+            this.LoadScrollButton = this.AddButton(this.GetButton(this.InitLoadScrollPane(80, 416, context)), () => { });
         }
 
         /// <summary>
@@ -112,6 +126,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public GameObject DeleteButton { get; private set; }
 
         /// <summary>
+        /// Gets the save button
+        /// </summary>
+        public GameObject SaveButton { get; private set; }
+
+        /// <summary>
+        /// Gets the load button
+        /// </summary>
+        public GameObject LoadButton { get; private set; }
+
+        /// <summary>
+        /// Gets the text input button
+        /// </summary>
+        public GameObject TextInput { get; private set; }
+
+        /// <summary>
+        /// Gets the load scroll button
+        /// </summary>
+        public GameObject LoadScrollButton { get; private set; }
+
+        /// <summary>
         /// Set all buttons to inactive, making them invisible.
         /// </summary>
         public void ResetButtons()
@@ -119,6 +153,37 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             for (int i = 0; i < this.buttons.Count; i++)
             {
                 this.buttons[i].SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Reset the load frame panel.
+        /// </summary>
+        /// <param name="context">he context that keeps track of the state</param>
+        public void RefreshLoadPanel(StateContext context)
+        {
+            this.buttons.Remove(this.LoadScrollButton);
+            this.LoadScrollButton = this.AddButton(this.GetButton(this.InitLoadScrollPane(80, 416, context)), () => { });
+        }
+
+        /// <summary>
+        /// Active a button
+        /// </summary>
+        /// <param name="gameObject">the button to active</param>
+        public void SetActive(GameObject gameObject)
+        {
+            gameObject.SetActive(true);
+        }
+
+        /// <summary>
+        /// Set multiple buttons to active
+        /// </summary>
+        /// <param name="gameObjects">array of buttons to active</param>
+        public void SetActive(GameObject[] gameObjects)
+        {
+            for (int i = 0; i < gameObjects.Length; i++)
+            {
+                this.SetActive(gameObjects[i]);
             }
         }
 
@@ -159,6 +224,69 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private GameObject GetButton(GameObject wrapper)
         {
             return wrapper.transform.GetChild(0).gameObject;
+        }
+
+        /// <summary>
+        /// Initialized the load select frame
+        /// </summary>
+        /// <param name="entryHeight">the height of an entry</param>
+        /// <param name="frameWidth">The width of the frame of the load scroll panel</param>
+        /// <param name="context">The state context which tracks the current state</param>
+        /// <returns>The Object select frame game object</returns>
+        private GameObject InitLoadScrollPane(int entryHeight, int frameWidth, StateContext context)
+        {
+            GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
+            string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
+            FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
+            Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
+            GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
+            GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
+            float height = files.Length * (entryHeight + 10);
+            this.SetRectTransform(
+                content.GetComponent<RectTransform>(),
+                new Vector3(0, -height - 40),
+                new Vector2(0, height + 40));
+            GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
+            for (int i = 0; i < files.Length; i++)
+            {
+                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, context, files[i].FullName, i);
+            }
+
+            UnityEngine.Object.Destroy(scrollViewEntry);
+            return scollButton;
+        }
+
+        /// <summary>
+        /// Edit a rectangle transform
+        /// </summary>
+        /// <param name="transform">the rectangle transform to modify</param>
+        /// <param name="localPosition">the new local position</param>
+        /// <param name="sizeDelta">the new size delta</param>
+        private void SetRectTransform(RectTransform transform, Vector3 localPosition, Vector2 sizeDelta)
+        {
+            transform.localPosition = localPosition;
+            transform.sizeDelta = sizeDelta;
+        }
+
+        /// <summary>
+        /// Add an entry to the load scroll pane
+        /// </summary>
+        /// <param name="entry">the new entry</param>
+        /// <param name="parent">the parent to set, the content of the scroll pane</param>
+        /// <param name="frameWidth">the width of the scroll pane</param>
+        /// <param name="entryHeight">the height of the entry</param>
+        /// <param name="context">the state context which keeps track of the current state</param>
+        /// <param name="path">the path to the file</param>
+        /// <param name="i">the index of the call</param>
+        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, StateContext context, string path, int i)
+        {
+            entry.name = Path.GetFileName(path).Replace(".xml", string.Empty);
+            entry.transform.SetParent(parent);
+            entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
+            entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
+            entry.transform.localPosition = new Vector3(0, ((i + 1) * (entryHeight + 10)) - 20);
+            entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+            entry.AddComponent<LoadSelector>().Init(context);
         }
     }
 }
