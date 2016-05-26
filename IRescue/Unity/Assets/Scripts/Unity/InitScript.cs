@@ -8,14 +8,12 @@ namespace Assets.Scripts.Unity
     using System.Collections.Generic;
     using System.Linq;
     using Enums;
-
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation;
     using ObjectPlacing;
     using SensorControllers;
     using SourceCouplers;
     using UnityEngine;
-
     using Vector3 = UnityEngine.Vector3;
 
     /// <summary>
@@ -42,12 +40,8 @@ namespace Assets.Scripts.Unity
             this.AddControllers();
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
             this.InitControllers(coupler);
-            this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(5, 5);
-
-            GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            plane.AddComponent<WorldBox>().Init(coupler.GetLocalizer(), new FieldSize());
+            this.InitWorldBox(coupler.GetLocalizer());
         }
 
         /// <summary>
@@ -91,36 +85,22 @@ namespace Assets.Scripts.Unity
         }
 
         /// <summary>
-        ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
-        /// </summary>
-        /// <param name="localizer">The Localizer filter</param>
-        private void InitUser(AbstractUserLocalizer localizer)
-        {
-            gameObject.AddComponent<UserController>().Init(localizer);
-        }
-
-        /// <summary>
         /// Create a cube with marker target behavior so that markers are tracked
         /// </summary>
         private void InitMarker()
         {
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.AddComponent<Rigidbody>();
-            cube.transform.position = new Vector3(0, -10000, 0);
+            GameObject cube = new GameObject("MarkerMetaBody");
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
         }
 
         /// <summary>
         /// Create the ground and water plane
         /// </summary>
-        /// <param name="width">width of the plane, or x</param>
-        /// <param name="depth">depth of the plane, or z</param>
-        private void InitPlanes(float width, float depth)
+        /// <param name="localizer">Localizer filter used for position tracking</param>
+        private void InitWorldBox(AbstractUserLocalizer localizer)
         {
-            GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            groundPlane.AddComponent<GroundPlane>().Init(width, depth);
-            GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            waterPlane.AddComponent<WaterLevelController>().Init(width, depth);
+            GameObject worldBox = new GameObject("WorldBox");
+            worldBox.AddComponent<WorldBox>().Init(localizer, localizer.Fieldsize);
         }
     }
 }

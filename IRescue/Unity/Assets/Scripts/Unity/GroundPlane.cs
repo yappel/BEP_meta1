@@ -14,12 +14,12 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// Initializes the ground plane
         /// </summary>
-        /// <param name="x">width of the ground plane</param>
-        /// <param name="z">depth of the ground plane</param>
+        /// <param name="x">width of the ground plane in meters</param>
+        /// <param name="z">depth of the ground plane in meter</param>
         public void Init(float x, float z)
         {
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.position = new Vector3(x, -1, z);
+            this.gameObject.transform.position = new Vector3(x, 0, z);
             this.gameObject.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
             this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         }
