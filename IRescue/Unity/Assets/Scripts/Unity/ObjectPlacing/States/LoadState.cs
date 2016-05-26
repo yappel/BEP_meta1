@@ -157,7 +157,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
             string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
             FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
-            Array.Sort<FileSystemInfo>(files, delegate (FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
+            Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
             float height = files.Length * (entryHeight + 10);
