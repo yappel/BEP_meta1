@@ -34,13 +34,15 @@ namespace Assets.Scripts.Unity
         /// </summary>
         public void Start()
         {
+            // Start in 2d mode
+            Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
+            this.InitPlanes(200, 200);
             this.AddControllers();
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(200, 200);
         }
 
         /// <summary>
@@ -97,8 +99,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void InitMarker()
         {
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.position = new Vector3(0, -10000, 0);
+            GameObject cube = new GameObject();
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
         }
 

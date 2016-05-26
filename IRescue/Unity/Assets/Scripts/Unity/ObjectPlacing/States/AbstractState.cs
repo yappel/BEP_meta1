@@ -4,8 +4,11 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using System.Collections.Generic;
+    using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// Abstract class for the implemented States.
@@ -13,13 +16,29 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public abstract class AbstractState
     {
         /// <summary>
+        /// Time before states should be able to switch
+        /// </summary>
+        private const long TimeBeforeSwitch = 1500;
+
+        /// <summary>
+        /// The list of all the buttons of the current interface.
+        /// </summary>
+        private List<GameObject> buttons;
+
+        /// <summary>
+        /// The timestamp of the constructor call
+        /// </summary>
+        private long initTimestamp;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AbstractState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         protected AbstractState(StateContext stateContext)
         {
+            this.initTimestamp = StopwatchSingleton.Time;
             this.StateContext = stateContext;
-            this.StateContext.Buttons.ResetButtons();
+            this.buttons = new List<GameObject>();
         }
 
         /// <summary>
@@ -29,66 +48,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public StateContext StateContext { get; private set; }
 
         /// <summary>
-        /// Method called when the cancel or return button was pressed
-        /// </summary>
-        public virtual void OnBackButton()
-        {
-        }
-
-        /// <summary>
-        /// Method called when the confirm button was pressed
-        /// </summary>
-        public virtual void OnConfirmButton()
-        {
-        }
-
-        /// <summary>
-        /// Method called when a rotate button has been pressed
-        /// </summary>
-        public virtual void OnRotateButton()
-        {
-        }
-
-        /// <summary>
-        /// Method called when a scale button has been pressed
-        /// </summary>
-        public virtual void OnScaleButton()
-        {
-        }
-
-        /// <summary>
-        /// Method called when a delete button has been pressed
-        /// </summary>
-        public virtual void OnDeleteButton()
-        {
-        }
-
-        /// <summary>
-        /// Method when the save button has been pressed.
-        /// </summary>
-        public virtual void OnSaveButton()
-        {
-        }
-
-        /// <summary>
-        /// Method when the load button has been pressed.
-        /// </summary>
-        public virtual void OnLoadButton()
-        {
-        }
-
-        /// <summary>
         /// Method when a grab event has occurred. A closed fist.
         /// </summary>
         /// <param name="hand">The hand(s) which perform a grab gesture</param>
         public virtual void OnGrab(HandType hand)
-        {
-        }
-
-        /// <summary>
-        /// Method called when a translate button has been pressed
-        /// </summary>
-        public virtual void OnTranslateButton()
         {
         }
 
@@ -125,6 +88,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Method when the save button has been pressed.
+        /// </summary>
+        public virtual void OnSaveButton()
+        {
+        }
+
+        /// <summary>
+        /// Method when the load button has been pressed.
+        /// </summary>
+        public virtual void OnLoadButton()
+        {
+        }
+
+        /// <summary>
         /// Run an update on the state.
         /// </summary>
         public virtual void RunUpdate()
@@ -136,6 +113,66 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public virtual void RunLateUpdate()
         {
+        }
+
+        /// <summary>
+        /// Discard the state, delete the interface
+        /// </summary>
+        public virtual void DiscardState()
+        {
+            for (int i = 0; i < this.buttons.Count; i++)
+            {
+                UnityEngine.Object.Destroy(this.buttons[i]);
+            }
+        }
+
+        /// <summary>
+        /// Check if the state can be switched
+        /// </summary>
+        /// <returns>if enough time has passed to switch states</returns>
+        protected bool CanSwitchState()
+        {
+            return StopwatchSingleton.Time - this.initTimestamp > TimeBeforeSwitch;
+        }
+
+        /// <summary>
+        /// Add a button to a state interface.
+        /// </summary>
+        /// <param name="buttonName">The name of the button located in Prefabs/Buttons/</param>
+        /// <param name="action">The lambda calculus</param>
+        protected void InitButton(string buttonName, UnityEngine.Events.UnityAction action)
+        {
+            GameObject button = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + buttonName)));
+            if (button.transform.GetComponentInChildren<Button>() != null)
+            {
+                button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
+            }
+            
+            this.buttons.Add(button);
+            button.transform.SetParent(ButtonWrapper.Wrapper, false);
+        }
+
+        /// <summary>
+        /// Create and set the text of a new text pane
+        /// </summary>
+        /// <param name="textPaneName">the name of the text pane in Prefabs/Buttons/</param>
+        /// <param name="text">The text to set in the pane</param>
+        protected void InitTextPane(string textPaneName, string text)
+        {
+            GameObject button = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + textPaneName));
+            button.GetComponentInChildren<Text>().text = text;
+            this.buttons.Add(button);
+            button.transform.SetParent(ButtonWrapper.Wrapper, false);
+        }
+
+        /// <summary>
+        /// Return the button in the MGUI canvas.
+        /// </summary>
+        /// <param name="buttonWrapper">The root of the game object</param>
+        /// <returns>The MGUI.Button game objects</returns>
+        private GameObject GetButton(GameObject buttonWrapper)
+        {
+            return buttonWrapper.transform.GetChild(0).gameObject;
         }
     }
 }
