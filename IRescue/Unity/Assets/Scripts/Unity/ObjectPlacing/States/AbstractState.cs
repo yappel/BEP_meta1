@@ -135,8 +135,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 button.transform.GetComponentInChildren<Button>().onClick.AddListener(action);
             }
             
-            this.buttons.Add(button);
-            button.transform.SetParent(ButtonWrapper.Wrapper, false);
+            this.buttons.Add(button.transform.root.gameObject);
+            button.transform.root.SetParent(ButtonWrapper.Wrapper, false);
             return button;
         }
 
@@ -150,8 +150,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             GameObject button = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + textPaneName));
             button.GetComponentInChildren<Text>().text = text;
-            this.buttons.Add(button);
-            button.transform.SetParent(ButtonWrapper.Wrapper, false);
+            this.buttons.Add(button.transform.root.gameObject);
+            button.transform.root.SetParent(ButtonWrapper.Wrapper, false);
             return button;
         }
 
