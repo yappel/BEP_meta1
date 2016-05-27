@@ -1,0 +1,52 @@
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Oo]bj
+[Bb]uild
+[Ll]ibrary/
+*sysinfo.txt
+*.stackdump
+*.mdb
+*.dll
+*.pdb
+*/Unity/Unity.CSharp.Editor.csproj
+*/Unity/Unity.CSharp.csproj
+IRescue/Unity/Assets/System.Threading.xml
+IRescue/Unity/Assets/MathNet.Numerics.xml
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+*/[Ee]xported[Oo]bj/
+*.vs/
+*.userprefs
+*.pidb
+*.suo
+*.user
+*.unityproj
+*.booproj
+packages/
+*bin/
+
+# ============ #
+# OS generated #
+# ============ #
+*.DS_Store
+*._*
+*.cache
+*.Spotlight-V100
+*.Trashes
+*/Icon?
+*/ehthumbs.db
+*[Tt]humbs.db
+
+# ============== #
+# META generated #
+# ============== #
+/IRescue/Unity/Assets/Meta/
+/IRescue/Unity/Assets/MetaPackages/
+/IRescue/Unity/Assets/Plugins/
+*/Meta.meta
+*/MetaPackages.meta
+*/Plugins.meta
