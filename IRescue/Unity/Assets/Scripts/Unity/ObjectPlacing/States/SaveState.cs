@@ -27,14 +27,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveState"/> class.
+        /// If a save path has already been set, the class only saved the game but does not initialize
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
-        public SaveState(StateContext stateContext) : base(stateContext)
+        /// <param name="saveOnly">Default is false, set to true if you only want to save the game and now switch state. WARNING: The state will not initialize</param>
+        public SaveState(StateContext stateContext, bool saveOnly = false) : base(stateContext)
         {
-            if (this.StateContext.SaveFilePath != null)
+            if (saveOnly && this.StateContext.SaveFilePath != null)
             {
-                this.SaveGame(SaveFile + this.StateContext.SaveFilePath + ".xml");
-                this.StateContext.SetState(new NeutralState(this.StateContext));
+                this.SaveGame(this.StateContext.SaveFilePath + ".xml");
             }
             else
             {
@@ -98,7 +99,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
-            this.StateContext.SaveFilePath = path;
+            this.StateContext.SaveFilePath = path.Replace(".xml", ""); //TODO remove extension
         }
 
         /// <summary>

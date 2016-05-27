@@ -46,7 +46,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
-                this.StateContext.SetState(new SaveState(this.StateContext));
+                if (this.StateContext.SaveFilePath != null)
+                {
+                    new SaveState(this.StateContext, true);
+                } 
+                else
+                {
+                    this.StateContext.SetState(new SaveState(this.StateContext));
+                }
             }
         }
 
