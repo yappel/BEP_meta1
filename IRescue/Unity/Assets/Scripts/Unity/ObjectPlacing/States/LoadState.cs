@@ -161,15 +161,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
-            float height = files.Length * (entryHeight + 10);
+            float height = (files.Length * (entryHeight + 10)) + 20;
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(),
-                new Vector3(0, -height - 40),
-                new Vector2(0, height + 40));
+                new Vector3(0, -height),
+                new Vector2(0, height));
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
             for (int i = 0; i < files.Length; i++)
             {
-                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, files[i].FullName, i);
+                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, files[i].FullName, i, height);
             }
 
             UnityEngine.Object.Destroy(scrollViewEntry);
@@ -198,13 +198,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="entryHeight">the height of the entry</param>
         /// <param name="path">the path to the file</param>
         /// <param name="i">the index of the call</param>
-        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, string path, int i)
+        /// <param name="contentSize">The height of the content wrapper</param>
+        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, string path, int i, float contentSize)
         {
             entry.name = Path.GetFileName(path).Replace(".xml", string.Empty);
             entry.transform.SetParent(parent);
             entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
             entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
-            entry.transform.localPosition = new Vector3(0, ((i + 1) * (entryHeight + 10)) - 20);
+            entry.transform.localPosition = new Vector3(0, (i * -(entryHeight + 10)) - 50 + contentSize);
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             entry.AddComponent<LoadSelector>().Init(this);
         }

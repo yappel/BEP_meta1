@@ -30,7 +30,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// If a save path has already been set, the class only saved the game but does not initialize
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
-        /// <param name="saveOnly">Default is false, set to true if you only want to save the game and now switch state. WARNING: The state will not initialize</param>
+        /// <param name="saveOnly">Default is false, set to true if you only want to save the game and now switch state. IMPORTANT: The state will not initialize</param>
         public SaveState(StateContext stateContext, bool saveOnly = false) : base(stateContext)
         {
             if (saveOnly && this.StateContext.SaveFilePath != null)
@@ -91,15 +91,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.Formatting = Formatting.Indented;
             writer.Indentation = 2;
             writer.WriteStartElement("objects");
-            foreach (Transform building in GameObject.FindObjectOfType<GroundPlane>().transform)
+            foreach (BuildingPlane building in GameObject.FindObjectsOfType<BuildingPlane>())
             {
-                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", string.Empty).Trim(), building.localPosition, building.localEulerAngles, building.localScale);
+                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", string.Empty).Trim(), building.transform.localPosition, building.transform.localEulerAngles, building.transform.localScale);
             }
 
             writer.WriteEndElement();
             writer.WriteEndDocument();
             writer.Close();
-            this.StateContext.SaveFilePath = path.Replace(".xml", ""); //TODO remove extension
+            this.StateContext.SaveFilePath = path.Replace(".xml", string.Empty);
         }
 
         /// <summary>
