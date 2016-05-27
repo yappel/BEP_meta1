@@ -155,6 +155,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private GameObject InitLoadScrollPane(int entryHeight, int frameWidth)
         {
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\\Saves\\");
             string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
             FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
             Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });

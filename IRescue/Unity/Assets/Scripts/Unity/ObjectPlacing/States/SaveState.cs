@@ -5,6 +5,7 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using System;
+    using System.IO;
     using System.Xml;
     using UnityEngine;
     using UnityEngine.UI;
@@ -83,6 +84,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="path">The path to which will be saved, should contain full path and end with .xml</param>
         private void SaveGame(string path)
         {
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\\Saves\\");
             XmlTextWriter writer = new XmlTextWriter(path, System.Text.Encoding.UTF8);
             writer.WriteStartDocument(true);
             writer.Formatting = Formatting.Indented;
