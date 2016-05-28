@@ -23,6 +23,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private const string SaveFile = "Saves/";
 
         /// <summary>
+        /// The height of an entry which displays the file name which can be clicked.
+        /// </summary>
+        private const int EntryHeight = 80;
+
+        /// <summary>
+        /// The width of the panel which shows the parts of the content
+        /// </summary>
+        private const int FrameWidth = 416;
+
+        /// <summary>
+        /// The height of the panel which shows the parts of the content
+        /// </summary>
+        private const int FrameHeight = 350;
+
+        /// <summary>
+        /// The padding between the load entries
+        /// </summary>
+        private const int Padding = 10;
+
+        /// <summary>
         /// The previous loaded file
         /// </summary>
         private string prevSave;
@@ -41,7 +61,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.prevSave = stateContext.SaveFilePath;
             this.InitButton("ConfirmButton", () => this.OnConfirmButton());
             this.InitButton("BackButton", () => this.OnBackButton());
-            this.scollButton = this.InitLoadScrollPane(80, 416);
+            this.scollButton = this.InitLoadScrollPane(EntryHeight, FrameWidth, FrameHeight, Padding);
         }
 
         /// <summary>
@@ -150,9 +170,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Initialized the load select frame
         /// </summary>
         /// <param name="entryHeight">the height of an entry</param>
-        /// <param name="frameWidth">The width of the frame of the load scroll panel</param>
+        /// <param name="frameWidth">The width of the frame of the load scroll panel in the prefab</param>
+        /// <param name="frameHeight">The height of the frame of the load scroll panel in the prefab</param>
+        /// <param name="padding">the padding between entries</param>
         /// <returns>The Object select frame game object</returns>
-        private GameObject InitLoadScrollPane(int entryHeight, int frameWidth)
+        private GameObject InitLoadScrollPane(int entryHeight, int frameWidth, int frameHeight, int padding)
         {
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\\Saves\\");
@@ -161,15 +183,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
-            float height = (files.Length * (entryHeight + 10)) + 20;
+            float height = (files.Length * (entryHeight + padding)) + (2 * padding);
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(),
-                new Vector3(0, -height),
+                new Vector3(0, (0.5f * frameHeight) - height),
                 new Vector2(0, height));
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
             for (int i = 0; i < files.Length; i++)
             {
-                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, files[i].FullName, i, height);
+                this.AddLoadEntry(GameObject.Instantiate(scrollViewEntry), content.transform, frameWidth, entryHeight, files[i].FullName, i, height, padding);
             }
 
             UnityEngine.Object.Destroy(scrollViewEntry);
@@ -199,13 +221,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="path">the path to the file</param>
         /// <param name="i">the index of the call</param>
         /// <param name="contentSize">The height of the content wrapper</param>
-        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, string path, int i, float contentSize)
+        /// <param name="padding">the padding between entries</param>
+        private void AddLoadEntry(GameObject entry, Transform parent, int frameWidth, int entryHeight, string path, int i, float contentSize, int padding)
         {
             entry.name = Path.GetFileName(path).Replace(".xml", string.Empty);
-            entry.transform.SetParent(parent);
             entry.transform.GetChild(0).GetComponent<Text>().text = File.GetLastWriteTime(path).ToString();
             entry.transform.GetChild(1).GetComponent<Text>().text = entry.name;
-            entry.transform.localPosition = new Vector3(0, (i * -(entryHeight + 10)) - 50 + contentSize);
+            entry.transform.SetParent(parent);
+            entry.transform.localPosition = new Vector3(0, (i * (-entryHeight - padding)) - ((0.5f * entryHeight) + (1.5f * padding)) + contentSize);
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
             entry.AddComponent<LoadSelector>().Init(this);
         }
