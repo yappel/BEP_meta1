@@ -7,8 +7,13 @@
 [Ll]ibrary/
 *sysinfo.txt
 *.stackdump
+*.mdb
+*.dll
+*.pdb
 */Unity/Unity.CSharp.Editor.csproj
 */Unity/Unity.CSharp.csproj
+IRescue/Unity/Assets/System.Threading.xml
+IRescue/Unity/Assets/MathNet.Numerics.xml
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #

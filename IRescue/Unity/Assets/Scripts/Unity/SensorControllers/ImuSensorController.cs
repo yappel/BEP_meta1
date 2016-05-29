@@ -4,7 +4,7 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
-    using System;
+    using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// </summary>
         public override void Init()
         {
-            this.imuSource = new IMUSource(this.accelerationStd, this.orientationStd, this.bufferSize);
+            this.imuSource = new IMUSource(new Normal(this.accelerationStd), new Normal(this.orientationStd), this.bufferSize);
         }
 
         /// <summary>

@@ -79,7 +79,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GnuPlot.cs" />
     <Compile Include="Particle\AbstractParticleControllerTest.cs" />
     <Compile Include="Particle\CircularParticleControllerTest.cs" />
     <Compile Include="Particle\LinearParticleControllerTest.cs" />

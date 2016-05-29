@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
-            this.InitPlanes(5, 5);
+            this.InitPlanes(200, 200);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void AddControllers()
         {
-            gameObject.AddComponent<StateController>().Init();
+            gameObject.AddComponent<GestureEventController>().Init();
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {
@@ -98,7 +98,6 @@ namespace Assets.Scripts.Unity
         private void InitMarker()
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.AddComponent<Rigidbody>();
             cube.transform.position = new Vector3(0, -10000, 0);
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
         }
