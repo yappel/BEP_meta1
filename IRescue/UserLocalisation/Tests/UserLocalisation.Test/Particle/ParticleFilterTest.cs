@@ -1,22 +1,18 @@
 ﻿// <copyright file="ParticleFilterTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
+    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
     using IRescue.UserLocalisation.PosePrediction;
     using IRescue.UserLocalisation.Sensors;
-
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Single;
 
     using Moq;
 

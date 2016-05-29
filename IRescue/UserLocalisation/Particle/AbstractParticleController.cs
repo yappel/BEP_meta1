@@ -1,42 +1,109 @@
 ﻿namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Linq;
 
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
-    using IRescue.UserLocalisation.Particle.Algos.Resamplers;
 
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
 
     public abstract class AbstractParticleController
     {
-        private readonly IResampler resampler;
-
-        protected Vector<float> weights;
-
-        protected AbstractParticleController(IResampler resampler, int particleAmount, float minValue, float maxValue)
-        {
-            this.resampler = resampler;
-            this.maxValue = minValue;
-            this.minValue = maxValue;
-            this.weights = new DenseVector(Enumerable.Repeat(1f / particleAmount, particleAmount).ToArray());
-        }
-
-        public abstract int Count { get; }
-
         public float maxValue;
 
         public float minValue;
 
-        public abstract float[] Values { get; set; }
+        /// <summary>
+        /// Contains the values of all the particles.
+        /// </summary>
+        protected Vector<float> values;
 
-        public float[] Weights => this.weights.ToArray<float>();
+        protected Vector<float> weights;
 
-        public abstract void AddToValues(float[] values);
+        protected AbstractParticleController(int particleAmount, float minValue, float maxValue, IParticleGenerator particleGenerator)
+        {
+            this.maxValue = maxValue;
+            this.minValue = minValue;
+            this.weights = new DenseVector(Enumerable.Repeat(1f / particleAmount, particleAmount).ToArray());
+            this.values = new DenseVector(particleAmount);
+            this.values.SetValues(particleGenerator.Generate(particleAmount, minValue, maxValue));
+        }
+
+        /// <summary>
+        /// Gets the amount of particles.
+        /// </summary>
+        public virtual int Count => this.values.Count;
+
+        /// <summary>
+        /// Gets or sets the particle values.
+        /// </summary>
+        public virtual float[] Values
+        {
+            get
+            {
+                return this.values.ToArray<float>();
+            }
+
+            set
+            {
+                this.CheckArrayLength(value);
+                if ((value.Max() > this.maxValue) || (value.Min() < this.minValue))
+                {
+                    throw new ArgumentOutOfRangeException($"All have value have to be bigger than the minimum and smaller than the maximum value. " + $"Min was {value.Min()}, max was {value.Max()}");
+                }
+
+                float[] newvalues = new float[value.Length];
+                value.CopyTo(newvalues, 0);
+                this.values.SetValues(newvalues);
+            }
+        }
+
+        private void CheckArrayLength(float[] value)
+        {
+            if (value.Length != this.Count)
+            {
+                throw new ArgumentException("Array length does not equal the amount of particles");
+            }
+        }
+
+        public virtual float[] Weights
+        {
+            get
+            {
+                return this.weights.ToArray<float>();
+            }
+
+            set
+            {
+                float[] newweights = new float[value.Length];
+                value.CopyTo(newweights, 0);
+                this.weights.SetValues(newweights);
+            }
+        }
+
+        /// <summary>
+        /// Pointwise adds an array of values to the existing values.
+        /// </summary>
+        /// <param name="values">List of the values to add.</param>
+        public virtual void AddToValues(float[] values)
+        {
+            this.values.Add(new DenseVector(values), this.values);
+            this.values.Map(val => val > this.maxValue ? this.maxValue : val, this.values);
+            this.values.Map(val => val < this.minValue ? this.minValue : val, this.values);
+        }
 
         public abstract float[] DistanceToValue(float othervalue);
 
-        public abstract float GetValueAt(int index);
+        /// <summary>
+        /// Gets the value at a certain index.
+        /// </summary>
+        /// <param name="index">The index to get the value of.</param>
+        /// <returns>The value of the particle with the given index.</returns>
+        public virtual float GetValueAt(int index)
+        {
+            return this.values[index];
+        }
 
         public virtual float GetWeightAt(int index)
         {
@@ -50,34 +117,37 @@
 
         public void NormalizeWeights()
         {
-            if (this.weights.Sum() > float.Epsilon)
+            float sum = this.weights.Sum();
+            if (sum > float.Epsilon)
             {
-                this.weights.DivideByThis(this.weights.Sum(), this.weights);
+                this.weights.Divide(sum, this.weights);
             }
             else
             {
-                this.weights.Map(w => 1f / this.Count);
+                throw new DivideByZeroException("Cant normalize the weights when the sum of the weights is 0");
             }
         }
 
         /// <summary>
-        /// Resamples the particles so the ones with low weights do not survive.
+        /// Sets a value at an index.
         /// </summary>
-        public void Resample()
+        /// <param name="index">The index to place the value at.</param>
+        /// <param name="value">The value to set.</param>
+        public virtual void SetValueAt(int index, float value)
         {
-            this.resampler.Resample(this);
+            if ((this.minValue <= value) && (this.maxValue >= value))
+            {
+                this.values[index] = value;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Value is not between the minimum and maximum value");
+            }
         }
-
-        public abstract void SetValueAt(int index, float value);
 
         public virtual void SetWeightAt(int index, float weight)
         {
             this.weights[index] = weight;
-        }
-
-        public virtual void SetWeights(float[] weights)
-        {
-            this.weights.SetValues(weights);
         }
 
         public virtual void SetWeights(float weight)
@@ -90,5 +160,10 @@
         /// </summary>
         /// <returns>The weighted average weights of the particles.</returns>
         public abstract float WeightedAverage();
+
+        protected bool CheckSumWeightsNotZero()
+        {
+            return !(Math.Abs(this.weights.Sum()) < float.Epsilon);
+        }
     }
 }

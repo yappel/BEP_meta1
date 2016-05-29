@@ -13,16 +13,17 @@ namespace IRescue.UserLocalisation.Particle
     /// <summary>
     /// TODO
     /// </summary>
-    public class OrientationParticleFilter : AbstractParticleFilter, IOrientationReceiver
+    internal class OrientationParticleFilter : AbstractParticleFilter, IOrientationReceiver
     {
         private List<IOrientationSource> orientationSources;
 
         public OrientationParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount)
             : base(
+                  resampler,
                   noiseGenerator,
-                  new CircularParticleController(resampler, particleGenerator, particleAmount, 0, 360),
-                  new CircularParticleController(resampler, particleGenerator, particleAmount, 0, 360),
-                  new CircularParticleController(resampler, particleGenerator, particleAmount, 0, 360),
+                  new CircularParticleController(particleGenerator, particleAmount),
+                  new CircularParticleController(particleGenerator, particleAmount),
+                  new CircularParticleController(particleGenerator, particleAmount),
                   resampleNoiseSize)
         {
             this.orientationSources = new List<IOrientationSource>();
@@ -30,6 +31,7 @@ namespace IRescue.UserLocalisation.Particle
 
         protected override void RetrieveMeasurements()
         {
+            this.measurements.Clear();
             foreach (IOrientationSource source in this.orientationSources)
             {
                 this.measurements.AddRange(source.GetOrientationClosestTo(this.currentTimeStamp, this.currentTimeStamp - this.previousTimeStamp));

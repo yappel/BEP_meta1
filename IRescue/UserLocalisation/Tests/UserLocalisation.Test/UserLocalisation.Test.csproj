@@ -79,6 +79,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Particle\AbstractParticleControllerTest.cs" />
+    <Compile Include="Particle\CircularParticleControllerTest.cs" />
+    <Compile Include="Particle\LinearParticleControllerTest.cs" />
+    <Compile Include="Particle\NoiseGenerators\RandomNoiseGeneratorTest.cs" />
     <Compile Include="Particle\ParticleFilterTest.cs" />
     <Compile Include="PosePrediction\LinearPredicterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,7 +120,6 @@
     <Analyzer Include="..\..\..\..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Particle\NoiseGenerators\" />
     <Folder Include="Particle\ParticleGenerators\" />
     <Folder Include="Particle\Resamplers\" />
   </ItemGroup>

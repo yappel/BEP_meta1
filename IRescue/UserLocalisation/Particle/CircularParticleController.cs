@@ -15,67 +15,40 @@ namespace IRescue.UserLocalisation.Particle
 
     internal class CircularParticleController : AbstractParticleController
     {
+        private const int minAngle = 0;
 
-        private List<Vector> values;
+        private const int maxAngle = 359;
 
-        public CircularParticleController(IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, float minValue, float maxValue)
-            : base(resampler, particleAmount, minValue, maxValue)
+
+        public CircularParticleController(IParticleGenerator particleGenerator, int particleAmount)
+            : base(particleAmount, minAngle, maxAngle, particleGenerator)
         {
-            this.values = particleGenerator.Generate(particleAmount, minValue, maxValue).Select(VectorMath.AngleToVector).ToList();
         }
 
-        public override int Count => this.values.Count;
-
-        public override float[] Values
+        public override void AddToValues(float[] valuesToAdd)
         {
-            get
-            {
-                return this.values.ConvertAll(VectorMath.Vector2ToAngle).ToArray();
-            }
-
-            set
-            {
-                this.values = value.Select(VectorMath.AngleToVector).ToList();
-            }
-        }
-
-        public override void AddToValues(float[] values)
-        {
-            if (values.Length != this.Count)
+            if (valuesToAdd.Length != this.Count)
             {
                 throw new ArgumentException("Length of input array is not the same as the particle count");
             }
 
-            List<Vector> vector = values.Select(VectorMath.AngleToVector).ToList();
-            for (int i = 0; i < this.values.Count; i++)
-            {
-                Vector value = this.values[i];
-                value.Add(vector[i], value);
-            }
+            Vector<float> res = new DenseVector(this.Count);
+            this.values.MapIndexed((index, value) => (value + valuesToAdd[index]), res);
+            res.Modulus(360f, res);
+            this.Values = res.ToArray();
         }
 
         public override float[] DistanceToValue(float othervalue)
         {
-            Vector vector = VectorMath.AngleToVector(othervalue);
+
             float[] res = new float[this.Count];
-            for (int i = 0; i < this.values.Count; i++)
+            for (int i = 0; i < this.Count; i++)
             {
-                Vector value = this.values[i];
-                double radianAngle = Math.Atan2((value[0] * vector[1]) - (vector[0] * value[1]), (value[0] * value[1]) + (vector[0] * vector[1]));
-                res[i] = (float)Trig.RadianToDegree(radianAngle);
+                double a = othervalue - this.values[i];
+                res[i] = (float)(Euclid.Modulus(a + 180, 360) - 180);
             }
 
             return res;
-        }
-
-        public override float GetValueAt(int index)
-        {
-            return VectorMath.Vector2ToAngle(this.values[index]);
-        }
-
-        public override void SetValueAt(int index, float value)
-        {
-            this.values[index] = VectorMath.AngleToVector(value);
         }
 
         /// <summary>
@@ -87,11 +60,11 @@ namespace IRescue.UserLocalisation.Particle
             Vector res = new DenseVector(2);
             for (int i = 0; i < this.values.Count; i++)
             {
-                Vector<float> vector = this.values[i].Clone();
-                vector.Multiply(this.weights[i], vector);
+                Vector<float> vector = VectorMath.AngleToVector(this.values[i], this.weights[i]);
                 res.Add(vector, res);
             }
-            if ((Math.Abs(res[0]) < float.Epsilon) && (Math.Abs(res[1] - 1) < float.Epsilon))
+
+            if ((Math.Abs(res[0]) < 1E-6) && (Math.Abs(res[1]) < 1E-6))
             {
                 return float.NaN;
             }

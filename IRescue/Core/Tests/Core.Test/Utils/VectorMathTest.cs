@@ -5,6 +5,11 @@
 namespace Core.Test
 {
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Utils;
+
+    using MathNet.Numerics.LinearAlgebra;
+    using MathNet.Numerics.LinearAlgebra.Single;
+
     using NUnit.Framework;
 
     /// <summary>
@@ -49,6 +54,29 @@ namespace Core.Test
             Assert.AreEqual(-1, vec.X, 0.01f);
             Assert.AreEqual(0, vec.Y, 0.01f);
             Assert.AreEqual(0, vec.Z, 0.01f);
+        }
+
+        /// <summary>
+        /// Test changing the legnth of a vector.
+        /// </summary>
+        [Test]
+        public void SetLengthVectorTest()
+        {
+            Vector<float> vec = new DenseVector(new[] { 0f, 1f });
+            float desiredLength = 1000;
+            VectorMath.SetLength(vec, desiredLength);
+            Assert.AreEqual(desiredLength, vec.L2Norm());
+        }
+
+        /// <summary>
+        /// Test changing the length of a vector to 0.
+        /// </summary>
+        [Test]
+        public void SetLengthVectorToZeroTest()
+        {
+            Vector<float> vec = new DenseVector(new[] { 0f, 1f });
+            VectorMath.SetLength(vec, 0);
+            Assert.AreEqual(new[] { 0f, 0f }, vec.ToArray());
         }
     }
 }

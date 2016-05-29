@@ -54,26 +54,29 @@
      <Compile Include="Assets\Meta\Examples\Camera Feed Example\Scripts\CameraFeedExample.cs" />
      <Compile Include="Assets\Meta\Examples\Markers Example\Scripts\MarkerEventTest.cs" />
      <Compile Include="Assets\Scripts\Enums\Filters.cs" />
+     <Compile Include="Assets\Scripts\Unity\GroundPlane.cs" />
      <Compile Include="Assets\Scripts\Unity\InitScript.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\StateController.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\AbstractState.cs" />
-     <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\BuildingPlacementState.cs" />
-     <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\BuildingSelectState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\LoadState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ModifyRotateState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ModifyScaleState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ModifyState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ModifyTranslateState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\NeutralState.cs" />
+     <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ObjectPlacementState.cs" />
+     <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\ObjectSelectState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\RunningState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\SaveState.cs" />
      <Compile Include="Assets\Scripts\Unity\ObjectPlacing\States\StateContext.cs" />
      <Compile Include="Assets\Scripts\Unity\SensorControllers\AbstractSensorController.cs" />
+     <Compile Include="Assets\Scripts\Unity\SensorControllers\ImuSensorController.cs" />
      <Compile Include="Assets\Scripts\Unity\SensorControllers\MarkerSensorController.cs" />
      <Compile Include="Assets\Scripts\Unity\SourceCouplers\AbstractLocalizerCoupler.cs" />
      <Compile Include="Assets\Scripts\Unity\SourceCouplers\LocalizerFactory.cs" />
      <Compile Include="Assets\Scripts\Unity\SourceCouplers\ParticleFilterCoupler.cs" />
      <Compile Include="Assets\Scripts\Unity\UserController.cs" />
+     <Compile Include="Assets\Scripts\Unity\WaterTracking\WaterLevelController.cs" />
      <None Include="Assets\Maps\MarkerMap01.xml" />
      <None Include="Assets\MetaPackages\HighlightingSystem\Resources\HighlightingBlur.shader" />
      <None Include="Assets\MetaPackages\LeanTween\LeanTween-ReadMe.txt" />
@@ -97,14 +100,41 @@
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
+ <Reference Include="IRescue-core">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/IRescue-core.dll</HintPath>
+ </Reference>
+ <Reference Include="IRescue-userLocalisation">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/IRescue-userLocalisation.dll</HintPath>
+ </Reference>
+ <Reference Include="MathNet.Numerics">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MathNet.Numerics.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Threading">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/System.Threading.dll</HintPath>
+ </Reference>
+ <Reference Include="Meta">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Meta/Meta.dll</HintPath>
+ </Reference>
+ <Reference Include="MetaPackages">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MetaPackages/MetaPackages.dll</HintPath>
+ </Reference>
+ <Reference Include="Vectrosity">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/MetaPackages/Vectrosity/Vectrosity.dll</HintPath>
+ </Reference>
+ <Reference Include="MathNet.Numerics">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Plugins/x64/MathNet.Numerics.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Threading">
+ <HintPath>D:/Yoeri 2/Documents/Unity3d/BEP_meta1/IRescue/Unity/Assets/Plugins/x64/System.Threading.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->
-
+  
 </Project>

@@ -72,7 +72,7 @@ namespace IRescue.Core.Utils
         {
             if ((vector.Count != 2) || ((Math.Abs(vector[0]) < float.Epsilon) && (Math.Abs(vector[1]) < float.Epsilon)))
             {
-                throw new ArgumentException("Length of vector is not 2");
+                throw new ArgumentException("Length of vector is not 2 or all values are 0");
             }
 
             if (Math.Abs(vector[0]) < float.Epsilon)
@@ -85,15 +85,7 @@ namespace IRescue.Core.Utils
                 return vector[0] < 0 ? 180f : 0f;
             }
 
-            float angletoadd = 0;
-            if (vector[0] < 0)
-            {
-                angletoadd = 180;
-            }
-            else if (vector[1] < 0)
-            {
-                angletoadd = 360;
-            }
+            float angletoadd = (vector[0] < 0) ? 180 : (vector[1] < 0) ? 360 : 0;
 
             return (float)(Trig.RadianToDegree(Math.Atan2(vector[1], vector[0])) + angletoadd);
         }
@@ -103,9 +95,33 @@ namespace IRescue.Core.Utils
         /// </summary>
         /// <param name="angle">The angle in degrees</param>
         /// <returns>A 2d vector</returns>
-        public static Vector AngleToVector(float angle)
+        public static Vector<float> AngleToVector(float angle)
         {
             return new DenseVector(new[] { (float)Math.Cos(Trig.DegreeToRadian(angle)), (float)Math.Sin(Trig.DegreeToRadian(angle)) });
+        }
+
+        /// <summary>
+        /// Changes the values of the given vector so that the vector has a certain length.
+        /// </summary>
+        /// <param name="vector">The vector to change the length of.</param>
+        /// <param name="desiredLength">The desired length.</param>
+        public static void SetLength(Vector<float> vector, float desiredLength)
+        {
+            double currentLength = vector.L2Norm();
+            vector.Multiply((float)(desiredLength / currentLength), vector);
+        }
+
+        /// <summary>
+        /// Converts an angle to a 2d vector with a certain length that points in the direction of the angle.
+        /// </summary>
+        /// <param name="angle">The angle in degrees</param>
+        /// <param name="length">The desired length of the vector</param>
+        /// <returns>A 2d vector</returns>
+        public static Vector<float> AngleToVector(float angle, float length)
+        {
+            Vector<float> res = AngleToVector(angle);
+            SetLength(res, length);
+            return res;
         }
     }
 }

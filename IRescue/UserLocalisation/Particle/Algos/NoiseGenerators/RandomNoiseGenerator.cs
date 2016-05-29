@@ -4,6 +4,7 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
 {
+    using System;
     using System.Linq;
 
     using MathNet.Numerics.Distributions;
@@ -23,9 +24,13 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
         /// </summary>
-        /// <param name="rng">The random number generator to generate the noise with</param>
+        /// <param name="rng">The random number generator that generates numbers between 0 and 1</param>
         public RandomNoiseGenerator(IContinuousDistribution rng)
         {
+            if ((Math.Abs(rng.Minimum) > float.Epsilon) || (Math.Abs(rng.Maximum - 1) > float.Epsilon))
+            {
+                throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
+            }
             this.rng = rng;
         }
 

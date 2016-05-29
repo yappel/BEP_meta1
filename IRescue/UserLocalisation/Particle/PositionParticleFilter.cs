@@ -12,7 +12,7 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
     using IRescue.UserLocalisation.Sensors;
 
-    class PositionParticleFilter : AbstractParticleFilter, IPositionReceiver, IDisplacementReceiver
+    internal class PositionParticleFilter : AbstractParticleFilter, IPositionReceiver, IDisplacementReceiver
     {
         private List<IDisplacementSource> dislocationSources;
 
@@ -22,10 +22,11 @@ namespace IRescue.UserLocalisation.Particle
 
         public PositionParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, FieldSize fieldSize)
             : base(
+                  resampler,
                   noiseGenerator,
-                  new LinearParticleController(resampler, particleGenerator, particleAmount, fieldSize.Xmin, fieldSize.Xmax),
-                  new LinearParticleController(resampler, particleGenerator, particleAmount, fieldSize.Ymin, fieldSize.Ymax),
-                  new LinearParticleController(resampler, particleGenerator, particleAmount, fieldSize.Zmin, fieldSize.Zmax),
+                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Xmin, fieldSize.Xmax),
+                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Ymin, fieldSize.Ymax),
+                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Zmin, fieldSize.Zmax),
                   resampleNoiseSize)
         {
             this.dislocationSources = new List<IDisplacementSource>();
@@ -59,6 +60,7 @@ namespace IRescue.UserLocalisation.Particle
 
         protected override void RetrieveMeasurements()
         {
+            this.measurements.Clear();
             this.CheckPositionSources();
             if (this.previousResult != null)
             {
@@ -80,7 +82,6 @@ namespace IRescue.UserLocalisation.Particle
         {
             foreach (IPositionSource source in this.positionSources)
             {
-                ////TODO fix interface of sources
                 this.measurements.AddRange(source.GetPositionsClosestTo(this.currentTimeStamp, this.currentTimeStamp - this.previousTimeStamp));
             }
         }

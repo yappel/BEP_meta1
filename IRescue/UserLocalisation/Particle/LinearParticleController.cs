@@ -1,55 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿// <copyright file="LinearParticleController.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
-    using IRescue.UserLocalisation.Particle.Algos.Resamplers;
 
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
 
+    /// <summary>
+    /// Controller for particles with linear values.
+    /// </summary>
     internal class LinearParticleController : AbstractParticleController
     {
-        private Vector<float> values;
-
-        public LinearParticleController(IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, float minValue, float maxValue)
-            : base(resampler, particleAmount, minValue, maxValue)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IRescue.UserLocalisation.Particle.CircularParticleController"/> class.
+        /// </summary>
+        /// <param name="particleGenerator">The class used to generate new particles</param>
+        /// <param name="particleAmount">The amount of particles</param>
+        /// <param name="minValue">The minimum value that a particle can have</param>
+        /// <param name="maxValue">The maximum value that a particle can have</param>
+        public LinearParticleController(IParticleGenerator particleGenerator, int particleAmount, float minValue, float maxValue)
+            : base(particleAmount, minValue, maxValue, particleGenerator)
         {
-            this.values = new DenseVector(particleAmount);
-            this.values.SetValues(particleGenerator.Generate(particleAmount, minValue, maxValue));
         }
 
-        public override int Count => this.values.Count;
-
-        public override float[] Values
-        {
-            get
-            {
-                return this.values.ToArray<float>();
-            }
-
-            set
-            {
-                float[] newvalues = new float[value.Length];
-                value.CopyTo(newvalues, 0);
-                ////Todo check inputlength
-                this.values.SetValues(newvalues);
-            }
-        }
-
-        public override void SetValueAt(int index, float value)
-        {
-            this.values[index] = value;
-        }
-
-        public override float GetValueAt(int index)
-        {
-            return this.values[index];
-        }
-
+        /// <summary>
+        /// Calculate the distance of the given value to every value of the particles.
+        /// </summary>
+        /// <param name="othervalue">The value to compare to.</param>
+        /// <returns>The number that needs to be added to the value of a particle to get the parameter value</returns>
         public override float[] DistanceToValue(float othervalue)
         {
             Vector<float> res = new DenseVector(this.values.Count);
@@ -63,15 +43,14 @@ namespace IRescue.UserLocalisation.Particle
         /// <returns>The weighted average weights of the particles.</returns>
         public override float WeightedAverage()
         {
+            if (!this.CheckSumWeightsNotZero())
+            {
+                return float.NaN;
+            }
+
             Vector<float> res = new DenseVector(this.Count);
             this.values.PointwiseMultiply(this.weights, res);
-            return res.Sum();
-        }
-
-        public override void AddToValues(float[] values)
-        {
-            ////TODO check inputlength
-            this.values.Add(new DenseVector(values));
+            return res.Sum() / this.weights.Sum();
         }
     }
 }
