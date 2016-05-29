@@ -5,10 +5,17 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Algos.Resamplers;
+
+    using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
+
+    using Moq;
+
     using NUnit.Framework;
 
     /// <summary>
@@ -17,19 +24,15 @@ namespace IRescue.UserLocalisation.Particle
     public class MultinomialResamplerTest
     {
         /// <summary>
-        /// The particles.
-        /// </summary>
-        private Matrix<float> particles;
-
-        /// <summary>
-        /// The weights.
-        /// </summary>
-        private Matrix<float> weights;
-
-        /// <summary>
         /// A test subject
         /// </summary>
         private MultinomialResampler mr;
+
+        private AbstractParticleController controller;
+
+        private Mock<IParticleGenerator> particleGenerator;
+
+        private int particleAmount = 12;
 
         /// <summary>
         /// Setup method
@@ -37,17 +40,22 @@ namespace IRescue.UserLocalisation.Particle
         [SetUp]
         public void Setup()
         {
-            int rowcount = 200;
-            this.weights = new DenseMatrix(rowcount, 1);
-            this.mr = new MultinomialResampler();
-            float[] parts = new float[rowcount];
-            for (int i = 0; i < rowcount; i++)
-            {
-                parts[i] = i;
-                this.weights[i, 0] = 1 / (float)rowcount;
-            }
+            this.particleGenerator = new Mock<IParticleGenerator>();
+            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<float>(), It.IsAny<float>())).Returns<int, float, float>((par, min, max) =>
+                {
+                    float[] res = new float[par];
+                    for (int i = 0; i < par; i++)
+                    {
+                        res[i] = (((float)i / par) * (max - min)) + min;
+                    }
+                    return res;
+                });
 
-            this.particles = new DenseMatrix(rowcount, 1, parts);
+
+
+            this.controller = new LinearParticleController(this.particleGenerator.Object, this.particleAmount, 0, 200);
+            this.mr = new MultinomialResampler();
+
         }
 
         /// <summary>
@@ -56,10 +64,10 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestZerosNotChosen()
         {
-            this.weights.Clear();
-            this.weights[1, 0] = 1;
-            this.mr.Resample(this.particles, this.weights);
-            Assert.AreEqual(this.particles.RowCount, this.particles.Column(0).ToArray().Sum());
+            float original = this.controller.GetValueAt(0);
+            this.controller.SetWeightAt(0, 0);
+            this.mr.Resample(this.controller);
+            Assert.AreNotEqual(original, this.controller.GetValueAt(0));
         }
 
         /// <summary>
@@ -68,16 +76,21 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestRightSpread()
         {
-            this.mr.Resample(this.particles, this.weights);
-            var diffs = new float[this.particles.RowCount - 1];
-            var particlearray = this.particles.Column(0).ToArray();
-            Array.Sort(particlearray);
-            for (int i = 0; i < this.particles.RowCount - 1; i++)
+            this.controller.NormalizeWeights();
+            List<float> orignalValues = new List<float>(this.controller.Values);
+            float[] orignalWeights = this.controller.Weights;
+
+            this.controller.SetWeightAt(0, 0);
+            this.controller.SetWeightAt(1, 0);
+            this.controller.SetWeightAt(2, 0);
+            this.mr.Resample(this.controller);
+            float weightsum = 0;
+            foreach (float value in this.controller.Values)
             {
-                diffs[i] = particlearray[i + 1] - particlearray[i];
+                weightsum += orignalWeights[orignalValues.IndexOf(value)];
             }
 
-            Assert.AreEqual(1, diffs.Average(), 1);
+            Assert.IsTrue(weightsum > 1);
         }
     }
 }

@@ -15,9 +15,9 @@ namespace IRescue.UserLocalisation.Particle
 
     internal class CircularParticleController : AbstractParticleController
     {
-        private const int minAngle = 0;
+        private const float minAngle = 0;
 
-        private const int maxAngle = 359;
+        private const float maxAngle = 360 - float.Epsilon;
 
 
         public CircularParticleController(IParticleGenerator particleGenerator, int particleAmount)

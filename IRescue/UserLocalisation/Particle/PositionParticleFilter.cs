@@ -73,7 +73,7 @@ namespace IRescue.UserLocalisation.Particle
             foreach (IDisplacementSource source in this.dislocationSources)
             {
                 Measurement<Vector3> meas = source.GetDisplacement(this.previousTimeStamp, this.currentTimeStamp);
-                meas.Data.Add(this.previousResult);
+                meas.Data.Add(this.previousResult, meas.Data);
                 this.measurements.Add(meas);
             }
         }

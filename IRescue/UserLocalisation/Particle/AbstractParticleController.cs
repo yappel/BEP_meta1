@@ -165,5 +165,10 @@
         {
             return !(Math.Abs(this.weights.Sum()) < float.Epsilon);
         }
+
+        public void AddToValues(float toadd)
+        {
+            this.AddToValues(Enumerable.Repeat(toadd, this.Count).ToArray());
+        }
     }
 }

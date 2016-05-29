@@ -38,9 +38,9 @@ namespace UserLocalisation.Test.Particle
             this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<float>(), It.IsAny<float>())).Returns<int, float, float>((par, min, max) => Enumerable.Repeat(min, par).ToArray());
 
             this.particleAmount = 5;
-            this.minValue = 0;
-            this.maxValue = 359;
             this.controller = new CircularParticleController(this.particleGenerator.Object, this.particleAmount);
+            this.minValue = this.controller.minValue;
+            this.maxValue = this.controller.maxValue;
         }
 
         /// <summary>
@@ -51,20 +51,29 @@ namespace UserLocalisation.Test.Particle
         {
             float[] begin = Enumerable.Repeat(0f, this.particleAmount).ToArray();
             Assert.AreEqual(begin, this.controller.Values);
+
             float[] expected = Enumerable.Repeat(90f, this.particleAmount).ToArray();
             this.controller.AddToValues(expected);
             Assert.AreEqual(expected, this.controller.Values);
+
             this.controller.AddToValues(expected);
             expected = Enumerable.Repeat(180f, this.particleAmount).ToArray();
             Assert.AreEqual(expected, this.controller.Values);
+
             this.controller.AddToValues(expected);
             expected = Enumerable.Repeat(0f, this.particleAmount).ToArray();
             Assert.AreEqual(expected, this.controller.Values);
+
             this.controller.AddToValues(Enumerable.Repeat(-90f, this.particleAmount).ToArray());
             expected = Enumerable.Repeat(270f, this.particleAmount).ToArray();
             Assert.AreEqual(expected, this.controller.Values);
+
             this.controller.AddToValues(Enumerable.Repeat(-720f, this.particleAmount).ToArray());
             expected = Enumerable.Repeat(270f, this.particleAmount).ToArray();
+            Assert.AreEqual(expected, this.controller.Values);
+
+            this.controller.AddToValues(Enumerable.Repeat(89.5f, this.particleAmount).ToArray());
+            expected = Enumerable.Repeat(359.5f, this.particleAmount).ToArray();
             Assert.AreEqual(expected, this.controller.Values);
         }
 
@@ -86,7 +95,7 @@ namespace UserLocalisation.Test.Particle
         [Test]
         public void TestDistanceToValues()
         {
-            float x = this.maxValue;
+            float x = 359;
             float[] newval = new float[this.particleAmount];
             for (int i = 0; i < this.particleAmount; i++)
             {
@@ -111,10 +120,9 @@ namespace UserLocalisation.Test.Particle
         {
             float[] values = { 359f, 0, 1, 1 };
             float[] weights = { 1f, 0f, 0.5f, 0.5f };
-            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
-            CircularParticleController cont = new CircularParticleController(this.particleGenerator.Object, 4);
-            cont.Weights = weights;
-            cont.Weights = weights;
+            Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
+            pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
+            CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
             Assert.AreEqual(0, cont.WeightedAverage());
         }
@@ -127,9 +135,9 @@ namespace UserLocalisation.Test.Particle
         {
             float[] values = { 359, 181 };
             float[] weights = { 0.5f, 0.5f };
-            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), 0, 359)).Returns(values);
-            CircularParticleController cont = new CircularParticleController(this.particleGenerator.Object, 2);
-            cont.Weights = weights;
+            Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
+            pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
+            CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
             Assert.AreEqual(270, cont.WeightedAverage());
         }
@@ -142,9 +150,9 @@ namespace UserLocalisation.Test.Particle
         {
             float[] values = { 271f, 0, 89f, 89f };
             float[] weights = { 1f, 0f, 0.5f, 0.5f };
-            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
-            CircularParticleController cont = new CircularParticleController(this.particleGenerator.Object, 4);
-            cont.Weights = weights;
+            Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
+            pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
+            CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
             Assert.AreEqual(0, cont.WeightedAverage());
         }
@@ -157,9 +165,9 @@ namespace UserLocalisation.Test.Particle
         {
             float[] values = { 270f, 90f };
             float[] weights = { 0.5f, 0.5f };
-            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
-            CircularParticleController cont = new CircularParticleController(this.particleGenerator.Object, 2);
-            cont.Weights = weights;
+            Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
+            pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
+            CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
             Assert.AreEqual(float.NaN, cont.WeightedAverage());
         }
@@ -172,9 +180,9 @@ namespace UserLocalisation.Test.Particle
         {
             float[] values = { 270f, 90f };
             float[] weights = { 0f, 0f };
-            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
-            CircularParticleController cont = new CircularParticleController(this.particleGenerator.Object, 2);
-            cont.Weights = weights;
+            Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
+            pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
+            CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
 
             Assert.AreEqual(float.NaN, cont.WeightedAverage());

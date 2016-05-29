@@ -7,6 +7,7 @@
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+    using IRescue.UserLocalisation.PosePrediction;
 
     public abstract class AbstractParticleFilter
     {
@@ -29,6 +30,10 @@
         private float resampleNoiseSize;
 
         private readonly IResampler resampler;
+
+        private IExtrapolate iex = new FlexibleExtrapolate();
+        private IExtrapolate iey = new FlexibleExtrapolate();
+        private IExtrapolate iez = new FlexibleExtrapolate();
 
         protected AbstractParticleFilter(IResampler resampler, INoiseGenerator noiseGenerator, AbstractParticleController particleControllerX, AbstractParticleController particleControllerY, AbstractParticleController particleControllerZ, float resampleNoiseSize)
         {
@@ -55,10 +60,19 @@
 
         protected virtual Vector3 ProcessResults()
         {
-            float resultX = this.particleControllerX.WeightedAverage();
-            float resultY = this.particleControllerY.WeightedAverage();
-            float resultZ = this.particleControllerZ.WeightedAverage();
+            float resultX = this.GetWeightedAverage(this.particleControllerX);
+            float resultY = this.GetWeightedAverage(this.particleControllerY);
+            float resultZ = this.GetWeightedAverage(this.particleControllerZ);
+            this.iex.AddData(this.currentTimeStamp, resultX);
+            this.iey.AddData(this.currentTimeStamp, resultY);
+            this.iez.AddData(this.currentTimeStamp, resultZ);
             return new Vector3(resultX, resultY, resultZ);
+        }
+
+        private float GetWeightedAverage(AbstractParticleController con)
+        {
+            con.NormalizeWeights();
+            return con.WeightedAverage();
         }
 
         protected abstract void RetrieveMeasurements();
@@ -75,10 +89,24 @@
 
         private void Predict()
         {
+            this.Predict(this.particleControllerX, this.iex);
+            this.Predict(this.particleControllerY, this.iey);
+            this.Predict(this.particleControllerZ, this.iez);
+        }
+
+        private void Predict(AbstractParticleController cont, IExtrapolate ie)
+        {
+            float prediction = (float)ie.PredictChange(this.previousTimeStamp, this.currentTimeStamp);
+            cont.AddToValues(prediction);
         }
 
         private void Resample()
         {
+            if (this.previousTimeStamp < 0)
+            {
+                return;
+            }
+
             this.Resample(this.particleControllerX);
             this.Resample(this.particleControllerY);
             this.Resample(this.particleControllerZ);
@@ -102,17 +130,13 @@
                     Measurement<Vector3> measurement = this.measurements[index];
                     IDistribution dist = measurement.DistributionType;
                     float[] diffx = this.particleControllerX.DistanceToValue(measurement.Data.X);
-                    float[] diffy = this.particleControllerX.DistanceToValue(measurement.Data.Y);
-                    float[] diffz = this.particleControllerX.DistanceToValue(measurement.Data.Z);
+                    float[] diffy = this.particleControllerY.DistanceToValue(measurement.Data.Y);
+                    float[] diffz = this.particleControllerZ.DistanceToValue(measurement.Data.Z);
                     this.CalculateWeights(this.particleControllerX, diffx, dist);
                     this.CalculateWeights(this.particleControllerY, diffy, dist);
                     this.CalculateWeights(this.particleControllerZ, diffz, dist);
                 }
             }
-
-            this.particleControllerX.NormalizeWeights();
-            this.particleControllerY.NormalizeWeights();
-            this.particleControllerZ.NormalizeWeights();
         }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
+    using System;
     using System.Linq;
 
     using MathNet.Numerics.Distributions;
@@ -25,6 +26,10 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
         /// <param name="rng">The random number generator that generates a number between 0.0 and 1.0.</param>
         public RandomParticleGenerator(IContinuousDistribution rng)
         {
+            if ((Math.Abs(rng.Minimum) > float.Epsilon) || (Math.Abs(rng.Maximum - 1) > float.Epsilon))
+            {
+                throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
+            }
             this.rng = rng;
         }
 

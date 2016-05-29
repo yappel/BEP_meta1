@@ -49,11 +49,6 @@ namespace UserLocalisation.Test.Particle
         private float[] particles;
 
         /// <summary>
-        ///     Pose predictor mock
-        /// </summary>
-        private Mock<IPosePredictor> posepredictor;
-
-        /// <summary>
         ///     Particle generator mock
         /// </summary>
         private Mock<IParticleGenerator> ptclgen;
@@ -72,7 +67,6 @@ namespace UserLocalisation.Test.Particle
             this.dist = new Mock<IDistribution>();
             this.ptclgen = new Mock<IParticleGenerator>();
             this.noisegen = new Mock<INoiseGenerator>();
-            this.posepredictor = new Mock<IPosePredictor>();
             this.resampler = new Mock<IResampler>();
             this.fieldsize = new FieldSize { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
             var particleamount = 30;
@@ -93,7 +87,6 @@ namespace UserLocalisation.Test.Particle
             this.particles = particles;
 
             this.ptclgen.Setup(foo => foo.Generate(particleamount, It.IsAny<float>(), It.IsAny<float>())).Returns(particles);
-            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
 
             //this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
             this.filter = new ParticleFilter(particleamount, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
@@ -120,7 +113,6 @@ namespace UserLocalisation.Test.Particle
             ParticleFilter filterr = new ParticleFilter(30, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
 
             this.ptclgen.Setup(foo => foo.Generate(30, It.IsAny<int>(), It.IsAny<int>())).Returns(this.particles);
-            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
             for (int i = 0; i < 1000; i++)
             {
                 filterr.CalculatePose(i);

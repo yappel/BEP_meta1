@@ -34,12 +34,14 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         /// <param name="weights">The Weights of the Particles</param>
         public void Resample(AbstractParticleController parCon)
         {
+            parCon.NormalizeWeights();
             int[] indexes = Multinomial(parCon);
             float[] newParticleValues = new float[indexes.Length];
             for (int i = 0; i < newParticleValues.Length; i++)
             {
-                newParticleValues[i] = parCon.GetValueAt(i);
+                newParticleValues[i] = parCon.GetValueAt(indexes[i]);
             }
+
             parCon.Values = newParticleValues;
         }
 
