@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractUserLocalizer.cs" />
+    <Compile Include="Kalman\AccelerationPositionKalmanFilter.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />
