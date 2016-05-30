@@ -11,6 +11,8 @@ namespace Assets.Scripts.Unity
     /// </summary>
     public class WaterLevelController : MonoBehaviour
     {
+        private GameObject waterPlane;
+
         /// <summary>
         /// Initializes the water plane
         /// </summary>
@@ -18,10 +20,10 @@ namespace Assets.Scripts.Unity
         /// <param name="z">the depth of the plane</param>
         public void Init(float x, float z)
         {
-            this.gameObject.transform.position = new Vector3(x, -1.6f, z);
-            this.gameObject.transform.localScale = new Vector3(2 * x, 1, 2 * z);
-            this.gameObject.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-            this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            this.gameObject.transform.position = new Vector3(x / 5, 0, z / 5);
+            this.gameObject.transform.localScale = new Vector3(x, 1, z);
+            this.gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Masked/Mask");
+            this.gameObject.GetComponent<MeshRenderer>().material.renderQueue = 3020;
         }
     }
 }
