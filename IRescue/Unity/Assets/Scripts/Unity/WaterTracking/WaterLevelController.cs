@@ -37,7 +37,8 @@ namespace Assets.Scripts.Unity
         {
             this.waterLevelTracker = new WaterLevelTracker();
             this.waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            this.waterPlane.transform.position = new Vector3(x / 5, 0, z / 5);
+            this.waterPlane.name = "WaterPlane";
+            this.waterPlane.transform.position = new Vector3(x * 5, -10, z * 5);
             this.waterPlane.transform.localScale = new Vector3(x, 1, z);
             this.waterPlane.GetComponent<MeshRenderer>().material.shader = Shader.Find("Masked/Mask");
             this.waterPlane.GetComponent<MeshRenderer>().material.renderQueue = 3020;
