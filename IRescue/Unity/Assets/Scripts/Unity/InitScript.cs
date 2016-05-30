@@ -36,6 +36,8 @@ namespace Assets.Scripts.Unity
         /// </summary>
         public void Start()
         {
+            // Start in 2d mode
+            Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.AddControllers();
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
@@ -49,7 +51,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void AddControllers()
         {
-            gameObject.AddComponent<StateController>().Init();
+            gameObject.AddComponent<GestureEventController>().Init();
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {
