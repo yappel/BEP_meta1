@@ -16,6 +16,7 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
 
     using MathNet.Numerics.Distributions;
@@ -65,7 +66,8 @@ namespace IRescue.UserLocalisation.Particle
                 new MultinomialResampler(),
                 new RandomParticleGenerator(new ContinuousUniform()),
                 200,
-                fieldsize);
+                fieldsize,
+                new MovingAverageSmoother(2000));
 
 
             this.posdist = new Normal(0.1);
@@ -80,6 +82,19 @@ namespace IRescue.UserLocalisation.Particle
             this.dissource.Setup(foo => foo.GetDisplacement(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>(this.Dis);
             this.filter.AddDisplacementSource(this.dissource.Object);
 
+        }
+
+        private Measurement<Vector3> Dis2(long arg1, long arg2)
+        {
+            return new Measurement<Vector3>(new Vector3((float)this.disnoise.Sample(), (float)this.disnoise.Sample(), (float)this.disnoise.Sample()), arg2, this.disdist);
+        }
+
+        private List<Measurement<Vector3>> Pos2(long ts)
+        {
+            return new List<Measurement<Vector3>>()
+                       {
+                           new Measurement<Vector3>(new Vector3((float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample())), ts, this.posdist)
+                       };
         }
 
         /// <summary>
@@ -110,6 +125,35 @@ namespace IRescue.UserLocalisation.Particle
             Assert.True(diffz.Max() < 5 * this.posnoise.Maximum);
             Assert.True(diffz.Min() > 5 * this.posnoise.Minimum);
 
+        }
+
+        [Test]
+        public void TestMethod2()
+        {
+            this.possource.Setup(foo => foo.GetPositionsClosestTo(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>((ts, range) => this.Pos2(ts));
+            this.dissource.Setup(foo => foo.GetDisplacement(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>(this.Dis2);
+
+            List<double> diffx = new List<double>();
+            List<double> diffy = new List<double>();
+            List<double> diffz = new List<double>();
+
+            for (int ts = 1; ts < 10001; ts += 33)
+            {
+                Vector3 res = this.filter.Calculate(ts);
+                diffx.Add((float)(res.X - 1));
+                diffy.Add((float)(res.Y - 1));
+                diffz.Add((float)(res.Z - 1));
+            }
+
+            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionX2.dat", diffx.Select(d => d.ToString()).ToArray());
+            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionY2.dat", diffy.Select(d => d.ToString()).ToArray());
+            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionZ2.dat", diffz.Select(d => d.ToString()).ToArray());
+            Assert.True(diffx.Max() < 5 * this.posnoise.Maximum);
+            Assert.True(diffx.Min() > 5 * this.posnoise.Minimum);
+            Assert.True(diffy.Max() < 5 * this.posnoise.Maximum);
+            Assert.True(diffy.Min() > 5 * this.posnoise.Minimum);
+            Assert.True(diffz.Max() < 5 * this.posnoise.Maximum);
+            Assert.True(diffz.Min() > 5 * this.posnoise.Minimum);
         }
 
         private Measurement<Vector3> Dis(long tsfrom, long tsto)

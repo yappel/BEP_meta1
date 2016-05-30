@@ -9,6 +9,8 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Sensors;
     using System.Collections.Generic;
 
+    using IRescue.Core.Utils;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
 
     /// <summary>
     /// TODO
@@ -17,14 +19,16 @@ namespace IRescue.UserLocalisation.Particle
     {
         private List<IOrientationSource> orientationSources;
 
-        public OrientationParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount)
+        public OrientationParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, ISmoother smoother)
             : base(
                   resampler,
                   noiseGenerator,
                   new CircularParticleController(particleGenerator, particleAmount),
                   new CircularParticleController(particleGenerator, particleAmount),
                   new CircularParticleController(particleGenerator, particleAmount),
-                  resampleNoiseSize)
+                  resampleNoiseSize,
+                  smoother,
+                  AngleMath.Average)
         {
             this.orientationSources = new List<IOrientationSource>();
         }

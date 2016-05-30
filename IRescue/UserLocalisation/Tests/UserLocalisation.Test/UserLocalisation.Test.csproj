@@ -84,7 +84,6 @@
     <Compile Include="Particle\LinearParticleControllerTest.cs" />
     <Compile Include="Particle\NoiseGenerators\RandomNoiseGeneratorTest.cs" />
     <Compile Include="Particle\OrientationParticleFilterTest.cs" />
-    <Compile Include="Particle\ParticleFilterTest.cs" />
     <Compile Include="Particle\ParticleGenerators\RandomParticleGeneratorTest.cs" />
     <Compile Include="Particle\PositionParticleFilterTest.cs" />
     <Compile Include="Particle\Resamplers\MultinomialResamplerTest.cs" />

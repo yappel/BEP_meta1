@@ -3,7 +3,9 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using IRescue.Core.DataTypes;
 
@@ -32,12 +34,10 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         /// <param name="rawResult">The unsmoothed result.</param>
         /// <param name="timeStamp">The timestamp of the (un)smoothed result.</param>
         /// <returns>The smoothed result</returns>
-        public Pose GetSmoothedResult(Pose rawResult, long timeStamp)
+        public Vector3 GetSmoothedResult(Vector3 rawResult, long timeStamp, Func<float[], float> averageFunction)
         {
-            this.buffer.Add(new Result { Pose = rawResult, TimeStamp = timeStamp });
-            Vector3 averagePos = new Vector3();
-            Vector3 averageOri = new Vector3();
-            float count = 0;
+            this.buffer.Add(new Result { vector3 = rawResult, TimeStamp = timeStamp });
+            List<Vector3> allResults = new List<Vector3>();
             List<int> toremove = new List<int>();
             foreach (Result result in this.buffer)
             {
@@ -47,20 +47,20 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
                 }
                 else
                 {
-                    count++;
-                    averagePos.Add(result.Pose.Position, averagePos);
-                    averageOri.Add(result.Pose.Orientation, averageOri);
+                    allResults.Add(result.vector3);
                 }
             }
 
-            foreach (int i in toremove)
+            for (int index = 0; index < toremove.Count; index++)
             {
-                this.buffer.RemoveAt(i);
+                this.buffer.RemoveAt(toremove[index]);
             }
 
-            averagePos.Divide(count, averagePos);
-            averageOri.Divide(count, averageOri);
-            return new Pose(averagePos, averageOri);
+            return new Vector3(
+                averageFunction(allResults.Select<Vector3, float>((v) => v.X).ToArray()),
+                averageFunction(allResults.Select<Vector3, float>((v) => v.Y).ToArray()),
+                averageFunction(allResults.Select<Vector3, float>((v) => v.Z).ToArray())
+                );
         }
     }
 }

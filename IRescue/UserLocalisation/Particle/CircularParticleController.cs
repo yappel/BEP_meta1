@@ -33,8 +33,7 @@ namespace IRescue.UserLocalisation.Particle
             }
 
             Vector<float> res = new DenseVector(this.Count);
-            this.values.MapIndexed((index, value) => (value + valuesToAdd[index]), res);
-            res.Modulus(360f, res);
+            this.values.MapIndexed((index, value) => AngleMath.Sum(value, valuesToAdd[index]), res);
             this.Values = res.ToArray();
         }
 
@@ -44,8 +43,7 @@ namespace IRescue.UserLocalisation.Particle
             float[] res = new float[this.Count];
             for (int i = 0; i < this.Count; i++)
             {
-                double a = othervalue - this.values[i];
-                res[i] = (float)(Euclid.Modulus(a + 180, 360) - 180);
+                res[i] = (float)AngleMath.SmallesAngle(this.values[i], othervalue);
             }
 
             return res;
@@ -57,21 +55,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <returns>The weighted average weights of the particles.</returns>
         public override float WeightedAverage()
         {
-            Vector res = new DenseVector(2);
-            for (int i = 0; i < this.values.Count; i++)
-            {
-                Vector<float> vector = VectorMath.AngleToVector(this.values[i], this.weights[i]);
-                res.Add(vector, res);
-            }
-
-            if ((Math.Abs(res[0]) < 1E-6) && (Math.Abs(res[1]) < 1E-6))
-            {
-                return float.NaN;
-            }
-            else
-            {
-                return VectorMath.Vector2ToAngle(res);
-            }
+            return AngleMath.WeightedAverage(this.values.ToArray(), this.weights.ToArray());
         }
     }
 }

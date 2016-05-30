@@ -4,6 +4,9 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
 {
+    using System;
+    using System.Collections.Generic;
+
     using IRescue.Core.DataTypes;
 
     /// <summary>
@@ -17,6 +20,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         /// <param name="rawResult">The unsmoothed result.</param>
         /// <param name="timeStamp">The timestamp of the (un)smoothed result.</param>
         /// <returns>The smoothed result</returns>
-        Pose GetSmoothedResult(Pose rawResult, long timeStamp);
+        Vector3 GetSmoothedResult(Vector3 rawResult, long timeStamp, Func<float[], float> averageFunction);
     }
 }

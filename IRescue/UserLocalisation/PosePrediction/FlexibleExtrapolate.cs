@@ -12,7 +12,7 @@ namespace IRescue.UserLocalisation.PosePrediction
 
     class FlexibleExtrapolate : IExtrapolate
     {
-        private const int buffersize = 1000;
+        private const int buffersize = 150;
 
         private SortedList<double, double> data;
 
@@ -23,14 +23,18 @@ namespace IRescue.UserLocalisation.PosePrediction
 
         public double PredictValueAt(long x)
         {
-            IInterpolation interpolation = Interpolate.Common(this.data.Keys, this.data.Values);
+            IInterpolation interpolation = Interpolate.Linear(this.data.Keys, this.data.Values);
             return interpolation.Interpolate(x);
         }
 
         public void AddData(long x, double y)
         {
             this.data.Add(x, y);
-            while (this.data.First().Key < x - buffersize)
+            //while (this.data.First().Key < x - buffersize)
+            //{
+            //    this.data.RemoveAt(0);
+            //}
+            while (this.data.Count > 4)
             {
                 this.data.RemoveAt(0);
             }
@@ -38,7 +42,7 @@ namespace IRescue.UserLocalisation.PosePrediction
 
         public double PredictChange(long xfrom, long xto)
         {
-            if (this.data.Count < 1)
+            if (this.data.Count < 3)
             {
                 return 0;
             }
@@ -46,7 +50,7 @@ namespace IRescue.UserLocalisation.PosePrediction
             double yfrom = interpolation.Interpolate(xfrom);
             double yto = interpolation.Interpolate(xto);
             if (this.data.Count > 1)
-                System.Console.WriteLine($"Prevprev was {this.data.Values[this.data.Count - 2]}, prev was {this.data.Values[this.data.Count - 1]}, prediction {yto}");
+                System.Console.WriteLine($"Prevprevprev was {this.data.Values[this.data.Count - 3]}: ({this.data.Keys[this.data.Count - 3]}), Prevprev was {this.data.Values[this.data.Count - 2]}: ({this.data.Keys[this.data.Count - 2]}), prev was {this.data.Values[this.data.Count - 1]}: ({this.data.Keys[this.data.Count - 1]}), prediction {yto}: ({xto})");
             return yto - yfrom;
         }
     }

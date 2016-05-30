@@ -5,11 +5,13 @@ namespace IRescue.UserLocalisation.Particle
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
 
     internal class PositionParticleFilter : AbstractParticleFilter, IPositionReceiver, IDisplacementReceiver
@@ -20,14 +22,16 @@ namespace IRescue.UserLocalisation.Particle
 
         private Vector3 previousResult;
 
-        public PositionParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, FieldSize fieldSize)
+        public PositionParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, FieldSize fieldSize, ISmoother smoother)
             : base(
                   resampler,
                   noiseGenerator,
                   new LinearParticleController(particleGenerator, particleAmount, fieldSize.Xmin, fieldSize.Xmax),
                   new LinearParticleController(particleGenerator, particleAmount, fieldSize.Ymin, fieldSize.Ymax),
                   new LinearParticleController(particleGenerator, particleAmount, fieldSize.Zmin, fieldSize.Zmax),
-                  resampleNoiseSize)
+                  resampleNoiseSize,
+                  smoother,
+                  Enumerable.Average)
         {
             this.dislocationSources = new List<IDisplacementSource>();
             this.positionSources = new List<IPositionSource>();

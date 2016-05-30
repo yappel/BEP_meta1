@@ -1,12 +1,15 @@
 ﻿namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.PosePrediction;
 
     public abstract class AbstractParticleFilter
@@ -31,11 +34,18 @@
 
         private readonly IResampler resampler;
 
+        private ISmoother smoother;
+
+        /// <summary>
+        /// Function that calculates the average value given a list of values.
+        /// </summary>
+        private Func<float[], float> averageCalculator;
+
         private IExtrapolate iex = new FlexibleExtrapolate();
         private IExtrapolate iey = new FlexibleExtrapolate();
         private IExtrapolate iez = new FlexibleExtrapolate();
 
-        protected AbstractParticleFilter(IResampler resampler, INoiseGenerator noiseGenerator, AbstractParticleController particleControllerX, AbstractParticleController particleControllerY, AbstractParticleController particleControllerZ, float resampleNoiseSize)
+        protected AbstractParticleFilter(IResampler resampler, INoiseGenerator noiseGenerator, AbstractParticleController particleControllerX, AbstractParticleController particleControllerY, AbstractParticleController particleControllerZ, float resampleNoiseSize, ISmoother smoother, Func<float[], float> averageCalculator)
         {
             this.resampler = resampler;
             this.noiseGenerator = noiseGenerator;
@@ -43,6 +53,8 @@
             this.particleControllerY = particleControllerY;
             this.particleControllerZ = particleControllerZ;
             this.resampleNoiseSize = resampleNoiseSize;
+            this.smoother = smoother;
+            this.averageCalculator = averageCalculator;
             this.currentTimeStamp = -1;
             this.measurements = new List<Measurement<Vector3>>();
         }
@@ -53,20 +65,30 @@
             this.currentTimeStamp = timeStamp;
             this.RetrieveMeasurements();
             this.Resample();
-            this.Predict();
+            //this.Predict();
             this.Update();
             return this.ProcessResults();
         }
 
         protected virtual Vector3 ProcessResults()
         {
-            float resultX = this.GetWeightedAverage(this.particleControllerX);
-            float resultY = this.GetWeightedAverage(this.particleControllerY);
-            float resultZ = this.GetWeightedAverage(this.particleControllerZ);
-            this.iex.AddData(this.currentTimeStamp, resultX);
-            this.iey.AddData(this.currentTimeStamp, resultY);
-            this.iez.AddData(this.currentTimeStamp, resultZ);
-            return new Vector3(resultX, resultY, resultZ);
+            float resultX = this.ProcessResult(this.particleControllerX, this.iex);
+            float resultY = this.ProcessResult(this.particleControllerY, this.iey);
+            float resultZ = this.ProcessResult(this.particleControllerZ, this.iez);
+            return this.smoother.GetSmoothedResult(new Vector3(resultX, resultY, resultZ), this.currentTimeStamp, this.averageCalculator);
+        }
+
+        private float ProcessResult(AbstractParticleController cont, IExtrapolate ie)
+        {
+            if (Math.Abs(cont.Weights.Sum()) < float.Epsilon)
+            {
+                this.noiseGenerator.GenerateNoise(0.01f, cont);
+                cont.SetWeights(1f / cont.Count);
+            }
+
+            float result = this.GetWeightedAverage(cont);
+            ie.AddData(this.currentTimeStamp, result);
+            return result;
         }
 
         private float GetWeightedAverage(AbstractParticleController con)
@@ -89,6 +111,11 @@
 
         private void Predict()
         {
+            if (this.previousTimeStamp < 0)
+            {
+                return;
+            }
+
             this.Predict(this.particleControllerX, this.iex);
             this.Predict(this.particleControllerY, this.iey);
             this.Predict(this.particleControllerZ, this.iez);
