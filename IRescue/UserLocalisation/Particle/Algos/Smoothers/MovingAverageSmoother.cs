@@ -62,5 +62,12 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
                 averageFunction(allResults.Select<Vector3, float>((v) => v.Z).ToArray())
                 );
         }
+
+        /// <summary>Creates a new object that is a copy of the current instance.</summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public ISmoother Clone()
+        {
+            return new MovingAverageSmoother(this.buffersize);
+        }
     }
 }

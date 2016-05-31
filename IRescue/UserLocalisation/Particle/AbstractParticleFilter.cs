@@ -63,10 +63,18 @@
         {
             this.previousTimeStamp = this.currentTimeStamp;
             this.currentTimeStamp = timeStamp;
+            //Console.WriteLine($"Calulating at timestamp {timeStamp}");
             this.RetrieveMeasurements();
+            //foreach (Measurement<Vector3> measurement in this.measurements)
+            //{
+            //    Console.WriteLine($"Retrieved an measurment: {measurement.Data.X} | {measurement.Data.Y} | {measurement.Data.Z}");
+            //}
             this.Resample();
+            //Console.WriteLine($"Average particle values: {this.averageCalculator(this.particleControllerX.Values)} | {this.averageCalculator(this.particleControllerY.Values)} | {this.averageCalculator(this.particleControllerZ.Values)}");
             //this.Predict();
             this.Update();
+            //Console.WriteLine($"Weighted average values: {this.particleControllerX.WeightedAverage()} | {this.particleControllerY.WeightedAverage()} | {this.particleControllerZ.WeightedAverage()}");
+
             return this.ProcessResults();
         }
 
@@ -75,7 +83,9 @@
             float resultX = this.ProcessResult(this.particleControllerX, this.iex);
             float resultY = this.ProcessResult(this.particleControllerY, this.iey);
             float resultZ = this.ProcessResult(this.particleControllerZ, this.iez);
-            return this.smoother.GetSmoothedResult(new Vector3(resultX, resultY, resultZ), this.currentTimeStamp, this.averageCalculator);
+            Vector3 res = this.smoother.GetSmoothedResult(new Vector3(resultX, resultY, resultZ), this.currentTimeStamp, this.averageCalculator);
+            Console.WriteLine($"Results : {res.X} | {res.Y} | {res.Z}");
+            return res;
         }
 
         private float ProcessResult(AbstractParticleController cont, IExtrapolate ie)

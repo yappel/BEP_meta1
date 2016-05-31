@@ -3,20 +3,28 @@
 // </copyright>
 namespace UserLocalisation.Test.Particle
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
 
     using IRescue.Core.DataTypes;
-    using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.PosePrediction;
     using IRescue.UserLocalisation.Sensors;
+
+    using MathNet.Numerics.Distributions;
 
     using Moq;
 
     using NUnit.Framework;
+
+    using IDistribution = IRescue.Core.Distributions.IDistribution;
+    using Normal = IRescue.Core.Distributions.Normal;
 
     /// <summary>
     ///     Test for the particles
@@ -61,21 +69,20 @@ namespace UserLocalisation.Test.Particle
         /// <summary>
         ///     Initialization method
         /// </summary>
-        [SetUp]
+        //[SetUp]
         public void Init()
         {
             this.dist = new Mock<IDistribution>();
             this.ptclgen = new Mock<IParticleGenerator>();
             this.noisegen = new Mock<INoiseGenerator>();
             this.resampler = new Mock<IResampler>();
-            this.fieldsize = new FieldSize { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
-            var particleamount = 30;
+            this.fieldsize = new FieldSize { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            var particleamount = 250;
 
             float[] particles = new float[particleamount];
             for (int i = 0; i < particleamount; i++)
             {
                 particles[i] = 1;
-                this.particles = particles;
             }
 
             float[] particles2 = new float[particleamount * 1];
@@ -89,7 +96,7 @@ namespace UserLocalisation.Test.Particle
             this.ptclgen.Setup(foo => foo.Generate(particleamount, It.IsAny<float>(), It.IsAny<float>())).Returns(particles);
 
             //this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
-            this.filter = new ParticleFilter(particleamount, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
+            //this.filter = new ParticleFilter(particleamount, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
 
             Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
             List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>> { new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 0, this.dist.Object) };
@@ -110,15 +117,88 @@ namespace UserLocalisation.Test.Particle
         [Test]
         public void TestParticleFilterRunWithoutSources()
         {
-            ParticleFilter filterr = new ParticleFilter(30, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
+            //ParticleFilter filterr = new ParticleFilter(30, 0.01f, this.fieldsize, this.ptclgen.Object, this.resampler.Object, this.noisegen.Object);
 
             this.ptclgen.Setup(foo => foo.Generate(30, It.IsAny<int>(), It.IsAny<int>())).Returns(this.particles);
             for (int i = 0; i < 1000; i++)
             {
-                filterr.CalculatePose(i);
+                //filterr.CalculatePose(i);
             }
 
             Assert.Pass();
+        }
+
+        [Test]
+        public void TestRealMarkerSensorData()
+        {
+
+
+            List<Measurement<Vector3>> oridata = new List<Measurement<Vector3>>();
+            List<Measurement<Vector3>> posdata = new List<Measurement<Vector3>>();
+            using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerOriData_Expected_9_10_3.dat"))
+            {
+                // Read the stream to a string, and write the string to the console.
+                String line = sr.ReadLine();
+                while (line != null)
+                {
+                    string[] unparsed = line.Split(',');
+                    oridata.Add(new Measurement<Vector3>(
+                        new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2])),
+                        0,
+                        new Normal(0.1)
+                        ));
+                    line = sr.ReadLine();
+                }
+            }
+
+            using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerPosData_Expected_060_150_1.dat"))
+            {
+                // Read the stream to a string, and write the string to the console.
+                String line = sr.ReadLine();
+                while (line != null)
+                {
+                    string[] unparsed = line.Split(',');
+                    posdata.Add(new Measurement<Vector3>(
+                        new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2])),
+                        0,
+                        new Normal(0.01)
+                        ));
+                    line = sr.ReadLine();
+                }
+            }
+
+
+            FieldSize fieldsize = new FieldSize() { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+
+            int poscount = 0;
+            Mock<IPositionSource> possource = new Mock<IPositionSource>();
+            possource.Setup(foo => foo.GetPositionsClosestTo(It.IsAny<long>(), It.IsAny<long>())).
+                Returns(() => new List<Measurement<Vector3>>() { posdata[poscount] }).
+                Callback(() => poscount++);
+            filter.AddPositionSource(possource.Object);
+
+            int oricount = 0;
+            Mock<IOrientationSource> orisource = new Mock<IOrientationSource>();
+            orisource.Setup(foo => foo.GetOrientationClosestTo(It.IsAny<long>(), It.IsAny<long>())).
+                Returns(() => new List<Measurement<Vector3>>() { oridata[oricount] }).
+                Callback(() => oricount++);
+            filter.AddOrientationSource(orisource.Object);
+
+            StringBuilder res = new StringBuilder();
+            long i = 0;
+            while (i < 30000000 && poscount < posdata.Count && oricount < oridata.Count)
+            {
+                Pose pose = filter.CalculatePose(i);
+                res.AppendFormat($"{pose.Position.X},{pose.Position.Y},{pose.Position.Z},{pose.Orientation.X},{pose.Orientation.Y},{pose.Orientation.Z}" + Environment.NewLine);
+                i += 33;
+            }
+
+            File.WriteAllText(TestContext.CurrentContext.TestDirectory + @"\RealMarkerResults.dat", res.ToString());
         }
     }
 }

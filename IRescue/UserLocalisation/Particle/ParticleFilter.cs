@@ -19,7 +19,7 @@ namespace IRescue.UserLocalisation.Particle
         public ParticleFilter(int particleAmount, float resampleNoiseSize, FieldSize fieldSize, IParticleGenerator particleGenerator, IResampler resampler, INoiseGenerator noiseGenerator, ISmoother smoother)
         {
             this.positionFilter = new PositionParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, fieldSize, smoother);
-            this.orientationFilter = new OrientationParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, smoother);
+            this.orientationFilter = new OrientationParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, smoother.Clone());
         }
 
         /// <summary>
