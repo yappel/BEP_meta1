@@ -14,10 +14,6 @@ using UnityEngine.UI;
 /// </summary>
 public class ObjectSelectStateTest
 {
-    /// <summary>
-    /// The used game object
-    /// </summary>
-    private GameObject gameObject;
 
     /// <summary>
     /// The used state context
@@ -35,7 +31,6 @@ public class ObjectSelectStateTest
     [SetUp]
     public void Setup()
     {
-        this.gameObject = new GameObject();
         this.stateContext = new StateContext(null);
         this.objectSelectState = new ObjectSelectState(this.stateContext);
         this.stateContext.SetState(this.objectSelectState);
