@@ -92,7 +92,7 @@ namespace UserLocalisation.Test.Particle
             StringBuilder res = new StringBuilder();
             List<Pose> results = new List<Pose>();
             long i = 0;
-            while ((i < 30000) && (poscount < posdata.Count) && (oricount < oridata.Count))
+            while ((poscount < posdata.Count) && (oricount < oridata.Count))
             {
                 Pose pose = filter.CalculatePose(i);
                 res.AppendFormat($"{pose.Position.X},{pose.Position.Y},{pose.Position.Z},{pose.Orientation.X},{pose.Orientation.Y},{pose.Orientation.Z}" + Environment.NewLine);
