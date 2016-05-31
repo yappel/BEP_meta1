@@ -1,18 +1,15 @@
 ﻿// <copyright file="RandomNoiseGenerator.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
 {
     using System;
     using System.Linq;
 
     using MathNet.Numerics.Distributions;
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.Random;
 
     /// <summary>
-    /// Generates and adds noise to the values of particles bases on a random number generator.
+    /// Generates and adds noise to the _values of particles bases on a random number generator.
     /// </summary>
     public class RandomNoiseGenerator : INoiseGenerator
     {
@@ -31,24 +28,21 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
             {
                 throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
             }
+
             this.rng = rng;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
-        /// </summary>
-        /// <param name="min">THe minimum amount of noise added to a particle</param>
-        /// <param name="max">The maximum amount of noise added to a particle</param>
-        /// <param name="particles">The particle to add noise to.</param>
+        /// <inheritdoc/>
         public void GenerateNoise(float min, float max, AbstractParticleController particles)
         {
             float[] noisearray = Enumerable.Repeat(0, particles.Count).Select(i => (float)(min + (this.rng.Sample() * (max - min)))).ToArray();
             particles.AddToValues(noisearray);
         }
 
+        /// <inheritdoc/>
         public void GenerateNoise(float percentage, AbstractParticleController particles)
         {
-            float noisesize = percentage * (particles.maxValue - particles.minValue);
+            float noisesize = percentage * (particles.MaxValue - particles.MinValue);
             this.GenerateNoise(-noisesize, noisesize, particles);
         }
     }

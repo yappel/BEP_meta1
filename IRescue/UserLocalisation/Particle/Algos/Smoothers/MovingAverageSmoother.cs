@@ -28,15 +28,17 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
             this.buffersize = buffersize;
         }
 
-        /// <summary>
-        /// Calculates the smoothed result.
-        /// </summary>
-        /// <param name="rawResult">The unsmoothed result.</param>
-        /// <param name="timeStamp">The timestamp of the (un)smoothed result.</param>
-        /// <returns>The smoothed result</returns>
+        /// <summary>Creates a new object that is a copy of the current instance.</summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public ISmoother Clone()
+        {
+            return new MovingAverageSmoother(this.buffersize);
+        }
+
+        /// <inheritdoc/>
         public Vector3 GetSmoothedResult(Vector3 rawResult, long timeStamp, Func<float[], float> averageFunction)
         {
-            this.buffer.Add(new Result { vector3 = rawResult, TimeStamp = timeStamp });
+            this.buffer.Add(new Result { Vector3 = rawResult, TimeStamp = timeStamp });
             List<Vector3> allResults = new List<Vector3>();
             List<int> toremove = new List<int>();
             foreach (Result result in this.buffer)
@@ -47,7 +49,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
                 }
                 else
                 {
-                    allResults.Add(result.vector3);
+                    allResults.Add(result.Vector3);
                 }
             }
 
@@ -57,17 +59,9 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
             }
 
             return new Vector3(
-                averageFunction(allResults.Select<Vector3, float>((v) => v.X).ToArray()),
-                averageFunction(allResults.Select<Vector3, float>((v) => v.Y).ToArray()),
-                averageFunction(allResults.Select<Vector3, float>((v) => v.Z).ToArray())
-                );
-        }
-
-        /// <summary>Creates a new object that is a copy of the current instance.</summary>
-        /// <returns>A new object that is a copy of this instance.</returns>
-        public ISmoother Clone()
-        {
-            return new MovingAverageSmoother(this.buffersize);
+                averageFunction(allResults.Select(v => v.X).ToArray()),
+                averageFunction(allResults.Select(v => v.Y).ToArray()),
+                averageFunction(allResults.Select(v => v.Z).ToArray()));
         }
     }
 }

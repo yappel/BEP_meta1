@@ -53,7 +53,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         private int classDefaultBufferSize = 10;
 
         /// <summary>
-        /// Setup the source to test and the default values.
+        /// Setup the source to test and the default _values.
         /// </summary>
         [SetUp]
         public void SetUp()

@@ -1,14 +1,12 @@
 ﻿// <copyright file="RandomParticleGenerator.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
     using System;
     using System.Linq;
 
     using MathNet.Numerics.Distributions;
-    using MathNet.Numerics.Random;
 
     /// <summary>
     /// A Particles generator that generates Particles using a random number generator
@@ -30,15 +28,11 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
             {
                 throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
             }
+
             this.rng = rng;
         }
 
-        /// <summary>
-        /// Generates a new set of Particles.
-        /// </summary>
-        /// <param name="amount"> The amount of Particles to generate for every dimension</param>
-        /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
-        /// <returns>A list of particle values</returns>
+        /// <inheritdoc/>
         public float[] Generate(int amount, float min, float max)
         {
             return Enumerable.Repeat(0, amount).Select(i => this.RandNum(min, max)).ToArray();

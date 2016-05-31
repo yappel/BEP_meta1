@@ -1,13 +1,10 @@
 ﻿// <copyright file="MultinomialResampler.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
 {
     using System;
     using System.Collections.Generic;
-
-    using MathNet.Numerics.LinearAlgebra;
 
     /// <summary>
     /// Resamples particles using the multinomial algorithm.
@@ -27,11 +24,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
             random = new Random();
         }
 
-        /// <summary>
-        /// Resamples Particles using a Multinomial algorithm
-        /// </summary>
-        /// <param name="particles">The Particles to resample</param>
-        /// <param name="weights">The Weights of the Particles</param>
+        /// <inheritdoc/>
         public void Resample(AbstractParticleController parCon)
         {
             parCon.NormalizeWeights();
@@ -46,9 +39,26 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
         }
 
         /// <summary>
+        /// Calculates the cumulative sum of the _values in a vector.
+        /// </summary>
+        /// <param name="list">The _values to calculate with.</param>
+        /// <returns>List with the cumulative sum values of the input list.</returns>
+        private static IList<float> CumSum(IList<float> list)
+        {
+            float[] output = new float[list.Count];
+            list.CopyTo(output, 0);
+            for (int i = 1; i < list.Count; i++)
+            {
+                output[i] = output[i - 1] + output[i];
+            }
+
+            return output;
+        }
+
+        /// <summary>
         /// Selects a list of indexes of the Particles that survived the resampling.
         /// </summary>
-        /// <param name="weights">The Weights of the Particles in a certain dimension</param>
+        /// <param name="particles">The Particles in a certain dimension</param>
         /// <returns>The list with indexes of the Particles that are chosen by the resample algorithm</returns>
         private static int[] Multinomial(AbstractParticleController particles)
         {
@@ -70,21 +80,6 @@ namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
             }
 
             return listout;
-        }
-
-        /// <summary>
-        /// Calculates the cumulative sum of the values in a vector.
-        /// </summary>
-        /// <param name="list">The values to calculate with.</param>
-        private static IList<float> CumSum(IList<float> list)
-        {
-            float[] output = new float[list.Count];
-            list.CopyTo(output, 0);
-            for (int i = 1; i < list.Count; i++)
-            {
-                output[i] = output[i - 1] + output[i];
-            }
-            return output;
         }
     }
 }

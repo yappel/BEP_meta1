@@ -19,6 +19,12 @@ namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
         /// <param name="particles">The particles to add the noise to.</param>
         void GenerateNoise(float min, float max, AbstractParticleController particles);
 
+        /// <summary>
+        /// Generates noise and adds it to the particles.
+        /// </summary>
+        /// <param name="percentage">The amount of noise to add to the particles.
+        ///  The maximum added noise is this number times the rangelength of possible values.</param>
+        /// <param name="particles">The particles to add the noise to.</param>
         void GenerateNoise(float percentage, AbstractParticleController particles);
     }
 }

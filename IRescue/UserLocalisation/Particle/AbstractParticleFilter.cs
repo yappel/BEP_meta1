@@ -51,7 +51,7 @@ namespace IRescue.UserLocalisation.Particle
         private readonly IResampler resampler;
 
         /// <summary>
-        /// Function that calculates the average value given a list of values.
+        /// Function that calculates the average value given a list of _values.
         /// </summary>
         private readonly Func<float[], float> averageCalculator;
 
@@ -62,7 +62,7 @@ namespace IRescue.UserLocalisation.Particle
         private readonly IExtrapolate iez = new FlexibleExtrapolate();
 
         /// <summary>
-        /// A percentage of the range of possible values to add as noise to the particles after the resampling step.
+        /// A percentage of the range of possible _values to add as noise to the particles after the resampling step.
         /// </summary>
         private readonly float resampleNoiseSize;
 
@@ -138,11 +138,11 @@ namespace IRescue.UserLocalisation.Particle
             // }
             this.Resample();
 
-            // Console.WriteLine($"Average particle values: {this.averageCalculator(this.particleControllerX.Values)} | {this.averageCalculator(this.particleControllerY.Values)} | {this.averageCalculator(this.particleControllerZ.Values)}");
+            // Console.WriteLine($"Average particle _values: {this.averageCalculator(this.particleControllerX.Values)} | {this.averageCalculator(this.particleControllerY.Values)} | {this.averageCalculator(this.particleControllerZ.Values)}");
             // this.Predict();
             this.Update();
 
-            // Console.WriteLine($"Weighted average values: {this.particleControllerX.WeightedAverage()} | {this.particleControllerY.WeightedAverage()} | {this.particleControllerZ.WeightedAverage()}");
+            // Console.WriteLine($"Weighted average _values: {this.particleControllerX.WeightedAverage()} | {this.particleControllerY.WeightedAverage()} | {this.particleControllerZ.WeightedAverage()}");
             return this.ProcessResults();
         }
 

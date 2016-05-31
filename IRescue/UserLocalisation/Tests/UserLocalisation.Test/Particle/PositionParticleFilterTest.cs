@@ -7,10 +7,6 @@ namespace IRescue.UserLocalisation.Particle
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Text;
-    using System.Threading;
-
-    using global::UserLocalisation.Test;
 
     using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
@@ -20,7 +16,6 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Sensors;
 
     using MathNet.Numerics.Distributions;
-    using MathNet.Numerics.Random;
 
     using Moq;
 
@@ -35,6 +30,7 @@ namespace IRescue.UserLocalisation.Particle
     public class PositionParticleFilterTest
     {
         private IDistribution disdist;
+
         private IContinuousDistribution disnoise;
 
         private Mock<IDisplacementSource> dissource;
@@ -47,6 +43,9 @@ namespace IRescue.UserLocalisation.Particle
 
         private Mock<IPositionSource> possource;
 
+        /// <summary>
+        /// Setup method.
+        /// </summary>
         [SetUp]
         public void Setup()
         {
@@ -69,7 +68,6 @@ namespace IRescue.UserLocalisation.Particle
                 fieldsize,
                 new MovingAverageSmoother(2000));
 
-
             this.posdist = new Normal(0.1);
             this.posnoise = new MathNet.Numerics.Distributions.Normal(0, 0.1);
             this.possource = new Mock<IPositionSource>();
@@ -81,27 +79,13 @@ namespace IRescue.UserLocalisation.Particle
             this.dissource = new Mock<IDisplacementSource>();
             this.dissource.Setup(foo => foo.GetDisplacement(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>(this.Dis);
             this.filter.AddDisplacementSource(this.dissource.Object);
-
-        }
-
-        private Measurement<Vector3> Dis2(long arg1, long arg2)
-        {
-            return new Measurement<Vector3>(new Vector3((float)this.disnoise.Sample(), (float)this.disnoise.Sample(), (float)this.disnoise.Sample()), arg2, this.disdist);
-        }
-
-        private List<Measurement<Vector3>> Pos2(long ts)
-        {
-            return new List<Measurement<Vector3>>()
-                       {
-                           new Measurement<Vector3>(new Vector3((float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample())), ts, this.posdist)
-                       };
         }
 
         /// <summary>
-        /// TODO TODO
+        /// Test the filter when the user is moving.
         /// </summary>
         [Test]
-        public void TestMethod()
+        public void TestMoving()
         {
             List<double> diffx = new List<double>();
             List<double> diffy = new List<double>();
@@ -124,11 +108,13 @@ namespace IRescue.UserLocalisation.Particle
             Assert.True(diffy.Min() > 5 * this.posnoise.Minimum);
             Assert.True(diffz.Max() < 5 * this.posnoise.Maximum);
             Assert.True(diffz.Min() > 5 * this.posnoise.Minimum);
-
         }
 
+        /// <summary>
+        /// Test the filter when the user is standing still.
+        /// </summary>
         [Test]
-        public void TestMethod2()
+        public void TestNoMove()
         {
             this.possource.Setup(foo => foo.GetPositionsClosestTo(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>((ts, range) => this.Pos2(ts));
             this.dissource.Setup(foo => foo.GetDisplacement(It.IsAny<long>(), It.IsAny<long>())).Returns<long, long>(this.Dis2);
@@ -140,9 +126,9 @@ namespace IRescue.UserLocalisation.Particle
             for (int ts = 1; ts < 10001; ts += 33)
             {
                 Vector3 res = this.filter.Calculate(ts);
-                diffx.Add((float)(res.X - 1));
-                diffy.Add((float)(res.Y - 1));
-                diffz.Add((float)(res.Z - 1));
+                diffx.Add(res.X - 1);
+                diffy.Add(res.Y - 1);
+                diffz.Add(res.Z - 1);
             }
 
             File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionX2.dat", diffx.Select(d => d.ToString()).ToArray());
@@ -166,7 +152,11 @@ namespace IRescue.UserLocalisation.Particle
                         (float)((this.Posz(tsto) - this.Posz(tsfrom)) + this.disnoise.Sample())),
                     tsto,
                     this.disdist);
+        }
 
+        private Measurement<Vector3> Dis2(long arg1, long arg2)
+        {
+            return new Measurement<Vector3>(new Vector3((float)this.disnoise.Sample(), (float)this.disnoise.Sample(), (float)this.disnoise.Sample()), arg2, this.disdist);
         }
 
         private List<Measurement<Vector3>> Pos(long ts)
@@ -175,11 +165,19 @@ namespace IRescue.UserLocalisation.Particle
                        {
                            new Measurement<Vector3>(
                                new Vector3(
-                               (float) (this.Posx(ts) + this.posnoise.Sample()),
-                               (float) (this.Posy(ts) + this.posnoise.Sample()),
-                               (float) (this.Posz(ts) + this.posnoise.Sample())),
+                               (float)(this.Posx(ts) + this.posnoise.Sample()),
+                               (float)(this.Posy(ts) + this.posnoise.Sample()),
+                               (float)(this.Posz(ts) + this.posnoise.Sample())),
                                ts,
                                this.posdist)
+                       };
+        }
+
+        private List<Measurement<Vector3>> Pos2(long ts)
+        {
+            return new List<Measurement<Vector3>>
+                       {
+                           new Measurement<Vector3>(new Vector3((float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample()), (float)(1 + this.posnoise.Sample())), ts, this.posdist)
                        };
         }
 

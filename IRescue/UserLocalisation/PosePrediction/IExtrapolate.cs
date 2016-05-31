@@ -14,8 +14,8 @@ namespace IRescue.UserLocalisation.PosePrediction
         /// <summary>
         /// Predicts the <see cref="Pose"/> at next timestamp.
         /// </summary>
-        /// <param name="timeStamp">The timestamp to predict the <see cref="Pose"/> at</param>
-        /// <returns>returns the position XYZ and orientation XYZ values in an array</returns>
+        /// <param name="x">The timestamp to predict the <see cref="Pose"/> at</param>
+        /// <returns>returns the position XYZ and orientation XYZ _values in an array</returns>
         double PredictValueAt(long x);
 
         /// <summary>

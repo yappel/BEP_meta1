@@ -61,7 +61,7 @@ namespace UserLocalisation.Test.Particle.NoiseGenerators
         }
 
         /// <summary>
-        /// Test if the particle values changed
+        /// Test if the particle _values changed
         /// </summary>
         [Test]
         public void TestIfNoiseIsAdded()
@@ -74,7 +74,7 @@ namespace UserLocalisation.Test.Particle.NoiseGenerators
         }
 
         /// <summary>
-        /// Test if the particle values changed
+        /// Test if the particle _values changed
         /// </summary>
         [Test]
         public void TestIfNoiseIsAdded2()
@@ -87,7 +87,7 @@ namespace UserLocalisation.Test.Particle.NoiseGenerators
         }
 
         /// <summary>
-        /// Test if the particle values changed
+        /// Test if the particle _values changed
         /// </summary>
         [Test]
         public void TestIfNoiseIsAdded3()
@@ -100,7 +100,7 @@ namespace UserLocalisation.Test.Particle.NoiseGenerators
         }
 
         /// <summary>
-        /// Test if the particle values changed
+        /// Test if the particle _values changed
         /// </summary>
         [Test]
         public void TestIfNoiseIsAdded4()

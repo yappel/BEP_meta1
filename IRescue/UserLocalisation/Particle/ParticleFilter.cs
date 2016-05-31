@@ -10,12 +10,25 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
 
+    /// <summary>
+    /// Determines the pose of the user at certain timestamp using the particle filter method.
+    /// </summary>
     public class ParticleFilter : IUserLocalizer, IPositionReceiver, IOrientationReceiver, IDisplacementReceiver
     {
         private PositionParticleFilter positionFilter;
 
         private OrientationParticleFilter orientationFilter;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
+        /// </summary>
+        /// <param name="noiseGenerator">See noiseGenerator argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="resampleNoiseSize">See resampleNoiseSize argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="resampler">See resampler argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="particleGenerator">See particleGenerator argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="particleAmount">See particleAmount argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="fieldSize">The dimensions of the area where the user can be.</param>
+        /// <param name="smoother">See smoother argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
         public ParticleFilter(int particleAmount, float resampleNoiseSize, FieldSize fieldSize, IParticleGenerator particleGenerator, IResampler resampler, INoiseGenerator noiseGenerator, ISmoother smoother)
         {
             this.positionFilter = new PositionParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, fieldSize, smoother);

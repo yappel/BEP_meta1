@@ -6,16 +6,17 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
     using System.Collections.Generic;
 
     /// <summary>
-    /// Interface for classes able to generate particles.
+    /// Interface for classes able to generate particles values.
     /// </summary>
     public interface IParticleGenerator
     {
         /// <summary>
         /// Generates a new set of Particles.
         /// </summary>
-        /// <param name="amount"> The amount of Particles to generate for every dimension</param>
-        /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
-        /// <returns>List with generated particle values</returns>
+        /// <param name="amount"> The amount of particles values to generate for every dimension</param>
+        /// <param name="min">The minimum value that the generated values can have.</param>
+        /// <param name="max">The maximum value that the generated values can have.</param>
+        /// <returns>List with generated particle _values</returns>
         float[] Generate(int amount, float min, float max);
     }
 }

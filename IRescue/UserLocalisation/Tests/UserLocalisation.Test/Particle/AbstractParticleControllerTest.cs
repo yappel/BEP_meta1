@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// <copyright file="AbstractParticleControllerTest.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
 
 namespace UserLocalisation.Test.Particle
 {
+    using System;
+    using System.Linq;
+
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 
@@ -12,7 +14,10 @@ namespace UserLocalisation.Test.Particle
 
     using NUnit.Framework;
 
-    class AbstractParticleControllerTest
+    /// <summary>
+    /// Tests for the particle controllers.
+    /// </summary>
+    public class AbstractParticleControllerTest
     {
         private LinearParticleController controller;
 
@@ -40,7 +45,7 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test adding values.
+        /// Test adding _values.
         /// </summary>
         [Test]
         public void TestAddingValues()
@@ -73,8 +78,6 @@ namespace UserLocalisation.Test.Particle
             Assert.Throws<ArgumentException>(() => this.controller.AddToValues(expected));
         }
 
-
-
         /// <summary>
         /// Test the if count is equal to particleamount.
         /// </summary>
@@ -98,7 +101,58 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test adding invalid values to set value.
+        /// Test getting the weight.
+        /// </summary>
+        [Test]
+        public void TestGettingWeightAtIndex()
+        {
+            Assert.AreEqual(1f / this.particleAmount, this.controller.GetWeightAt(0));
+            float[] newweights = new float[this.controller.Count];
+            for (int i = 0; i < this.controller.Count; i++)
+            {
+                newweights[i] = i;
+            }
+
+            this.controller.Weights = newweights;
+            Assert.AreEqual(this.particleAmount - 1, this.controller.GetWeightAt(this.particleAmount - 1));
+        }
+
+        /// <summary>
+        /// Test multiplying weights.
+        /// </summary>
+        [Test]
+        public void TestMultiplyWeights()
+        {
+            Assert.AreEqual(1f / this.particleAmount, this.controller.GetWeightAt(0));
+            this.controller.MultiplyWeightAt(0, 2);
+            Assert.AreEqual(2f / this.particleAmount, this.controller.GetWeightAt(0));
+            this.controller.MultiplyWeightAt(0, 0);
+            Assert.AreEqual(0f, this.controller.GetWeightAt(0));
+        }
+
+        /// <summary>
+        /// Test normalizing weights.
+        /// </summary>
+        [Test]
+        public void TestNormalizingWeights()
+        {
+            this.controller.Weights = Enumerable.Repeat(10f, this.particleAmount).ToArray();
+            this.controller.NormalizeWeights();
+            Assert.AreEqual(1, this.controller.Weights.Sum(), float.Epsilon);
+        }
+
+        /// <summary>
+        /// Test when normalizing weights is not possible.
+        /// </summary>
+        [Test]
+        public void TestNormalizingWeightsNotPossible()
+        {
+            this.controller.Weights = Enumerable.Repeat(0f, this.particleAmount).ToArray();
+            Assert.Throws<DivideByZeroException>(() => this.controller.NormalizeWeights());
+        }
+
+        /// <summary>
+        /// Test adding invalid _values to set value.
         /// </summary>
         [Test]
         public void TestSettingInvalidValue()
@@ -122,7 +176,7 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test setting values.
+        /// Test setting _values.
         /// </summary>
         [Test]
         public void TestSettingValues()
@@ -134,7 +188,7 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test adding wrong length of array of values.
+        /// Test adding wrong length of array of _values.
         /// </summary>
         [Test]
         public void TestSettingValuesWrongLength()
@@ -143,7 +197,7 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test when adding values outside minmax range.
+        /// Test when adding _values outside minmax range.
         /// </summary>
         [Test]
         public void TestSettingValuesWrongValues()
@@ -152,28 +206,8 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test if the inital values are correct.
+        /// Test setting weights.
         /// </summary>
-        [Test]
-        public void TestValues()
-        {
-            Assert.AreEqual(this.particleGenerator.Object.Generate(this.particleAmount, this.minValue, this.maxValue), this.controller.Values);
-        }
-
-        [Test]
-        public void TestGettingWeightAtIndex()
-        {
-            Assert.AreEqual(1f / this.particleAmount, this.controller.GetWeightAt(0));
-            float[] newweights = new float[this.controller.Count];
-            for (int i = 0; i < this.controller.Count; i++)
-            {
-                newweights[i] = i;
-            }
-
-            this.controller.Weights = newweights;
-            Assert.AreEqual(this.particleAmount - 1, this.controller.GetWeightAt(this.particleAmount - 1));
-        }
-
         [Test]
         public void TestSettingWeightAtIndex()
         {
@@ -183,29 +217,13 @@ namespace UserLocalisation.Test.Particle
             Assert.AreEqual(this.particleAmount, this.controller.GetWeightAt(0));
         }
 
+        /// <summary>
+        /// Test if the inital _values are correct.
+        /// </summary>
         [Test]
-        public void TestMultiplyWeights()
+        public void TestValues()
         {
-            Assert.AreEqual(1f / this.particleAmount, this.controller.GetWeightAt(0));
-            this.controller.MultiplyWeightAt(0, 2);
-            Assert.AreEqual(2f / this.particleAmount, this.controller.GetWeightAt(0));
-            this.controller.MultiplyWeightAt(0, 0);
-            Assert.AreEqual(0f, this.controller.GetWeightAt(0));
-        }
-
-        [Test]
-        public void TestNormalizingWeights()
-        {
-            this.controller.Weights = Enumerable.Repeat(10f, this.particleAmount).ToArray();
-            this.controller.NormalizeWeights();
-            Assert.AreEqual(1, this.controller.Weights.Sum(), float.Epsilon);
-        }
-
-        [Test]
-        public void TestNormalizingWeightsNotPossible()
-        {
-            this.controller.Weights = Enumerable.Repeat(0f, this.particleAmount).ToArray();
-            Assert.Throws<DivideByZeroException>(() => this.controller.NormalizeWeights());
+            Assert.AreEqual(this.particleGenerator.Object.Generate(this.particleAmount, this.minValue, this.maxValue), this.controller.Values);
         }
     }
 }

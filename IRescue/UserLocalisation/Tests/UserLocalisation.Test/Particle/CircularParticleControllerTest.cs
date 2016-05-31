@@ -39,12 +39,12 @@ namespace UserLocalisation.Test.Particle
 
             this.particleAmount = 5;
             this.controller = new CircularParticleController(this.particleGenerator.Object, this.particleAmount);
-            this.minValue = this.controller.minValue;
-            this.maxValue = this.controller.maxValue;
+            this.minValue = this.controller.MinValue;
+            this.maxValue = this.controller.MaxValue;
         }
 
         /// <summary>
-        /// Test adding values.
+        /// Test adding _values.
         /// </summary>
         [Test]
         public void TestAddingValues()
@@ -90,7 +90,7 @@ namespace UserLocalisation.Test.Particle
         }
 
         /// <summary>
-        /// Test getting the distance to the values.
+        /// Test getting the distance to the _values.
         /// </summary>
         [Test]
         public void TestDistanceToValues()
@@ -183,7 +183,6 @@ namespace UserLocalisation.Test.Particle
             Mock<IParticleGenerator> pargen = new Mock<IParticleGenerator>();
             pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
             CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
-
 
             Assert.AreEqual(float.NaN, cont.WeightedAverage());
         }

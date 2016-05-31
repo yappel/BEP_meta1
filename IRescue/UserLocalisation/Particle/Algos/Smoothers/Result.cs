@@ -14,7 +14,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         /// <summary>
         /// The pose.
         /// </summary>
-        internal Vector3 vector3;
+        internal Vector3 Vector3;
 
         /// <summary>
         /// The time stamp of the pose.

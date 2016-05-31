@@ -5,9 +5,11 @@ namespace IRescue.UserLocalisation
 {
     using IRescue.Core.DataTypes;
 
-    interface IUserLocalizer
+    /// <summary>
+    /// Determines the pose of the user at a certain timestamp.
+    /// </summary>
+    public interface IUserLocalizer
     {
-
         /// <summary>
         ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
         /// </summary>

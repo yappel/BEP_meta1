@@ -3,7 +3,6 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,26 +13,55 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
 
+    /// <summary>
+    /// Particle filter that calculates the cartesian x y z coordinates of the user.
+    /// </summary>
     internal class PositionParticleFilter : AbstractParticleFilter, IPositionReceiver, IDisplacementReceiver
     {
-        private List<IDisplacementSource> dislocationSources;
+        /// <summary>
+        /// List containing all tho <see cref="IDisplacementSource"/> sources.
+        /// </summary>
+        private readonly List<IDisplacementSource> displacementSources;
 
-        private List<IPositionSource> positionSources;
+        /// <summary>
+        /// List containing all tho <see cref="IPositionSource"/> sources.
+        /// </summary>
+        private readonly List<IPositionSource> positionSources;
 
+        /// <summary>
+        /// The result of the previous calculation.
+        /// </summary>
         private Vector3 previousResult;
 
-        public PositionParticleFilter(INoiseGenerator noiseGenerator, float resampleNoiseSize, IResampler resampler, IParticleGenerator particleGenerator, int particleAmount, FieldSize fieldSize, ISmoother smoother)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PositionParticleFilter"/> class.
+        /// </summary>
+        /// <param name="noiseGenerator">See noiseGenerator argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="resampleNoiseSize">See resampleNoiseSize argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="resampler">See resampler argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="particleGenerator">See particleGenerator argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="particleAmount">See particleAmount argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        /// <param name="fieldSize">The dimensions of the area where the user can be.</param>
+        /// <param name="smoother">See smoother argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
+        public PositionParticleFilter(
+            INoiseGenerator noiseGenerator,
+            float resampleNoiseSize,
+            IResampler resampler,
+            IParticleGenerator particleGenerator,
+            int particleAmount,
+            FieldSize fieldSize,
+            ISmoother smoother)
             : base(
-                  resampler,
-                  noiseGenerator,
-                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Xmin, fieldSize.Xmax),
-                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Ymin, fieldSize.Ymax),
-                  new LinearParticleController(particleGenerator, particleAmount, fieldSize.Zmin, fieldSize.Zmax),
-                  resampleNoiseSize,
-                  smoother,
-                  Enumerable.Average)
+                resampler,
+                noiseGenerator,
+                new LinearParticleController(particleGenerator, particleAmount, fieldSize.Xmin, fieldSize.Xmax),
+                new LinearParticleController(particleGenerator, particleAmount, fieldSize.Ymin, fieldSize.Ymax),
+                new LinearParticleController(particleGenerator, particleAmount, fieldSize.Zmin, fieldSize.Zmax),
+                resampleNoiseSize,
+                smoother,
+                Enumerable.Average)
         {
-            this.dislocationSources = new List<IDisplacementSource>();
+            this.displacementSources = new List<IDisplacementSource>();
             this.positionSources = new List<IPositionSource>();
         }
 
@@ -43,7 +71,7 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="source">The source from which data can be extracted.</param>
         public void AddDisplacementSource(IDisplacementSource source)
         {
-            this.dislocationSources.Add(source);
+            this.displacementSources.Add(source);
         }
 
         /// <summary>
@@ -55,6 +83,7 @@ namespace IRescue.UserLocalisation.Particle
             this.positionSources.Add(source);
         }
 
+        /// <inheritdoc/>
         protected override Vector3 ProcessResults()
         {
             Vector3 result = base.ProcessResults();
@@ -62,6 +91,7 @@ namespace IRescue.UserLocalisation.Particle
             return result;
         }
 
+        /// <inheritdoc/>
         protected override void RetrieveMeasurements()
         {
             this.Measurements.Clear();
@@ -72,9 +102,13 @@ namespace IRescue.UserLocalisation.Particle
             }
         }
 
+        /// <summary>
+        /// Check if there are dislocation measurements.
+        /// If there are convert them to position measurements and add them to the list of measurements.
+        /// </summary>
         private void CheckDislocationSources()
         {
-            foreach (IDisplacementSource source in this.dislocationSources)
+            foreach (IDisplacementSource source in this.displacementSources)
             {
                 Measurement<Vector3> meas = source.GetDisplacement(this.PreviousTimeStamp, this.CurrentTimeStamp);
                 meas.Data.Add(this.previousResult, meas.Data);
@@ -82,6 +116,9 @@ namespace IRescue.UserLocalisation.Particle
             }
         }
 
+        /// <summary>
+        /// Check if there are position measurements and add them to the list if there are.
+        /// </summary>
         private void CheckPositionSources()
         {
             foreach (IPositionSource source in this.positionSources)

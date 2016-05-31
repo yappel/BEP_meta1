@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
+// set of attributes. Change these attribute _values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IRescue-userLocalisation")]
 [assembly: AssemblyDescription("")]
@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("fe8198e9-1547-4d64-9d89-d63443d7736c")]
 
-// Version information for an assembly consists of the following four values:
+// Version information for an assembly consists of the following four _values:
 //
 //      Major Version
 //      Minor Version 

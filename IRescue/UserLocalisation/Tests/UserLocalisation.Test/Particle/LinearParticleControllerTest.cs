@@ -42,10 +42,8 @@ namespace UserLocalisation.Test.Particle
             this.controller = new LinearParticleController(this.particleGenerator.Object, this.particleAmount, this.minValue, this.maxValue);
         }
 
-
-
         /// <summary>
-        /// Test getting the distance to the values.
+        /// Test getting the distance to the _values.
         /// </summary>
         [Test]
         public void TestDistanceToValues()
@@ -66,8 +64,6 @@ namespace UserLocalisation.Test.Particle
             this.controller.Values = newval;
             Assert.AreEqual(expected, this.controller.DistanceToValue(x));
         }
-
-
 
         /// <summary>
         /// Test getting the weighted average.

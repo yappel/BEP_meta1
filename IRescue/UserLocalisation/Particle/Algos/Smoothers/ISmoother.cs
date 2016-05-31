@@ -19,6 +19,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         /// </summary>
         /// <param name="rawResult">The unsmoothed result.</param>
         /// <param name="timeStamp">The timestamp of the (un)smoothed result.</param>
+        /// <param name="averageFunction">Function that calculates the avarage value</param>
         /// <returns>The smoothed result</returns>
         Vector3 GetSmoothedResult(Vector3 rawResult, long timeStamp, Func<float[], float> averageFunction);
 

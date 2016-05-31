@@ -11,7 +11,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
     using Core.Utils;
 
     /// <summary>
-    ///     The IMU Source provides data from sensors in an IMU and computes values which can be derived from this.
+    ///     The IMU Source provides data from sensors in an IMU and computes _values which can be derived from this.
     ///     Implements <see cref="IAccelerationSource" />, <see cref="IDisplacementSource" />, <see cref="IVelocitySource" />
     ///     and <see cref="IOrientationSource" /> to provide data on acceleration, displacement, orientation and velocity.
     /// </summary>

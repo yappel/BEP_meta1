@@ -1,15 +1,13 @@
-﻿// <copyright file="RandomGeneratorTest.cs" company="Delft University of Technology">
+﻿// <copyright file="RandomParticleGeneratorTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle
 {
     using System;
-    using System.Linq;
-    using Algos.ParticleGenerators;
+
+    using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 
     using MathNet.Numerics.Distributions;
-    using MathNet.Numerics.Random;
 
     using Moq;
 
@@ -20,14 +18,15 @@ namespace IRescue.UserLocalisation.Particle
     /// </summary>
     public class RandomParticleGeneratorTest
     {
+        private RandomParticleGenerator rng;
 
         private Mock<IContinuousDistribution> rngsource;
 
         private double sample = 1f;
 
-        private RandomParticleGenerator rng;
-
-
+        /// <summary>
+        /// Setup method.
+        /// </summary>
         [SetUp]
         public void SetUp()
         {
@@ -40,7 +39,18 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Test if the max and min values are actually the max and min values generated.
+        /// Test if the length of the output is correct.
+        /// </summary>
+        [Test]
+        public void TestOutputLength()
+        {
+            int particleamount = 30;
+            float[] list = this.rng.Generate(particleamount, 0, 10);
+            Assert.AreEqual(particleamount, list.Length);
+        }
+
+        /// <summary>
+        /// Test if the max and min _values are actually the max and min _values generated.
         /// </summary>
         [Test]
         public void TestSpread()
@@ -53,17 +63,6 @@ namespace IRescue.UserLocalisation.Particle
             this.rngsource.Setup(foo => foo.Sample()).Returns(1);
             list = this.rng.Generate(1, min, max);
             Assert.AreEqual(max, list[0]);
-        }
-
-        /// <summary>
-        /// Test if the length of the output is correct.
-        /// </summary>
-        [Test]
-        public void TestOutputLength()
-        {
-            int particleamount = 30;
-            float[] list = this.rng.Generate(particleamount, 0, 10);
-            Assert.AreEqual(particleamount, list.Length);
         }
 
         /// <summary>

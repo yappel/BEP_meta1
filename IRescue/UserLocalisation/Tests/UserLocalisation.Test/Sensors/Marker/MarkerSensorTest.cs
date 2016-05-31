@@ -294,7 +294,7 @@ namespace UserLocalisation.Test.Sensors.Marker
 
         /// <summary>
         /// Test testing on several inputs to assure that the correct world position and orientation are computed
-        /// from the relative marker position and orientation. These values are more complex.
+        /// from the relative marker position and orientation. These _values are more complex.
         /// </summary>
         [Test]
         public void CombinedPositionAndOrientationInOutTest()
@@ -342,7 +342,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         /// <summary>
         /// Test that rotations are equal. As rotations can be achieved by different rotations in
         /// different orders around different axes the method creates a rotation matrix for the expected
-        /// and actual values and compares the result of a multiplication with a reference vector. When
+        /// and actual _values and compares the result of a multiplication with a reference vector. When
         /// the output of the multiplication is the same the orientation is also similar.
         /// </summary>
         /// <param name="expected">The expected rotation.</param>

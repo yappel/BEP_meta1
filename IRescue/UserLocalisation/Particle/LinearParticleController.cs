@@ -9,12 +9,12 @@ namespace IRescue.UserLocalisation.Particle
     using MathNet.Numerics.LinearAlgebra.Single;
 
     /// <summary>
-    /// Controller for particles with linear values.
+    /// Controller for particles with linear _values.
     /// </summary>
     internal class LinearParticleController : AbstractParticleController
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IRescue.UserLocalisation.Particle.CircularParticleController"/> class.
+        /// Initializes a new instance of the <see cref="LinearParticleController"/> class.
         /// </summary>
         /// <param name="particleGenerator">The class used to generate new particles</param>
         /// <param name="particleAmount">The amount of particles</param>
@@ -32,13 +32,13 @@ namespace IRescue.UserLocalisation.Particle
         /// <returns>The number that needs to be added to the value of a particle to get the parameter value</returns>
         public override float[] DistanceToValue(float othervalue)
         {
-            Vector<float> res = new DenseVector(this.values.Count);
-            this.values.Multiply(-1).Add(othervalue, res);
+            Vector<float> res = new DenseVector(this.ValuesVector.Count);
+            this.ValuesVector.Multiply(-1).Add(othervalue, res);
             return res.ToArray();
         }
 
         /// <summary>
-        /// Calculates the weighted average based on the current particle values and corresponding weights.
+        /// Calculates the weighted average based on the current particle _values and corresponding weights.
         /// </summary>
         /// <returns>The weighted average weights of the particles.</returns>
         public override float WeightedAverage()
@@ -49,8 +49,8 @@ namespace IRescue.UserLocalisation.Particle
             }
 
             Vector<float> res = new DenseVector(this.Count);
-            this.values.PointwiseMultiply(this.weights, res);
-            return res.Sum() / this.weights.Sum();
+            this.ValuesVector.PointwiseMultiply(this.WeightsVector, res);
+            return res.Sum() / this.WeightsVector.Sum();
         }
     }
 }
