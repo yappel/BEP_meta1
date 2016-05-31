@@ -3,8 +3,6 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
-    using System.Collections.Generic;
-
     /// <summary>
     /// Interface for classes able to generate particles values.
     /// </summary>

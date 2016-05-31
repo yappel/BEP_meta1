@@ -5,7 +5,6 @@
 namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
 {
     using System;
-    using System.Collections.Generic;
 
     using IRescue.Core.DataTypes;
 

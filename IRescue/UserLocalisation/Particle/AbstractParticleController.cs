@@ -163,13 +163,13 @@ namespace IRescue.UserLocalisation.Particle
         public void NormalizeWeights()
         {
             float sum = this.WeightsVector.Sum();
-            if (sum > float.Epsilon)
+            if (sum < float.Epsilon)
             {
-                this.WeightsVector.Divide(sum, this.WeightsVector);
+                throw new DivideByZeroException("Cant normalize the weights when the sum of the weights is 0");
             }
             else
             {
-                throw new DivideByZeroException("Cant normalize the weights when the sum of the weights is 0");
+                this.WeightsVector.Divide(sum, this.WeightsVector);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿// <copyright file="RandomParticleGeneratorTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle.ParticleGenerators
 {
     using System;
 

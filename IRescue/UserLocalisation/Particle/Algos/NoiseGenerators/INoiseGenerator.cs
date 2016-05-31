@@ -4,8 +4,6 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
 {
-    using MathNet.Numerics.LinearAlgebra;
-
     /// <summary>
     /// Generates noise within a range.
     /// </summary>

@@ -95,6 +95,7 @@
     <Compile Include="Sensors\Marker\MarkerSensorTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <AdditionalFiles Include="..\..\..\stylecop.json" />
     <None Include="Resources\RealMarkerOriData_Expected_9_10_3.dat" />

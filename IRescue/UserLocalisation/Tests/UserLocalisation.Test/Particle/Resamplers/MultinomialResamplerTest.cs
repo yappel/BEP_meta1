@@ -1,10 +1,11 @@
 ﻿// <copyright file="MultinomialResamplerTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle.Resamplers
 {
     using System.Collections.Generic;
 
+    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
 

@@ -11,6 +11,7 @@ namespace IRescue.UserLocalisation.Particle
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
     using IRescue.UserLocalisation.Particle.Algos.Smoothers;
+    using IRescue.UserLocalisation.PosePrediction;
     using IRescue.UserLocalisation.Sensors;
 
     /// <summary>
@@ -22,6 +23,21 @@ namespace IRescue.UserLocalisation.Particle
         /// List containing all tho <see cref="IDisplacementSource"/> sources.
         /// </summary>
         private readonly List<IDisplacementSource> displacementSources;
+
+        /// <summary>
+        /// The algorithm used for the predict step in the x dimension.
+        /// </summary>
+        private readonly IExtrapolate iex;
+
+        /// <summary>
+        /// The algorithm used for the predict step in the x dimension.
+        /// </summary>
+        private readonly IExtrapolate iey;
+
+        /// <summary>
+        /// The algorithm used for the predict step in the x dimension.
+        /// </summary>
+        private readonly IExtrapolate iez;
 
         /// <summary>
         /// List containing all tho <see cref="IPositionSource"/> sources.
@@ -63,6 +79,9 @@ namespace IRescue.UserLocalisation.Particle
         {
             this.displacementSources = new List<IDisplacementSource>();
             this.positionSources = new List<IPositionSource>();
+            this.iex = new LinearRegression();
+            this.iey = new LinearRegression();
+            this.iez = new LinearRegression();
         }
 
         /// <summary>
@@ -84,10 +103,26 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <inheritdoc/>
+        protected override void Predict()
+        {
+            if (this.PreviousTimeStamp < 0)
+            {
+                return;
+            }
+
+            this.Predict(this.ParticleControllerX, this.iex);
+            this.Predict(this.ParticleControllerY, this.iey);
+            this.Predict(this.ParticleControllerZ, this.iez);
+        }
+
+        /// <inheritdoc/>
         protected override Vector3 ProcessResults()
         {
             Vector3 result = base.ProcessResults();
             this.previousResult = result;
+            this.iex.AddData(this.CurrentTimeStamp, result.X);
+            this.iey.AddData(this.CurrentTimeStamp, result.Y);
+            this.iez.AddData(this.CurrentTimeStamp, result.Z);
             return result;
         }
 
@@ -125,6 +160,17 @@ namespace IRescue.UserLocalisation.Particle
             {
                 this.Measurements.AddRange(source.GetPositionsClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
             }
+        }
+
+        /// <summary>
+        /// Predicts the value for the current timestamp and move the particles.
+        /// </summary>
+        /// <param name="cont">The dimension to predict in.</param>
+        /// <param name="ie">The prediction algorithm to use.</param>
+        private void Predict(AbstractParticleController cont, IExtrapolate ie)
+        {
+            float prediction = (float)ie.PredictChange(this.PreviousTimeStamp, this.CurrentTimeStamp);
+            cont.AddToValues(prediction);
         }
     }
 }

@@ -4,6 +4,7 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;

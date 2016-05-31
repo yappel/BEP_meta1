@@ -1,7 +1,7 @@
 ﻿// <copyright file="PositionParticleFilterTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +9,7 @@ namespace IRescue.UserLocalisation.Particle
     using System.Linq;
 
     using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
@@ -25,7 +26,7 @@ namespace IRescue.UserLocalisation.Particle
     using Normal = IRescue.Core.Distributions.Normal;
 
     /// <summary>
-    /// TODO TODO
+    /// Tests for the particle filter.
     /// </summary>
     public class PositionParticleFilterTest
     {
@@ -56,7 +57,7 @@ namespace IRescue.UserLocalisation.Particle
                 Xmin = 0,
                 Ymin = 0,
                 Zmax = 4,
-                Zmin = 0
+                Zmin = -4
             };
 
             this.filter = new PositionParticleFilter(
@@ -66,7 +67,7 @@ namespace IRescue.UserLocalisation.Particle
                 new RandomParticleGenerator(new ContinuousUniform()),
                 200,
                 fieldsize,
-                new MovingAverageSmoother(2000));
+                new MovingAverageSmoother(500));
 
             this.posdist = new Normal(0.1);
             this.posnoise = new MathNet.Numerics.Distributions.Normal(0, 0.1);
@@ -97,6 +98,9 @@ namespace IRescue.UserLocalisation.Particle
                 diffx.Add((float)(res.X - this.Posx(ts)));
                 diffy.Add((float)(res.Y - this.Posy(ts)));
                 diffz.Add((float)(res.Z - this.Posz(ts)));
+
+                Vector3 meas = this.Dis(ts - 33, ts).Data;
+                Console.WriteLine($"{meas.X},{meas.Y},{meas.Z}");
             }
 
             File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionX.dat", diffx.Select(d => d.ToString()).ToArray());
@@ -183,17 +187,17 @@ namespace IRescue.UserLocalisation.Particle
 
         private double Posx(long ts)
         {
-            return Math.Sin(ts / 10000d) + 2;
+            return Math.Sin((Math.PI * ts) / 10000d) + 2;
         }
 
         private double Posy(long ts)
         {
-            return (0.1 * Math.Sin(ts / 1000d)) + 1.8f;
+            return (0.1 * Math.Sin((Math.PI * ts) / 1000d)) + 1.8f;
         }
 
         private double Posz(long ts)
         {
-            return (float)Math.Cos(ts / 10000d) + 2;
+            return (float)(3 * Math.Cos((Math.PI * ts) / 10000d));
         }
     }
 }

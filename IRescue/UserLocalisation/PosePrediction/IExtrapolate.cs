@@ -7,24 +7,30 @@ namespace IRescue.UserLocalisation.PosePrediction
     using Core.DataTypes;
 
     /// <summary>
-    /// Predicts the <see cref="Pose"/> at a certain timestamp
+    /// Extrapolates values.
     /// </summary>
     public interface IExtrapolate
     {
         /// <summary>
-        /// Predicts the <see cref="Pose"/> at next timestamp.
+        /// Predict the value at timestamp x using extrapolation.
         /// </summary>
-        /// <param name="x">The timestamp to predict the <see cref="Pose"/> at</param>
-        /// <returns>returns the position XYZ and orientation XYZ _values in an array</returns>
+        /// <param name="x">The x to predict y at.</param>
+        /// <returns>The predicted y.</returns>
         double PredictValueAt(long x);
 
         /// <summary>
-        /// Tells the predictor what the pose at was at a certain time stamp.
+        ///  Add data to the buffer that can be used for the extrapolation.
         /// </summary>
-        /// <param name="timeStamp">The time stamp of the given pose</param>
-        /// <param name="pose">The given pose</param>
+        /// <param name="x">The x coordinate.</param>
+        /// <param name="y">The y coordinate.</param>
         void AddData(long x, double y);
 
+        /// <summary>
+        /// Predict the difference in y values between to x values.
+        /// </summary>
+        /// <param name="xfrom">The first x coordinate</param>
+        /// <param name="xto">The second x coordinate</param>
+        /// <returns>The difference in y coordinates between the two x coordinates.</returns>
         double PredictChange(long xfrom, long xto);
     }
 }

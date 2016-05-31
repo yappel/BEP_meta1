@@ -1,7 +1,7 @@
 ﻿// <copyright file="OrientationParticleFilterTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle
 {
     using System;
     using System.Collections.Generic;
@@ -10,6 +10,7 @@ namespace IRescue.UserLocalisation.Particle
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Utils;
+    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
@@ -80,6 +81,7 @@ namespace IRescue.UserLocalisation.Particle
                 diffx.Add((float)AngleMath.SmallesAngle(res.X, (float)this.OriX(ts)));
                 diffy.Add((float)AngleMath.SmallesAngle(res.Y, (float)this.Oriy(ts)));
                 diffz.Add((float)AngleMath.SmallesAngle(res.Z, (float)this.Oriz(ts)));
+                Console.WriteLine($"{this.OriX(ts)}, {this.Oriy(ts)},{this.Oriz(ts)}, {res.X},{res.Y},{res.Z}");
             }
 
             File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationX.dat", diffx.Select(d => d.ToString()).ToArray());

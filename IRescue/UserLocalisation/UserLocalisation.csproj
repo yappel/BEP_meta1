@@ -78,7 +78,7 @@
     <Compile Include="Particle\Algos\Smoothers\MovingAverageSmoother.cs" />
     <Compile Include="Particle\Algos\Smoothers\Result.cs" />
     <Compile Include="Particle\ParticleFilter.cs" />
-    <Compile Include="PosePrediction\FlexibleExtrapolate.cs" />
+    <Compile Include="PosePrediction\LinearRegression.cs" />
     <Compile Include="PosePrediction\IExtrapolate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IAccelerationReceiver.cs" />

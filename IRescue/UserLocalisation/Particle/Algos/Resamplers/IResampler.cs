@@ -4,10 +4,6 @@
 
 namespace IRescue.UserLocalisation.Particle.Algos.Resamplers
 {
-    using System.Collections.Generic;
-
-    using MathNet.Numerics.LinearAlgebra;
-
     /// <summary>
     /// Interface for all particle resample classes.
     /// </summary>
