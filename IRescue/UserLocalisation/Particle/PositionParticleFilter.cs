@@ -64,7 +64,7 @@ namespace IRescue.UserLocalisation.Particle
 
         protected override void RetrieveMeasurements()
         {
-            this.measurements.Clear();
+            this.Measurements.Clear();
             this.CheckPositionSources();
             if (this.previousResult != null)
             {
@@ -76,9 +76,9 @@ namespace IRescue.UserLocalisation.Particle
         {
             foreach (IDisplacementSource source in this.dislocationSources)
             {
-                Measurement<Vector3> meas = source.GetDisplacement(this.previousTimeStamp, this.currentTimeStamp);
+                Measurement<Vector3> meas = source.GetDisplacement(this.PreviousTimeStamp, this.CurrentTimeStamp);
                 meas.Data.Add(this.previousResult, meas.Data);
-                this.measurements.Add(meas);
+                this.Measurements.Add(meas);
             }
         }
 
@@ -86,7 +86,7 @@ namespace IRescue.UserLocalisation.Particle
         {
             foreach (IPositionSource source in this.positionSources)
             {
-                this.measurements.AddRange(source.GetPositionsClosestTo(this.currentTimeStamp, this.currentTimeStamp - this.previousTimeStamp));
+                this.Measurements.AddRange(source.GetPositionsClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
             }
         }
     }
