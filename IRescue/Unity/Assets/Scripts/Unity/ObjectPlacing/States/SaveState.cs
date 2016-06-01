@@ -93,7 +93,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             writer.WriteStartElement("objects");
             foreach (BuildingPlane building in GameObject.FindObjectsOfType<BuildingPlane>())
             {
-                this.WriteObject(writer, "Objects/DefaultObject/" + building.name.Replace("(Clone)", string.Empty).Trim(), building.transform.localPosition, building.transform.localEulerAngles, building.transform.localScale);
+                this.WriteObject(writer, "Objects/" + building.name.Replace("(Clone)", string.Empty).Trim(), building.transform.localPosition, building.transform.localEulerAngles, building.transform.localScale);
             }
 
             writer.WriteEndElement();

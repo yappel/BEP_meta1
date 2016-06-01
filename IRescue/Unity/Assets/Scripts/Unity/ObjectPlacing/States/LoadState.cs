@@ -135,6 +135,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 GameObject newObject = UnityEngine.Object.Instantiate<GameObject>(Resources.Load<GameObject>(node.SelectSingleNode("path").InnerText));
                 newObject.AddComponent<MetaBody>();
+                newObject.AddComponent<BuildingPlane>();
                 newObject.transform.parent = parent;
                 newObject.transform.localPosition = this.ParseXmlVector(node.SelectSingleNode("position"));
                 newObject.transform.localEulerAngles = this.ParseXmlVector(node.SelectSingleNode("orientation"));
