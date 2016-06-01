@@ -39,6 +39,21 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         public Vector3 GetSmoothedResult(Vector3 rawResult, long timeStamp, Func<float[], float> averageFunction)
         {
             this.buffer.Add(new Result { Vector3 = rawResult, TimeStamp = timeStamp });
+            List<Vector3> allResults = this.GetResults(timeStamp);
+
+            return new Vector3(
+                averageFunction(allResults.Select(v => v.X).ToArray()),
+                averageFunction(allResults.Select(v => v.Y).ToArray()),
+                averageFunction(allResults.Select(v => v.Z).ToArray()));
+        }
+
+        /// <summary>
+        /// Removes exess values out the buffer and return a list of all vectors still in the buffer.
+        /// </summary>
+        /// <param name="timeStamp">The timestamp of the last item of the set of results to calculate the average of.</param>
+        /// <returns>List of all vectors in the buffer.</returns>
+        private List<Vector3> GetResults(long timeStamp)
+        {
             List<Vector3> allResults = new List<Vector3>();
             List<int> toremove = new List<int>();
             foreach (Result result in this.buffer)
@@ -53,15 +68,20 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
                 }
             }
 
+            this.RemoveFromBuffer(toremove);
+            return allResults;
+        }
+
+        /// <summary>
+        /// Removes items from the buffer.
+        /// </summary>
+        /// <param name="toremove">Indexes of the items to remove.</param>
+        private void RemoveFromBuffer(IList<int> toremove)
+        {
             for (int index = 0; index < toremove.Count; index++)
             {
                 this.buffer.RemoveAt(toremove[index]);
             }
-
-            return new Vector3(
-                averageFunction(allResults.Select(v => v.X).ToArray()),
-                averageFunction(allResults.Select(v => v.Y).ToArray()),
-                averageFunction(allResults.Select(v => v.Z).ToArray()));
         }
     }
 }

@@ -155,7 +155,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
-            for (int i = 0; i < this.orientations.Length; i++)
+            for (int i = 0; i < this.Measurements; i++)
             {
                 Measurement<Vector3> measurement = this.orientations[i];
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
@@ -223,7 +223,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
-            for (int i = 0; i < this.positions.Length; i++)
+            for (int i = 0; i < this.Measurements; i++)
             {
                 Measurement<Vector3> measurement = this.positions[i];
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);

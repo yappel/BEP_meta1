@@ -30,6 +30,8 @@ namespace UserLocalisation.Test.Particle
     /// </summary>
     public class ParticleFilterTest
     {
+        private bool writetofile;
+
         /// <summary>
         /// Test if data generated with the Meta1 is resulting in the right results.
         /// </summary>
@@ -40,7 +42,6 @@ namespace UserLocalisation.Test.Particle
             List<Measurement<Vector3>> posdata = new List<Measurement<Vector3>>();
             using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerOriData_Expected_9_10_3.dat"))
             {
-                // Read the stream to a string, and write the string to the console.
                 string line = sr.ReadLine();
                 while (line != null)
                 {
@@ -55,7 +56,6 @@ namespace UserLocalisation.Test.Particle
 
             using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerPosData_Expected_060_150_1.dat"))
             {
-                // Read the stream to a string, and write the string to the console.
                 string line = sr.ReadLine();
                 while (line != null)
                 {
@@ -89,24 +89,81 @@ namespace UserLocalisation.Test.Particle
                 Callback(() => oricount++);
             filter.AddOrientationSource(orisource.Object);
 
+            this.writetofile = false;
             StringBuilder res = new StringBuilder();
             List<Pose> results = new List<Pose>();
             long i = 0;
-            while ((poscount < posdata.Count) && (oricount < oridata.Count))
+            while ((poscount < posdata.Count / 10) && (oricount < oridata.Count / 10))
             {
                 Pose pose = filter.CalculatePose(i);
-                res.AppendFormat($"{pose.Position.X},{pose.Position.Y},{pose.Position.Z},{pose.Orientation.X},{pose.Orientation.Y},{pose.Orientation.Z}" + Environment.NewLine);
+                if (this.writetofile)
+                {
+                    res.AppendFormat($"{pose.Position.X},{pose.Position.Y},{pose.Position.Z},{pose.Orientation.X},{pose.Orientation.Y},{pose.Orientation.Z}" + Environment.NewLine);
+                }
+
                 i += 33;
                 results.Add(pose);
             }
 
-            File.WriteAllText(TestContext.CurrentContext.TestDirectory + @"\RealMarkerResults.dat", res.ToString());
-            Assert.AreEqual(posdata.Select(m => m.Data.X).Average(), results.ToArray().Select(p => p.Position.X).Average(), 0.1);
-            Assert.AreEqual(posdata.Select(m => m.Data.Y).Average(), results.ToArray().Select(p => p.Position.Y).Average(), 0.1);
-            Assert.AreEqual(posdata.Select(m => m.Data.Z).Average(), results.ToArray().Select(p => p.Position.Z).Average(), 0.1);
-            Assert.AreEqual(oridata.Select(m => m.Data.X).Average(), results.ToArray().Select(p => p.Orientation.X).Average(), 0.1);
-            Assert.AreEqual(oridata.Select(m => m.Data.Y).Average(), results.ToArray().Select(p => p.Orientation.Y).Average(), 0.1);
-            Assert.AreEqual(oridata.Select(m => m.Data.Z).Average(), results.ToArray().Select(p => p.Orientation.Z).Average(), 0.1);
+            if (this.writetofile)
+            {
+                File.WriteAllText(TestContext.CurrentContext.TestDirectory + @"\RealMarkerResults.dat", res.ToString());
+            }
+
+            int startindex = 30;
+            Pose[] resultarray = new Pose[results.Count - startindex];
+            results.CopyTo(startindex, resultarray, 0, resultarray.Length);
+
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.X).Average(), resultarray.Select(p => p.Position.X).Average(), 0.1);
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Y).Average(), resultarray.Select(p => p.Position.Y).Average(), 0.1);
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Z).Average(), resultarray.Select(p => p.Position.Z).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.X).Average(), resultarray.Select(p => p.Orientation.X).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Y).Average(), resultarray.Select(p => p.Orientation.Y).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Z).Average(), resultarray.Select(p => p.Orientation.Z).Average(), 0.1);
+        }
+
+        /// <summary>
+        /// Test if adding displacement sources works.
+        /// </summary>
+        [Test]
+        public void TestAddingDisplacementSource()
+        {
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+
+            Mock<IDisplacementSource> sourcemock = new Mock<IDisplacementSource>();
+            sourcemock.SetReturnsDefault<Measurement<Vector3>>(new Measurement<Vector3>(new Vector3(), 0, new Normal(0.1)));
+            sourcemock.Setup(foo => foo.GetDisplacement(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new Measurement<Vector3>(new Vector3(), 0, new Normal(0.1)));
+            filter.AddDisplacementSource(sourcemock.Object);
+
+            filter.CalculatePose(1);
+            filter.CalculatePose(2);
+            sourcemock.Verify(foo => foo.GetDisplacement(1, 2));
+        }
+
+        /// <summary>
+        /// Test that filter can run without sources.
+        /// </summary>
+        [Test]
+        public void TestNoCrashWhenNoData()
+        {
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+
+            for (int i = 0; i < 10; i++)
+            {
+                filter.CalculatePose(i);
+            }
+
+            Assert.Pass();
         }
     }
 }

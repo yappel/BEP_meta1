@@ -5,6 +5,8 @@
 namespace UserLocalisation.Test.Sensors.IMU
 {
     using System.Collections.Generic;
+    using System.Linq;
+
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors.IMU;
@@ -529,6 +531,30 @@ namespace UserLocalisation.Test.Sensors.IMU
         {
             this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, 0);
             Assert.AreEqual(this.classDefaultBufferSize, this.source.GetMeasurementBufferSize());
+        }
+
+        /// <summary>
+        /// Test getting data closest to a point.
+        /// </summary>
+        [Test]
+        public void TestGetDataClosestTo()
+        {
+            this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, 10, new Vector3(new float[] { 0, 0, 0 }));
+            this.source.AddMeasurements(1, new Vector3(1, 1, 1), new Vector3(0, 0, 0));
+            this.source.AddMeasurements(1, new Vector3(1, 1, 1), new Vector3(0, 0, 0));
+            this.source.AddMeasurements(10, new Vector3(2, 2, 2), new Vector3(10, 10, 10));
+            this.source.AddMeasurements(10, new Vector3(2, 2, 2), new Vector3(10, 10, 10));
+            this.source.AddMeasurements(19, new Vector3(3, 3, 3), new Vector3(20, 20, 20));
+            this.source.AddMeasurements(19, new Vector3(3, 3, 3), new Vector3(20, 20, 20));
+            this.source.AddMeasurements(25, new Vector3(4, 4, 4), new Vector3(30, 30, 30));
+            this.source.AddMeasurements(25, new Vector3(4, 4, 4), new Vector3(30, 30, 30));
+
+            List<Measurement<Vector3>> resacc = this.source.GetAccelerationClosestTo(11, 10);
+            List<Measurement<Vector3>> resvel = this.source.GetVelocityClosestTo(15, 10);
+            List<Measurement<Vector3>> resori = this.source.GetOrientationClosestTo(21, 10);
+            Assert.AreEqual(new[] { 10, 10 }, resacc.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
+            Assert.AreEqual(new[] { 19, 19 }, resvel.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
+            Assert.AreEqual(new[] { 19, 19 }, resori.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
         }
 
         /// <summary>

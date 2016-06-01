@@ -230,10 +230,6 @@ namespace IRescue.UserLocalisation.Particle
             this.ParticleControllerX.SetWeights(1f);
             this.ParticleControllerY.SetWeights(1f);
             this.ParticleControllerZ.SetWeights(1f);
-            if (this.Measurements == null)
-            {
-                return;
-            }
 
             for (int index = 0; index < this.Measurements.Count; index++)
             {

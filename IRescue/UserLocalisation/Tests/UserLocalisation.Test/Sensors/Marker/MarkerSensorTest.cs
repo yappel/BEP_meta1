@@ -5,6 +5,8 @@
 namespace UserLocalisation.Test.Sensors.Marker
 {
     using System.Collections.Generic;
+    using System.Linq;
+
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors.Marker;
@@ -321,6 +323,26 @@ namespace UserLocalisation.Test.Sensors.Marker
                 this.mlocmoq.AddMarker(i, marker);
                 this.TestComplexInOut(measurement, output, i);
             }
+        }
+
+        /// <summary>
+        /// Test getting data closest to a point.
+        /// </summary>
+        [Test]
+        public void TestGetPositionOrientationClosestTo()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            dic.Add(0, new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270)));
+
+            this.sensor.UpdateLocations(0, dic);
+            this.sensor.UpdateLocations(1, dic);
+            this.sensor.UpdateLocations(2, dic);
+            Assert.AreEqual(dic.Count, this.sensor.GetPositionsClosestTo(3, 10).Count);
+            List<Measurement<Vector3>> respos = this.sensor.GetPositionsClosestTo(3, 10);
+            List<Measurement<Vector3>> resori = this.sensor.GetOrientationClosestTo(3, 10);
+            Assert.AreEqual(new[] { 2, 2 }, respos.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
+            Assert.AreEqual(new[] { 2, 2 }, resori.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
         }
 
         /// <summary>

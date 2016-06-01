@@ -174,7 +174,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
-            for (int i = 0; i < this.accelerations.Length; i++)
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 Measurement<Vector3> measurement = new Measurement<Vector3>(this.accelerations[i], this.timeStamps[i], this.accDistType);
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
@@ -342,7 +342,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
-            for (int i = 0; i < this.orientations.Length; i++)
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 Measurement<Vector3> measurement = new Measurement<Vector3>(this.orientations[i], this.timeStamps[i], this.oriDistType);
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
@@ -430,7 +430,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
-            for (int i = 0; i < this.velocity.Length; i++)
+            for (int i = 0; i < this.measurementSize; i++)
             {
                 ////TODO fix dist type.
                 Measurement<Vector3> measurement = new Measurement<Vector3>(this.velocity[i], this.timeStamps[i], this.accDistType);
