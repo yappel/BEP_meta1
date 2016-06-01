@@ -22,7 +22,8 @@ namespace Assets.Scripts.Unity
             this.gameObject.transform.position = new Vector3(0, -1.6f, 0);
             // TODO change this, but should be the same for all 3 values else the scaling gets weird.
             this.gameObject.transform.localScale = new Vector3(x, x, x);
-            this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
+            this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(10 * x, 10 * x);
         }
     }
 }
