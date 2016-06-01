@@ -7,12 +7,23 @@ namespace Assets.Scripts.Unity.ObjectPlacing
     using Meta;
     using States;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
-    /// This controller keeps track of gesture events and passes it to a statecontext.
+    /// This controller keeps track of gesture events and passes it to a state context.
     /// </summary>
     public class GestureEventController : MonoBehaviour
     {
+        /// <summary>
+        /// The time before buttons can be pressed after switching states.
+        /// </summary>
+        private const int TimeBeforeAction = 2000;
+
+        /// <summary>
+        /// The scale of the buttons for 2d.
+        /// </summary>
+        private const float TwoDScale = 1.8f;
+
         /// <summary>
         /// Coupled state context.
         /// </summary>
@@ -29,11 +40,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private bool validRightHand;
 
         /// <summary>
+        /// Boolean if watching in 3d or not;
+        /// </summary>
+        private bool threeDMode = true;
+
+        /// <summary>
         /// Method called on start. Initialize the StateContext
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext();
+            this.stateContext = new StateContext(this);
         }
 
         /// <summary>
@@ -41,6 +57,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Update()
         {
+            this.MonoStereo();
             this.stateContext.CurrentState.RunUpdate();
             this.GrabEvent();
             this.OpenEvent();
@@ -54,6 +71,23 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         public void LateUpdate()
         {
             this.stateContext.CurrentState.RunLateUpdate();
+        }
+
+        /// <summary>
+        /// Changes the button size if the monocular state changes.
+        /// </summary>
+        private void MonoStereo()
+        {
+            if (this.threeDMode && Meta.MetaCameraMode.monocular)
+            {
+                this.threeDMode = false;
+                ButtonWrapper.SetScale(TwoDScale);
+            }
+            else if (!this.threeDMode && !Meta.MetaCameraMode.monocular)
+            {
+                this.threeDMode = true;
+                ButtonWrapper.SetScale(1);
+            }
         }
 
         /// <summary>
@@ -158,7 +192,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
             {
-                if (gameObject.GetComponent<MetaBody>() == null)
+                if (gameObject.GetComponentInParent<BuildingPlane>() == null)
                 {
                     this.stateContext.CurrentState.OnPoint(point);
                 }
@@ -182,7 +216,13 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             float minDistance = float.MaxValue;
             for (int i = 0; i < hits.Length; i++)
             {
-                if (hits[i].distance < minDistance && hits[i].transform.gameObject.GetComponent<GroundPlane>() != null)
+                if (hits[i].transform.gameObject.GetComponent<Button>() != null)
+                {
+                    gameObject = null;
+                    return new Vector3();
+                }
+
+                if (hits[i].distance < minDistance && (hits[i].transform.gameObject.GetComponent<GroundPlane>() != null || hits[i].transform.gameObject.GetComponentInParent<BuildingPlane>() != null))
                 {
                     minDistance = hits[i].distance;
                     res = hits[i].point;

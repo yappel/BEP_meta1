@@ -6,6 +6,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using Meta;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// State when rotating a selected building.
@@ -36,21 +37,25 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             mb.grabbableDistance = float.MaxValue;
             mb.moveObjectOnGrab = false;
             mb.rotateObjectOnTwoHandedGrab = true;
-            this.StateContext.Buttons.BackButton.SetActive(true);
-            this.originalOrientation = gameObject.transform.eulerAngles;
+            this.originalOrientation = gameObject.transform.localEulerAngles;
+            this.InitButton("BackButton", () => this.OnBackButton());
+            this.InitTextPane("InfoText", "Rotate");
         }
 
         /// <summary>
         /// Return to the modify state
         /// </summary>
-        public override void OnBackButton()
+        public void OnBackButton()
         {
-            MetaBody mb = this.gameObject.GetComponent<MetaBody>();
-            mb.useDefaultGrabSettings = true;
-            mb.grabbableDistance = 0.1f;
-            mb.grabbable = false;
-            mb.rotateObjectOnTwoHandedGrab = false;
-            this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            if (this.CanSwitchState())
+            {
+                MetaBody mb = this.gameObject.GetComponent<MetaBody>();
+                mb.useDefaultGrabSettings = true;
+                mb.grabbableDistance = 0.1f;
+                mb.grabbable = false;
+                mb.rotateObjectOnTwoHandedGrab = false;
+                this.StateContext.SetState(new ModifyState(this.StateContext, this.gameObject));
+            }
         }
 
         /// <summary>
@@ -58,7 +63,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void RunLateUpdate()
         {
-            this.gameObject.transform.eulerAngles = new Vector3(this.originalOrientation.x, this.gameObject.transform.eulerAngles.y, this.originalOrientation.z);
+            this.gameObject.transform.localEulerAngles = new Vector3(this.originalOrientation.x, this.gameObject.transform.localEulerAngles.y, this.originalOrientation.z);
         }
     }
 }

@@ -19,8 +19,9 @@ namespace Assets.Scripts.Unity
         public void Init(float x, float z)
         {
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.position = new Vector3(x, -1.6f, z);
-            this.gameObject.transform.localScale = new Vector3(x, 1, z);
+            this.gameObject.transform.position = new Vector3(0, -1.6f, 0);
+            // TODO change this, but should be the same for all 3 values else the scaling gets weird.
+            this.gameObject.transform.localScale = new Vector3(x, x, x);
             this.gameObject.GetComponent<MeshRenderer>().enabled = false;
         }
     }

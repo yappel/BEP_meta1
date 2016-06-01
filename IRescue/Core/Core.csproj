@@ -68,7 +68,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="Utils\AbRelPositioning.cs" />
     <Compile Include="Utils\AngleMath.cs" />
     <Compile Include="Utils\VectorMath.cs" />
     <Compile Include="Utils\StopwatchSingleton.cs" />
