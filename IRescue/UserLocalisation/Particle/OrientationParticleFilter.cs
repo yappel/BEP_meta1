@@ -58,9 +58,9 @@ namespace IRescue.UserLocalisation.Particle
         protected override void RetrieveMeasurements()
         {
             this.Measurements.Clear();
-            foreach (IOrientationSource source in this.orientationSources)
+            for (int i = 0; i < this.orientationSources.Count; i++)
             {
-                this.Measurements.AddRange(source.GetOrientationClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
+                this.Measurements.AddRange(this.orientationSources[i].GetOrientationClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
             }
         }
     }

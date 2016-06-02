@@ -143,9 +143,9 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         private void CheckDislocationSources()
         {
-            foreach (IDisplacementSource source in this.displacementSources)
+            for (int i = 0; i < this.displacementSources.Count; i++)
             {
-                Measurement<Vector3> meas = source.GetDisplacement(this.PreviousTimeStamp, this.CurrentTimeStamp);
+                Measurement<Vector3> meas = this.displacementSources[i].GetDisplacement(this.PreviousTimeStamp, this.CurrentTimeStamp);
                 meas.Data.Add(this.previousResult, meas.Data);
                 this.Measurements.Add(meas);
             }
@@ -156,9 +156,9 @@ namespace IRescue.UserLocalisation.Particle
         /// </summary>
         private void CheckPositionSources()
         {
-            foreach (IPositionSource source in this.positionSources)
+            for (int i = 0; i < this.positionSources.Count; i++)
             {
-                this.Measurements.AddRange(source.GetPositionsClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
+                this.Measurements.AddRange(this.positionSources[i].GetPositionsClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
             }
         }
 
