@@ -52,7 +52,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
-                Meta.MetaKeyboard.Instance.enabled = false;
+                Meta.MetaKeyboard.Instance.ENTER(true);
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
         }
@@ -65,7 +65,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             if (this.CanSwitchState())
             {
                 // TODO not enabled but hide only
-                Meta.MetaKeyboard.Instance.enabled = false;
+                Meta.MetaKeyboard.Instance.ENTER(true);
                 try
                 {
                     string saveName = this.saveStringInput.GetComponentInChildren<Text>().text.Replace(" ", string.Empty).Replace("\\", string.Empty).Replace("/", string.Empty);
