@@ -44,16 +44,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnSaveButton()
         {
-            if (this.CanSwitchState())
+            Debug.Log(this.StateContext.SaveFilePath);
+            if (this.StateContext.SaveFilePath != null)
             {
-                if (this.StateContext.SaveFilePath != null)
-                {
-                    new SaveState(this.StateContext, true);
-                } 
-                else
-                {
-                    this.StateContext.SetState(new SaveState(this.StateContext));
-                }
+                new SaveState(this.StateContext, true);
+            }
+            else if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new SaveState(this.StateContext));
             }
         }
 
