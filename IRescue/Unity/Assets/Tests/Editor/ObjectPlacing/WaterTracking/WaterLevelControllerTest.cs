@@ -17,9 +17,10 @@ public class WaterLevelControllerTest
     [Test]
     public void InitTest()
     {
-        GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        waterPlane.AddComponent<WaterLevelController>().Init(5, 10);
-        Assert.AreEqual(5, waterPlane.transform.position.x);
-        Assert.AreEqual(10, waterPlane.transform.position.z);
+        GameObject temp = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        temp.AddComponent<WaterLevelController>().Init(5, 10);
+        GameObject waterPlane = GameObject.Find("WaterPlane");
+        Assert.AreEqual(5 * 5, waterPlane.transform.position.x);
+        Assert.AreEqual(10 * 5, waterPlane.transform.position.z);
     }
 }
