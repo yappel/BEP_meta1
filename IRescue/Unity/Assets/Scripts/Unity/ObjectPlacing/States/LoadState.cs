@@ -76,6 +76,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                     {
                         this.DestroyObjects();
                         this.LoadGame();
+                        this.StateContext.SaveFilePath = this.SaveFilePath;
                         this.StateContext.SetState(new NeutralState(this.StateContext));
                     }
                 }

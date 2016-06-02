@@ -44,7 +44,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnSaveButton()
         {
-            Debug.Log(this.StateContext.SaveFilePath);
             if (this.StateContext.SaveFilePath != null)
             {
                 new SaveState(this.StateContext, true);

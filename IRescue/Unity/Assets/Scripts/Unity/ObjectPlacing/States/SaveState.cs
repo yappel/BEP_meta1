@@ -35,7 +35,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (saveOnly && this.StateContext.SaveFilePath != null)
             {
-                this.SaveGame(this.StateContext.SaveFilePath + ".xml");
+                this.SaveGame(SaveFile + this.StateContext.SaveFilePath + ".xml");
             }
             else
             {
@@ -64,6 +64,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
+                // TODO not enabled but hide only
                 Meta.MetaKeyboard.Instance.enabled = false;
                 try
                 {
