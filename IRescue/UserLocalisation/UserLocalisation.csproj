@@ -61,16 +61,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractUserLocalizer.cs" />
+    <Compile Include="Particle\AbstractParticleFilter.cs" />
+    <Compile Include="IUserLocalizer.cs" />
+    <Compile Include="Particle\AbstractParticleController.cs" />
+    <Compile Include="Particle\CircularParticleController.cs" />
+    <Compile Include="Particle\LinearParticleController.cs" />
+    <Compile Include="Particle\PositionParticleFilter.cs" />
+    <Compile Include="Particle\OrientationParticleFilter.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\INoiseGenerator.cs" />
     <Compile Include="Particle\Algos\NoiseGenerators\RandomNoiseGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\IParticleGenerator.cs" />
     <Compile Include="Particle\Algos\ParticleGenerators\RandomParticleGenerator.cs" />
     <Compile Include="Particle\Algos\Resamplers\MultinomialResampler.cs" />
     <Compile Include="Particle\Algos\Resamplers\IResampler.cs" />
+    <Compile Include="Particle\Algos\Smoothers\ISmoother.cs" />
+    <Compile Include="Particle\Algos\Smoothers\MovingAverageSmoother.cs" />
+    <Compile Include="Particle\Algos\Smoothers\Result.cs" />
     <Compile Include="Particle\ParticleFilter.cs" />
-    <Compile Include="PosePrediction\IPosePredictor.cs" />
-    <Compile Include="PosePrediction\LinearPosePredicter.cs" />
+    <Compile Include="PosePrediction\LinearRegression.cs" />
+    <Compile Include="PosePrediction\IExtrapolate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sensors\IAccelerationReceiver.cs" />
     <Compile Include="Sensors\IAccelerationSource.cs" />

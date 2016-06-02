@@ -11,7 +11,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
     using Core.Utils;
 
     /// <summary>
-    ///     The IMU Source provides data from sensors in an IMU and computes values which can be derived from this.
+    ///     The IMU Source provides data from sensors in an IMU and computes _values which can be derived from this.
     ///     Implements <see cref="IAccelerationSource" />, <see cref="IDisplacementSource" />, <see cref="IVelocitySource" />
     ///     and <see cref="IOrientationSource" /> to provide data on acceleration, displacement, orientation and velocity.
     /// </summary>
@@ -172,6 +172,35 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         }
 
         /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetAccelerationClosestTo(long timeStamp, long range)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.measurementSize; i++)
+            {
+                Measurement<Vector3> measurement = new Measurement<Vector3>(this.accelerations[i], this.timeStamps[i], this.accDistType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
         ///     Get the acceleration measurements from the specified starting time stamp up to and including the ending time stamp.
         /// </summary>
         /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
@@ -313,6 +342,18 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         }
 
         /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
+        {
+            ////TODO fix dist type
+            return this.GetSourceClosestTo(timeStamp, range, this.orientations, this.oriDistType);
+        }
+
+        /// <summary>
         ///     Get the orientation measurements from the specified starting time stamp up to and including the ending time stamp.
         /// </summary>
         /// <param name="startTimeStamp">The time stamp to include measurements from.</param>
@@ -367,6 +408,18 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        public List<Measurement<Vector3>> GetVelocityClosestTo(long timeStamp, long range)
+        {
+            ////TODO fix dist type.
+            return this.GetSourceClosestTo(timeStamp, range, this.velocity, this.accDistType);
         }
 
         /// <summary>
@@ -502,6 +555,37 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         private int Mod(int a, int b)
         {
             return ((a % b) + b) % b;
+        }
+
+        /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <param name="measurements">The measurements for a source.</param>
+        /// <param name="distType">The distribution type of the source.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, IDistribution distType)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.measurementSize; i++)
+            {
+                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
         }
     }
 }
