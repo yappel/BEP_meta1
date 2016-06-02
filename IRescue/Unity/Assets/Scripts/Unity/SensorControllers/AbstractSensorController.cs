@@ -61,5 +61,14 @@ namespace Assets.Scripts.Unity.SensorControllers
         {
             return null;
         }
+
+        /// <summary>
+        /// Return true if the calibration has been completed
+        /// </summary>
+        /// <returns>if the calibration is finished</returns>
+        protected bool ImuInitialized()
+        {
+            return Meta.MetaCore.Instance.initialized;
+        }
     }
 }

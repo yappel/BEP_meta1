@@ -4,6 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -43,6 +44,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.InitButton("TranslateButton", () => this.OnTranslateButton());
             this.InitButton("RotateButton", () => this.OnRotateButton());
             this.InitButton("ScaleButton", () => this.OnScaleButton());
+            this.InitButton("CopyButton", () => this.OnCopyButton());
             this.gameObject = gameObject;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
             this.ChangeOutlineRender(this.greenOutline);
@@ -103,6 +105,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 this.StateContext.SetState(new ModifyScaleState(this.StateContext, this.gameObject));
             }
+        }
+
+        /// <summary>
+        /// Copy the objet and go to the object placing state.
+        /// </summary>
+        public void OnCopyButton()
+        {
+            GameObject newBuilding = UnityEngine.Object.Instantiate<GameObject>(this.gameObject);
+            newBuilding.transform.parent = this.gameObject.transform.parent;
+            newBuilding.name = this.gameObject.name;
+            newBuilding.transform.localScale = this.gameObject.transform.localScale;
+            UnityEngine.Object.Destroy(newBuilding.GetComponent<MetaBody>());
+            this.ChangeOutlineRender(this.defaultShader);
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding));
         }
 
         /// <summary>
