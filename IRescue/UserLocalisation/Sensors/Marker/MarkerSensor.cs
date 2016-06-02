@@ -153,25 +153,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            long mindiff = long.MaxValue;
-            for (int i = 0; i < this.Measurements; i++)
-            {
-                Measurement<Vector3> measurement = this.orientations[i];
-                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
-                {
-                    res.Add(measurement);
-                }
-                else if (diff < mindiff)
-                {
-                    res.Clear();
-                    mindiff = diff;
-                    res.Add(measurement);
-                }
-            }
-
-            return res;
+            return this.GetSourceClosestTo(timeStamp, range, this.orientations);
         }
 
         /// <summary>
@@ -221,25 +203,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetPositionsClosestTo(long timeStamp, long range)
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            long mindiff = long.MaxValue;
-            for (int i = 0; i < this.Measurements; i++)
-            {
-                Measurement<Vector3> measurement = this.positions[i];
-                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
-                {
-                    res.Add(measurement);
-                }
-                else if (diff < mindiff)
-                {
-                    res.Clear();
-                    mindiff = diff;
-                    res.Add(measurement);
-                }
-            }
-
-            return res;
+            return this.GetSourceClosestTo(timeStamp, range, this.positions);
         }
 
         /// <summary>
@@ -339,6 +303,36 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         private int GetIterationLength(Measurement<Vector3>[] measurements)
         {
             return Math.Min(this.bufferLength, this.Measurements);
+        }
+
+        /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <param name="measurements">The measurements for a source.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Measurement<Vector3>[] measurements)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.Measurements; i++)
+            {
+                Measurement<Vector3> measurement = measurements[i];
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
         }
     }
 }
