@@ -64,7 +64,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
-                // TODO not enabled but hide only
                 Meta.MetaKeyboard.Instance.ENTER(true);
                 try
                 {
