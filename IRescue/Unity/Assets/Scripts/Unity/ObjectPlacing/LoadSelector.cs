@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
 
             this.transform.GetChild(2).GetComponent<Image>().color = Color.yellow;
-            this.state.StateContext.SaveFilePath = this.name;
+            this.state.SaveFilePath = this.name;
         }
     }
 }

@@ -43,11 +43,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private const int Padding = 10;
 
         /// <summary>
-        /// The previous loaded file
-        /// </summary>
-        private string prevSave;
-
-        /// <summary>
         /// The scroll pane with the load files.
         /// </summary>
         private GameObject scollButton;
@@ -58,22 +53,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public LoadState(StateContext stateContext) : base(stateContext)
         {
-            this.prevSave = stateContext.SaveFilePath;
             this.InitButton("ConfirmButton", () => this.OnConfirmButton());
             this.InitButton("BackButton", () => this.OnBackButton());
             this.scollButton = this.InitLoadScrollPane(EntryHeight, FrameWidth, FrameHeight, Padding);
         }
 
         /// <summary>
+        /// Gets or sets the path to the save file if something is loaded.
+        /// </summary>
+        public string SaveFilePath { get; set; }
+
+        /// <summary>
         /// Load the game and return to the neutral state
         /// </summary>
         public void OnConfirmButton()
         {
-            if (this.CanSwitchState())
+            if (this.SaveFilePath != null && this.CanSwitchState())
             {
                 try
                 {
-                    if (this.prevSave != this.StateContext.SaveFilePath)
+                    if (!this.SaveFilePath.Equals(this.StateContext.SaveFilePath))
                     {
                         this.DestroyObjects();
                         this.LoadGame();
@@ -104,7 +103,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
-                this.StateContext.SaveFilePath = this.prevSave;
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
         }
@@ -114,11 +112,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void LoadGame()
         {
-            if (this.CanSwitchState())
-            {
-                string path = this.StateContext.SaveFilePath;
-                this.LoadObjects(SaveFile + path + ".xml", GameObject.FindObjectOfType<GroundPlane>().transform);
-            }
+            this.LoadObjects(SaveFile + this.SaveFilePath + ".xml", GameObject.FindObjectOfType<GroundPlane>().transform);
         }
 
         /// <summary>
@@ -179,9 +173,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             GameObject scollButton = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/LoadScrollButton"));
             Directory.CreateDirectory(Directory.GetCurrentDirectory() + @"\\Saves\\");
-            string[] filePaths = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\\Saves\\");
             FileSystemInfo[] files = new DirectoryInfo(Directory.GetCurrentDirectory() + @"\\Saves\\").GetFileSystemInfos();
-            Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return a.LastWriteTime.CompareTo(b.LastWriteTime); });
+            Array.Sort<FileSystemInfo>(files, delegate(FileSystemInfo a, FileSystemInfo b) { return b.LastWriteTime.CompareTo(a.LastWriteTime); });
             GameObject scrollViewVertical = scollButton.transform.GetChild(0).GetChild(0).gameObject;
             GameObject content = scrollViewVertical.transform.GetChild(0).gameObject;
             float height = (files.Length * (entryHeight + padding)) + (2 * padding);
