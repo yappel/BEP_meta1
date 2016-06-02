@@ -47,16 +47,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         public void TestConstructorEmpty()
         {
             this.markerLocations = new MarkerLocations();
-            try
-            {
-                this.markerLocations.GetMarker(1);
-            }
-            catch (UnallocatedMarkerException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => this.markerLocations.GetMarker(1), Throws.TypeOf<UnallocatedMarkerException>());
         }
 
         /// <summary>
@@ -101,16 +92,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         public void TestConstructorException()
         {
             this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMap01.xml");
-            try
-            {
-                this.markerLocations.GetMarker(2);
-            }
-            catch (UnallocatedMarkerException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => this.markerLocations.GetMarker(2), Throws.TypeOf<UnallocatedMarkerException>());
         }
 
         /// <summary>
@@ -119,16 +101,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorLoadException()
         {
-            try
-            {
-                this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFail.xml");
-            }
-            catch (NullReferenceException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFail.xml"), Throws.TypeOf<NullReferenceException>());
         }
 
         /// <summary>
@@ -137,16 +110,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         [Test]
         public void TestConstructorFailLoadException()
         {
-            try
-            {
-                this.markerLocations = new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFailFormat.xml");
-            }
-            catch (XmlException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => new MarkerLocations(TestContext.CurrentContext.TestDirectory + "\\MarkerMapFailFormat.xml"), Throws.TypeOf<XmlException>());
         }
 
         /// <summary>

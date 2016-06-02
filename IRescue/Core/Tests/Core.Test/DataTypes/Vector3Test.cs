@@ -41,16 +41,7 @@ namespace Core.Test
         [Test]
         public void TestConstructorException()
         {
-            try
-            {
-                Vector3 vector = new Vector3(new float[] { 1, 2, 3, 4 });
-            }
-            catch (ArgumentException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => new Vector3(new float[] { 1, 2, 3, 4 }), Throws.TypeOf<ArgumentException>());
         }
 
         /// <summary>
