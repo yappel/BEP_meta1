@@ -349,25 +349,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            long mindiff = long.MaxValue;
-            for (int i = 0; i < this.measurementSize; i++)
-            {
-                Measurement<Vector3> measurement = new Measurement<Vector3>(this.orientations[i], this.timeStamps[i], this.oriDistType);
-                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
-                {
-                    res.Add(measurement);
-                }
-                else if (diff < mindiff)
-                {
-                    res.Clear();
-                    mindiff = diff;
-                    res.Add(measurement);
-                }
-            }
-
-            return res;
+            ////TODO fix dist type
+            return this.GetSourceClosestTo(timeStamp, range, this.orientations, this.oriDistType);
         }
 
         /// <summary>
@@ -435,26 +418,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetVelocityClosestTo(long timeStamp, long range)
         {
-            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
-            long mindiff = long.MaxValue;
-            for (int i = 0; i < this.measurementSize; i++)
-            {
-                ////TODO fix dist type.
-                Measurement<Vector3> measurement = new Measurement<Vector3>(this.velocity[i], this.timeStamps[i], this.accDistType);
-                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
-                {
-                    res.Add(measurement);
-                }
-                else if (diff < mindiff)
-                {
-                    res.Clear();
-                    mindiff = diff;
-                    res.Add(measurement);
-                }
-            }
-
-            return res;
+            ////TODO fix dist type.
+            return this.GetSourceClosestTo(timeStamp, range, this.velocity, this.accDistType);
         }
 
         /// <summary>
@@ -590,6 +555,37 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         private int Mod(int a, int b)
         {
             return ((a % b) + b) % b;
+        }
+
+        /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <param name="measurements">The measurements for a source.</param>
+        /// <param name="distType">The distribution type of the source.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, IDistribution distType)
+        {
+            List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
+            long mindiff = long.MaxValue;
+            for (int i = 0; i < this.measurementSize; i++)
+            {
+                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType);
+                long diff = Math.Abs(measurement.TimeStamp - timeStamp);
+                if (diff == mindiff)
+                {
+                    res.Add(measurement);
+                }
+                else if (diff < mindiff)
+                {
+                    res.Clear();
+                    mindiff = diff;
+                    res.Add(measurement);
+                }
+            }
+
+            return res;
         }
     }
 }
