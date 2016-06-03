@@ -7,7 +7,7 @@ using Assets.Scripts.Unity.SourceCouplers;
 using NUnit.Framework;
 
 /// <summary>
-/// Tests for <see cref="LocalizerFactory"/>
+/// Tests for <see cref="LocalizerCouplerFactory"/>
 /// </summary>
 public class LocalizerFactoryTest
 {
@@ -17,6 +17,6 @@ public class LocalizerFactoryTest
     [Test]
     public void ParticleTest()
     {
-        Assert.True(LocalizerFactory.Get(Filters.Particle) is ParticleFilterCoupler);
+        Assert.True(LocalizerCouplerFactory.Get(Filters.Particle) is ParticleFilterCoupler);
     }
 }

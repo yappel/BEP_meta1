@@ -13,11 +13,6 @@ namespace Assets.Scripts.Unity.SensorControllers
     public abstract class AbstractSensorController : MonoBehaviour
     {
         /// <summary>
-        ///   Initializes the controller.
-        /// </summary>
-        public abstract void Init();
-
-        /// <summary>
         ///   Return the acceleration source.
         /// </summary>
         /// <returns>The IAccelerationSource</returns>

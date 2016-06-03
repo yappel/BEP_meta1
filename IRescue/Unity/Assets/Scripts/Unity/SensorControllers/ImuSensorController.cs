@@ -36,11 +36,11 @@ namespace Assets.Scripts.Unity.SensorControllers
         private int bufferSize = 30;
 
         /// <summary>
-        ///   Method called when creating a UserController.
+        ///  Adds the source to the source controller.
         /// </summary>
-        public override void Init()
+        public void Init(IMUSource imuSource)
         {
-            this.imuSource = new IMUSource(new Normal(this.accelerationStd), new Normal(this.orientationStd), this.bufferSize);
+            this.imuSource = imuSource;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         }
 
         /// <summary>
-        ///   Method calles on every frame.
+        ///   Method called on every frame.
         /// </summary>
         public void Update()
         {

@@ -38,21 +38,11 @@ public class MarkerSensorController : AbstractSensorController
     private Transform markerTransform;
 
     /// <summary>
-    ///   The standard deviation of the meta sensor for markers.
+    ///  Adds the source to the source controller.
     /// </summary>
-    private float positionStd = 0.00945f;
-
-    /// <summary>
-    /// standard deviation for orientation
-    /// </summary>
-    private float orientationStd = 0.264f;
-
-    /// <summary>
-    ///   Method called when creating a UserController.
-    /// </summary>
-    public override void Init()
+    public void Init(MarkerSensor markerSensor)
     {
-        this.markerSensor = new MarkerSensor(new MarkerLocations(Path), new Normal(this.orientationStd), new Normal(this.positionStd));
+        this.markerSensor = markerSensor;
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }
@@ -116,8 +106,8 @@ public class MarkerSensorController : AbstractSensorController
             Vector3 position = new Vector3(relativeMarkerPosition.X, relativeMarkerPosition.Y, relativeMarkerPosition.Z);
 
             Vector3 rotation = new Vector3(
-                this.markerTransform.eulerAngles.x - MetaOrientation.x, 
-                180 + this.markerTransform.eulerAngles.y - MetaOrientation.y, 
+                this.markerTransform.eulerAngles.x - MetaOrientation.x,
+                180 + this.markerTransform.eulerAngles.y - MetaOrientation.y,
                 this.markerTransform.eulerAngles.z - MetaOrientation.z);
             visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }

@@ -6,7 +6,11 @@ namespace Assets.Scripts.Unity
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
+
+    using Assets.Scripts.Unity.Config;
+
     using Enums;
     using IRescue.UserLocalisation;
     using ObjectPlacing;
@@ -20,14 +24,11 @@ namespace Assets.Scripts.Unity
     public class InitScript : MonoBehaviour
     {
         /// <summary>
-        /// Enum type of the filter that is going to be used
-        /// </summary>
-        private Filters usedFilter = Filters.Particle;
-
-        /// <summary>
         /// Size of the used markers in meters
         /// </summary>
         private float markerSize = 0.23f;
+
+        private GeneralConfigs generalConfigs;
 
         /// <summary>
         ///  Called when the game starts.
@@ -37,20 +38,58 @@ namespace Assets.Scripts.Unity
             // Start in 2d mode
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
-            this.InitPlanes(200, 200);
-            this.AddControllers();
-            AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
-            this.InitControllers(coupler);
-            this.InitUser(coupler.GetLocalizer());
-            this.InitMarker();
+            this.generalConfigs = new GeneralConfigs();
+
+            //Init sensors
+            this.InitSensorControllers();
+            //Init World controller
+            this.InitWordControllers();
+            //Init user input controller(s)
+            this.InitInputHandlers();
         }
+
+        /// <summary>
+        /// Initializes the controllers that handle the data retrieved from the sensors.
+        /// </summary>
+        private void InitSensorControllers()
+        {
+            if (!this.generalConfigs.IgnoreIMUData)
+            {
+                gameObject.AddComponent<ImuSensorController>().Init(this.generalConfigs.IMUSource);
+            }
+
+            if (!this.generalConfigs.IgnoreMarkers)
+            {
+                gameObject.AddComponent<MarkerSensorController>().Init(this.generalConfigs.MarkerSensor);
+                this.InitMarker();
+            }
+        }
+
+        /// <summary>
+        /// Initializes the controllers that controll the objects in the virtual world.
+        /// </summary>
+        private void InitWordControllers()
+        {
+            //TODO change to worldbox
+            this.InitPlanes(200, 200);
+            gameObject.AddComponent<UserController>().Init(this.generalConfigs.UserLocalizer);
+        }
+
+        /// <summary>
+        /// Initializes the scripts that handle user input.
+        /// </summary>
+        private void InitInputHandlers()
+        {
+            gameObject.AddComponent<GestureEventController>().Init();
+        }
+
 
         /// <summary>
         ///  Add the controllers to the GameObject.
         /// </summary>
         private void AddControllers()
         {
-            gameObject.AddComponent<GestureEventController>().Init();
+
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {
@@ -68,30 +107,6 @@ namespace Assets.Scripts.Unity
                 .Assembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(AbstractSensorController)) && !t.IsAbstract)
                 .Select(t => (AbstractSensorController)Activator.CreateInstance(t));
-        }
-
-        /// <summary>
-        ///  Initialize the controllers and register them to a localizer. 
-        ///  Disable the controller if its source is not required by the current localizer method.
-        /// </summary>
-        /// <param name="localizer">The Localizer filter</param>
-        private void InitControllers(AbstractLocalizerCoupler localizer)
-        {
-            AbstractSensorController[] controllers = gameObject.GetComponents<AbstractSensorController>();
-            for (int i = 0; i < controllers.Length; i++)
-            {
-                controllers[i].Init();
-                controllers[i].enabled = localizer.RegisterSource(controllers[i]);
-            }
-        }
-
-        /// <summary>
-        ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
-        /// </summary>
-        /// <param name="localizer">The Localizer filter</param>
-        private void InitUser(AbstractUserLocalizer localizer)
-        {
-            gameObject.AddComponent<UserController>().Init(localizer);
         }
 
         /// <summary>
