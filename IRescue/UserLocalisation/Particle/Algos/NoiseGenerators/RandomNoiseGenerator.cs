@@ -1,40 +1,49 @@
 ﻿// <copyright file="RandomNoiseGenerator.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle.Algos.NoiseGenerators
 {
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.Random;
+    using System;
+    using System.Linq;
+
+    using MathNet.Numerics.Distributions;
 
     /// <summary>
-    /// Generates and adds noise to the values of particles bases on a random number generator.
+    /// Generates and adds noise to the _values of particles bases on a random number generator.
     /// </summary>
     public class RandomNoiseGenerator : INoiseGenerator
     {
         /// <summary>
         /// The random number generator to generate the noise with.
         /// </summary>
-        private RandomSource rng;
+        private IContinuousDistribution rng;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
         /// </summary>
-        /// <param name="rng">The random number generator to generate the noise with</param>
-        public RandomNoiseGenerator(RandomSource rng)
+        /// <param name="rng">The random number generator that generates numbers between 0 and 1</param>
+        public RandomNoiseGenerator(IContinuousDistribution rng)
         {
+            if ((Math.Abs(rng.Minimum) > float.Epsilon) || (Math.Abs(rng.Maximum - 1) > float.Epsilon))
+            {
+                throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
+            }
+
             this.rng = rng;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RandomNoiseGenerator"/> class.
-        /// </summary>
-        /// <param name="min">THe minimum amount of noise added to a particle</param>
-        /// <param name="max">The maximum amount of noise added to a particle</param>
-        /// <param name="particles">The particle to add noise to.</param>
-        public void GenerateNoise(float min, float max, Matrix<float> particles)
+        /// <inheritdoc/>
+        public void GenerateNoise(float min, float max, AbstractParticleController particles)
         {
-            particles.SetSubMatrix(0, 0, particles.Map(p => (float)(p + min + (this.rng.NextDouble() * (max - min)))));
+            float[] noisearray = Enumerable.Repeat(0, particles.Count).Select(i => (float)(min + (this.rng.Sample() * (max - min)))).ToArray();
+            particles.AddToValues(noisearray);
+        }
+
+        /// <inheritdoc/>
+        public void GenerateNoise(float percentage, AbstractParticleController particles)
+        {
+            float noisesize = percentage * (particles.MaxValue - particles.MinValue);
+            this.GenerateNoise(-noisesize, noisesize, particles);
         }
     }
 }

@@ -16,13 +16,13 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// The used localizer.
         /// </summary>
-        private AbstractUserLocalizer localizer;
+        private IUserLocalizer localizer;
 
         /// <summary>
         /// Initializes the User Controller. 
         /// </summary>
         /// <param name="localizer">The <see cref="AbstractUserLocalizer"/> used for the localization.</param>
-        public void Init(AbstractUserLocalizer localizer)
+        public void Init(IUserLocalizer localizer)
         {
             this.localizer = localizer;
         }
