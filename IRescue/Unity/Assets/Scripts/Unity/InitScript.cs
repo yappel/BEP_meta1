@@ -43,6 +43,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
+            Meta.MetaUI.Instance.enableGrid = false;
         }
 
         /// <summary>
