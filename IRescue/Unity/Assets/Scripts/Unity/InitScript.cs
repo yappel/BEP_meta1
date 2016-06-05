@@ -113,8 +113,7 @@ namespace Assets.Scripts.Unity
         {
             GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             groundPlane.AddComponent<GroundPlane>().Init(width, depth);
-            GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            waterPlane.AddComponent<WaterLevelController>().Init(width, depth);
+            this.gameObject.AddComponent<WaterLevelController>().Init(width, depth);
         }
     }
 }
