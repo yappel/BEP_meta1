@@ -28,6 +28,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private long pointObjectTime;
 
         /// <summary>
+        /// Boolean if the user was pointing this iteration.
+        /// </summary>
+        private bool hasPointed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
@@ -43,6 +48,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="position">Position of the building to be placed</param>
         public override void OnPoint(Vector3 position)
         {
+            this.hasPointed = true;
             long time = StopwatchSingleton.Time;
             this.pointObjectTime = 0;
             if (time - this.pointTime > TimeToPoint + 250)
@@ -61,6 +67,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">Object pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
+            this.hasPointed = true;
             long time = StopwatchSingleton.Time;
             this.pointTime = 0;
             if (time - this.pointObjectTime > TimeToPoint + 250)
@@ -71,6 +78,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
+        }
+
+        /// <summary>
+        /// If the user was not pointing, reset the timers
+        /// </summary>
+        public override void RunLateUpdate()
+        {
+            if (!this.hasPointed)
+            {
+                this.pointTime = 0;
+                this.pointObjectTime = 0;
+            }
+
+            this.hasPointed = false;
         }
 
         /// <summary>
