@@ -67,8 +67,27 @@
         /// Contains information about the general configurations of the application.
         /// </summary>
         /// <param name="path">Path to the configuration file to use.</param>
+        public GeneralConfigs(string path, string defaultPath, MarkerConfigs markerConfigs)
+            : base(path, defaultPath)
+        {
+            this.UserCanMove = this.GetBool(UserCanMoveKey);
+            this.IgnoreIMUData = this.GetBool(IgnoreIMUDataKey);
+            this.IgnoreMarkers = this.GetBool(IgnoreMarkersKey);
+            this.TrackWater = this.GetBool(TrackWaterKey);
+            this.Jaws = this.GetBool(JawsKey);
+            this.fieldSize = this.CreateFieldSize();
+            this.UserLocalizer = this.CreateUserLocalizer();
+            this.IMUSource = this.CreateIMUSource();
+            this.MarkerSensor = this.CreateMarkerSensor(markerConfigs);
+        }
+
+        /// <summary>
+        /// Instantiates a new <see cref="GeneralConfigs"/>.
+        /// Contains information about the general configurations of the application.
+        /// </summary>
+        /// <param name="path">Path to the configuration file to use.</param>
         public GeneralConfigs(string path, MarkerConfigs markerConfigs)
-            : base(path, DefaultPath)
+            : this(path, DefaultPath, markerConfigs)
         {
             this.UserCanMove = this.GetBool(UserCanMoveKey);
             this.IgnoreIMUData = this.GetBool(IgnoreIMUDataKey);

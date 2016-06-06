@@ -20,24 +20,8 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// </summary>
         private IMUSource imuSource;
 
-        /// <summary>
-        ///   The standard deviation of the acceleration
-        /// </summary>
-        private float accelerationStd = 2.0f;
-
-        /// <summary>
-        ///   The standard deviation of the orientation
-        /// </summary>
-        private float orientationStd = 2.0f;
-
-        /// <summary>
-        ///   The measurement buffer size
-        /// </summary>
-        private int bufferSize = 30;
-
-        /// <summary>
-        ///  Adds the source to the source controller.
-        /// </summary>
+        /// <summary>Adds the source to the source controller.</summary>
+        /// <param name="imuSource">The IMU Source.</param>
         public void Init(IMUSource imuSource)
         {
             this.imuSource = imuSource;

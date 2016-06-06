@@ -27,7 +27,7 @@ namespace Assets.Scripts.Unity.SourceCouplers
                 case "ParticleFilter":
                     return new ParticleFilterCoupler((ParticleFilter)localizer);
                 default:
-                    throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer.GetType()), nameof(localizer));
+                    throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer.GetType()), "localizer");
             }
         }
     }

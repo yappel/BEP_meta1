@@ -6,7 +6,7 @@
 
     public abstract class AbstractMarkerConfigs<T> : AbstractConfigs
     {
-        public Dictionary<int, T> markerConfigs { get; }
+        public Dictionary<int, T> markerConfigs { get; private set; }
 
         private T defaultValues;
 

@@ -3,6 +3,9 @@
 // </copyright>
 
 using Assets.Scripts.Unity.SensorControllers;
+
+using IRescue.UserLocalisation.Sensors.IMU;
+
 using NUnit.Framework;
 using UnityEngine;
 
@@ -24,7 +27,7 @@ public class ImuSensorControllerTest
     {
         var gameObject = new GameObject();
         this.imuSensorController = gameObject.AddComponent<ImuSensorController>();
-        this.imuSensorController.Init();
+        this.imuSensorController.Init(new IMUSource(new IRescue.Core.Distributions.Normal(1), new IRescue.Core.Distributions.Normal(1), 100));
     }
 
     /// <summary>

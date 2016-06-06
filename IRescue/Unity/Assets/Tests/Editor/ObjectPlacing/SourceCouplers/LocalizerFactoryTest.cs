@@ -4,6 +4,16 @@
 
 using Assets.Scripts.Enums;
 using Assets.Scripts.Unity.SourceCouplers;
+
+using IRescue.Core.DataTypes;
+using IRescue.UserLocalisation.Particle;
+using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
+using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+using IRescue.UserLocalisation.Particle.Algos.Smoothers;
+
+using MathNet.Numerics.Distributions;
+
 using NUnit.Framework;
 
 /// <summary>
@@ -17,6 +27,14 @@ public class LocalizerFactoryTest
     [Test]
     public void ParticleTest()
     {
-        Assert.True(LocalizerCouplerFactory.Get(Filters.Particle) is ParticleFilterCoupler);
+        ParticleFilter filter = new ParticleFilter(
+           10,
+           1,
+           new FieldSize(),
+           new RandomParticleGenerator(new ContinuousUniform()),
+           new MultinomialResampler(),
+           new RandomNoiseGenerator(new ContinuousUniform()),
+           new MovingAverageSmoother(1000));
+        Assert.True(LocalizerCouplerFactory.Get(filter) is ParticleFilterCoupler);
     }
 }

@@ -3,7 +3,17 @@
 // </copyright>
 
 using Assets.Scripts.Unity.SensorControllers;
+using Assets.Scripts.Unity.SourceCouplers;
+
+using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation.Particle;
+using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
+using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+using IRescue.UserLocalisation.Particle.Algos.Smoothers;
+
+using MathNet.Numerics.Distributions;
+
 using NUnit.Framework;
 
 /// <summary>
@@ -22,16 +32,15 @@ public class ParticleFilterCouplerTest
     [SetUp]
     public void Setup()
     {
-        this.coupler = new ParticleFilterCoupler();
-    }
-
-    /// <summary>
-    /// Test for the particle get
-    /// </summary>
-    [Test]
-    public void ConstructorTest()
-    {
-        Assert.True(this.coupler.GetLocalizer() is ParticleFilter);
+        ParticleFilter filter = new ParticleFilter(
+            10,
+            1,
+            new FieldSize(),
+            new RandomParticleGenerator(new ContinuousUniform()),
+            new MultinomialResampler(),
+            new RandomNoiseGenerator(new ContinuousUniform()),
+            new MovingAverageSmoother(1000));
+        this.coupler = new ParticleFilterCoupler(filter);
     }
 
     /// <summary>

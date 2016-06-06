@@ -44,8 +44,18 @@ namespace Assets.Scripts.Unity.Config
         /// The configuration information about the markers places in the world.
         /// </summary>
         /// <param name="path">Path to the config file to use.</param>
+        public MarkerConfigs(string path, string defaultPath)
+            : base(path, defaultPath)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MarkerConfigs"/> class.
+        /// The configuration information about the markers places in the world.
+        /// </summary>
+        /// <param name="path">Path to the config file to use.</param>
         public MarkerConfigs(string path)
-            : base(path, DefaultPath)
+            : this(path, DefaultPath)
         {
         }
 

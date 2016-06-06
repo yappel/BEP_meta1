@@ -2,6 +2,8 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using IRescue.Core.Distributions;
+
 using NUnit.Framework;
 using UnityEngine;
 
@@ -23,7 +25,7 @@ public class MarkerSensorControllerTest
     {
         var gameObject = new GameObject();
         this.markerSensorController = gameObject.AddComponent<MarkerSensorController>();
-        this.markerSensorController.Init();
+        this.markerSensorController.Init(new IRescue.UserLocalisation.Sensors.Marker.MarkerSensor(new IRescue.UserLocalisation.Sensors.Marker.MarkerLocations(), new Normal(1), new Normal(1)));
     }
 
     /// <summary>

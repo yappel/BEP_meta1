@@ -3,6 +3,8 @@
 // </copyright>
 
 using Assets.Scripts.Unity;
+using Assets.Scripts.Unity.WaterTracking;
+
 using NUnit.Framework;
 using UnityEngine;
 
