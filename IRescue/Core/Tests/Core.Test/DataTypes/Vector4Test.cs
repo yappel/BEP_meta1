@@ -6,7 +6,6 @@ namespace Core.Test.DataTypes
 {
     using System;
     using IRescue.Core.DataTypes;
-    using MathNet.Numerics.LinearAlgebra.Single;
     using NUnit.Framework;
 
     /// <summary>
