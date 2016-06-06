@@ -24,14 +24,14 @@ public abstract class AbstractLocalizerCoupler
         res = this.RegisterOrientationReceiver(sensor.GetOrientationSource()) || res;
         res = this.RegisterPositionReceiver(sensor.GetPositionSource()) || res;
         res = this.RegisterVelocityReceiver(sensor.GetVelocitySource()) || res;
-        return res; 
+        return res;
     }
 
     /// <summary>
     /// Return the localizer filter
     /// </summary>
     /// <returns>the localizer</returns>
-    public abstract AbstractUserLocalizer GetLocalizer();
+    public abstract IUserLocalizer GetLocalizer();
 
     /// <summary>
     /// Register a acceleration source

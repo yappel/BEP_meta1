@@ -17,7 +17,7 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// Reference the user localizer class used in the application.
         /// </summary>
-        private AbstractUserLocalizer localizer;
+        private IUserLocalizer localizer;
 
         /// <summary>
         /// The field size used in the application.
@@ -25,11 +25,16 @@ namespace Assets.Scripts.Unity
         private FieldSize fieldSize;
 
         /// <summary>
+        /// The MetaWorld MetaFrame which sets the rotation.
+        /// </summary>
+        private Transform metaFrame;
+
+        /// <summary>
         /// Initializes the world box, setting the localizer and the field size
         /// </summary>
         /// <param name="localizer">The used filter method</param>
         /// <param name="fieldSize">The size of the game field</param>
-        public void Init(AbstractUserLocalizer localizer, FieldSize fieldSize)
+        public void Init(IUserLocalizer localizer, FieldSize fieldSize)
         {
             this.localizer = localizer;
             this.fieldSize = fieldSize;
@@ -39,6 +44,7 @@ namespace Assets.Scripts.Unity
             cube.transform.parent = this.transform;
             cube.transform.localPosition = new UnityEngine.Vector3(1.5f, 1.5f, 3);
             cube.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            this.metaFrame = GameObject.Find("MetaWorld/MetaFrame").transform;
         }
 
         /// <summary>
@@ -48,16 +54,14 @@ namespace Assets.Scripts.Unity
         {
             Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
             UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
-            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
+            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);            
 
-            Debug.Log("Pos: " + pos.ToString());
-            Debug.Log("Rot: " + rot.ToString());
-            
-            rot = new UnityEngine.Vector3(0, 0, 0);
+            rot = new UnityEngine.Vector3();
 
             Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
             this.transform.position = -1 * (rotation * pos);
             this.transform.rotation = rotation;
+            this.metaFrame.rotation = new Quaternion();
         }
 
         /// <summary>
@@ -68,9 +72,8 @@ namespace Assets.Scripts.Unity
             GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             groundPlane.AddComponent<GroundPlane>().Init(this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
             groundPlane.transform.parent = this.transform;
-            GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            waterPlane.AddComponent<WaterLevelController>().Init(this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
-            waterPlane.transform.parent = this.transform;
+            WaterLevelController waterPlane = this.gameObject.AddComponent<WaterLevelController>();
+            waterPlane.Init(this.transform, this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
         }
     }
 }

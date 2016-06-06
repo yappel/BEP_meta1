@@ -8,17 +8,14 @@ namespace Assets.Scripts.Unity
     using System.Collections.Generic;
     using System.Linq;
     using Enums;
-    using IRescue.Core.DataTypes;
-    using IRescue.UserLocalisation;
     using ObjectPlacing;
     using SensorControllers;
     using SourceCouplers;
     using UnityEngine;
-    using Vector3 = UnityEngine.Vector3;
-
-    /// <summary>
-    ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
-    /// </summary>
+    using IRescue.UserLocalisation;
+    using IRescue.Core.DataTypes;    /// <summary>
+                                     ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
+                                     /// </summary>
     public class InitScript : MonoBehaviour
     {
         /// <summary>
@@ -40,10 +37,12 @@ namespace Assets.Scripts.Unity
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.AddControllers();
-            AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
+            FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter, fieldSize);
             this.InitControllers(coupler);
             this.InitMarker();
-            this.InitWorldBox(coupler.GetLocalizer());
+            this.InitWorldBox(coupler.GetLocalizer(), fieldSize);
+            Meta.MetaUI.Instance.enableGrid = false;
         }
 
         /// <summary>
@@ -99,10 +98,11 @@ namespace Assets.Scripts.Unity
         /// Create the ground and water plane
         /// </summary>
         /// <param name="localizer">Localizer filter used for position tracking</param>
-        private void InitWorldBox(AbstractUserLocalizer localizer)
+        /// <param name="fieldSize">Size of the field</param>
+        private void InitWorldBox(IUserLocalizer localizer, FieldSize fieldSize)
         {
             GameObject worldBox = new GameObject("WorldBox");
-            worldBox.AddComponent<WorldBox>().Init(localizer, localizer.Fieldsize);
+            worldBox.AddComponent<WorldBox>().Init(localizer, fieldSize);
         }
     }
 }

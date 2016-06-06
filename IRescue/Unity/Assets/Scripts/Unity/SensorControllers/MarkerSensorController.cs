@@ -84,12 +84,6 @@ public class MarkerSensorController : AbstractSensorController
         {
             long t = IRescue.Core.Utils.StopwatchSingleton.Time;
             this.markerSensor.UpdateLocations(t, this.GetVisibleMarkers());
-            List<Measurement<Vector3>> list = this.markerSensor.GetPositions(t, t);
-            Debug.Log("Time: " + t);
-            foreach (Measurement<Vector3> mes in list)
-            {
-                Debug.Log("x=" + mes.Data.X + " y=" + mes.Data.Y + " z=" + mes.Data.Z);
-            }
         }
     }
 

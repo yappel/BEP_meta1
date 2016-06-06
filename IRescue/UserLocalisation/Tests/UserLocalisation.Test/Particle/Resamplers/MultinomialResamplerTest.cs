@@ -1,14 +1,16 @@
 ﻿// <copyright file="MultinomialResamplerTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle.Resamplers
 {
-    using System;
-    using System.Linq;
-    using Algos.Resamplers;
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Single;
+    using System.Collections.Generic;
+
+    using IRescue.UserLocalisation.Particle;
+    using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+    using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+
+    using Moq;
+
     using NUnit.Framework;
 
     /// <summary>
@@ -16,20 +18,16 @@ namespace IRescue.UserLocalisation.Particle
     /// </summary>
     public class MultinomialResamplerTest
     {
-        /// <summary>
-        /// The particles.
-        /// </summary>
-        private Matrix<float> particles;
-
-        /// <summary>
-        /// The weights.
-        /// </summary>
-        private Matrix<float> weights;
+        private AbstractParticleController controller;
 
         /// <summary>
         /// A test subject
         /// </summary>
         private MultinomialResampler mr;
+
+        private int particleAmount = 12;
+
+        private Mock<IParticleGenerator> particleGenerator;
 
         /// <summary>
         /// Setup method
@@ -37,29 +35,20 @@ namespace IRescue.UserLocalisation.Particle
         [SetUp]
         public void Setup()
         {
-            int rowcount = 200;
-            this.weights = new DenseMatrix(rowcount, 1);
+            this.particleGenerator = new Mock<IParticleGenerator>();
+            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<float>(), It.IsAny<float>())).Returns<int, float, float>((par, min, max) =>
+                {
+                    float[] res = new float[par];
+                    for (int i = 0; i < par; i++)
+                    {
+                        res[i] = (((float)i / par) * (max - min)) + min;
+                    }
+
+                    return res;
+                });
+
+            this.controller = new LinearParticleController(this.particleGenerator.Object, this.particleAmount, 0, 200);
             this.mr = new MultinomialResampler();
-            float[] parts = new float[rowcount];
-            for (int i = 0; i < rowcount; i++)
-            {
-                parts[i] = i;
-                this.weights[i, 0] = 1 / (float)rowcount;
-            }
-
-            this.particles = new DenseMatrix(rowcount, 1, parts);
-        }
-
-        /// <summary>
-        /// Test if particles with zero weight are not chosen.
-        /// </summary>
-        [Test]
-        public void TestZerosNotChosen()
-        {
-            this.weights.Clear();
-            this.weights[1, 0] = 1;
-            this.mr.Resample(this.particles, this.weights);
-            Assert.AreEqual(this.particles.RowCount, this.particles.Column(0).ToArray().Sum());
         }
 
         /// <summary>
@@ -68,16 +57,33 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestRightSpread()
         {
-            this.mr.Resample(this.particles, this.weights);
-            var diffs = new float[this.particles.RowCount - 1];
-            var particlearray = this.particles.Column(0).ToArray();
-            Array.Sort(particlearray);
-            for (int i = 0; i < this.particles.RowCount - 1; i++)
+            this.controller.NormalizeWeights();
+            List<float> orignalValues = new List<float>(this.controller.Values);
+            float[] orignalWeights = this.controller.Weights;
+
+            this.controller.SetWeightAt(0, 0);
+            this.controller.SetWeightAt(1, 0);
+            this.controller.SetWeightAt(2, 0);
+            this.mr.Resample(this.controller);
+            float weightsum = 0;
+            foreach (float value in this.controller.Values)
             {
-                diffs[i] = particlearray[i + 1] - particlearray[i];
+                weightsum += orignalWeights[orignalValues.IndexOf(value)];
             }
 
-            Assert.AreEqual(1, diffs.Average(), 1);
+            Assert.IsTrue(weightsum > 1);
+        }
+
+        /// <summary>
+        /// Test if particles with zero weight are not chosen.
+        /// </summary>
+        [Test]
+        public void TestZerosNotChosen()
+        {
+            float original = this.controller.GetValueAt(0);
+            this.controller.SetWeightAt(0, 0);
+            this.mr.Resample(this.controller);
+            Assert.AreNotEqual(original, this.controller.GetValueAt(0));
         }
     }
 }

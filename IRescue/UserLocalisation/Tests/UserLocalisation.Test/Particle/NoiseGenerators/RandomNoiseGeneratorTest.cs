@@ -2,13 +2,18 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle.NoiseGenerators
 {
     using System;
     using System.Linq;
-    using Algos.NoiseGenerators;
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Single;
+
+    using IRescue.UserLocalisation.Particle;
+    using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
+    using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
+
+    using MathNet.Numerics.Distributions;
+
+    using Moq;
 
     using NUnit.Framework;
 
@@ -20,12 +25,20 @@ namespace IRescue.UserLocalisation.Particle
         /// <summary>
         /// The particles
         /// </summary>
-        private Matrix<float> particles;
+        private AbstractParticleController particles;
+
+        private Mock<IContinuousDistribution> rngsource;
 
         /// <summary>
         /// The object to test
         /// </summary>
         private RandomNoiseGenerator rng;
+
+        private float addedNoise = 0.5f;
+
+        private int particleCount = 5;
+
+        private Mock<IParticleGenerator> particleGenerator;
 
         /// <summary>
         /// Setup method
@@ -33,18 +46,71 @@ namespace IRescue.UserLocalisation.Particle
         [SetUp]
         public void Setup()
         {
-            this.particles = new SparseMatrix(200, 1);
-            this.rng = new RandomNoiseGenerator(new MathNet.Numerics.Random.SystemRandomSource());
+            this.rngsource = new Mock<IContinuousDistribution>();
+            this.rngsource.SetupGet(foo => foo.Maximum).Returns(1);
+            this.rngsource.SetupGet(foo => foo.Minimum).Returns(0);
+            this.rngsource.Setup(foo => foo.Sample()).Returns(this.addedNoise);
+
+            this.particleGenerator = new Mock<IParticleGenerator>();
+            this.particleGenerator.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<float>(), It.IsAny<float>()))
+                .Returns<int, float, float>((par, min, max) => Enumerable.Repeat(min, par).ToArray());
+
+            this.particles = new LinearParticleController(this.particleGenerator.Object, this.particleCount, 0, 1);
+
+            this.rng = new RandomNoiseGenerator(this.rngsource.Object);
         }
 
         /// <summary>
-        /// Test if the particle values changed
+        /// Test if the particle _values changed
         /// </summary>
         [Test]
         public void TestIfNoiseIsAdded()
         {
-            this.rng.GenerateNoise(0, 1, this.particles);
-            Assert.IsTrue(this.particles.Column(0).ToArray().Max() > 0);
+            float percentage = 0.1f;
+            this.rngsource.Setup(foo => foo.Sample()).Returns(1);
+            this.rng.GenerateNoise(percentage, this.particles);
+            float[] expected = Enumerable.Repeat(percentage, this.particleCount).ToArray();
+            Assert.AreEqual(expected, this.particles.Values);
+        }
+
+        /// <summary>
+        /// Test if the particle _values changed
+        /// </summary>
+        [Test]
+        public void TestIfNoiseIsAdded2()
+        {
+            float min = 0;
+            float max = 1;
+            this.rng.GenerateNoise(min, max, this.particles);
+            float[] expected = Enumerable.Repeat(0.5f, this.particleCount).ToArray();
+            Assert.AreEqual(expected, this.particles.Values);
+        }
+
+        /// <summary>
+        /// Test if the particle _values changed
+        /// </summary>
+        [Test]
+        public void TestIfNoiseIsAdded3()
+        {
+            float min = -1;
+            float max = 1;
+            this.rng.GenerateNoise(min, max, this.particles);
+            float[] expected = Enumerable.Repeat(0f, this.particleCount).ToArray();
+            Assert.AreEqual(expected, this.particles.Values);
+        }
+
+        /// <summary>
+        /// Test if the particle _values changed
+        /// </summary>
+        [Test]
+        public void TestIfNoiseIsAdded4()
+        {
+            float min = -1;
+            float max = 0;
+            this.particles.Values = Enumerable.Repeat(1f, this.particles.Count).ToArray();
+            this.rng.GenerateNoise(min, max, this.particles);
+            float[] expected = Enumerable.Repeat(0.5f, this.particleCount).ToArray();
+            Assert.AreEqual(expected, this.particles.Values);
         }
 
         /// <summary>
@@ -53,12 +119,15 @@ namespace IRescue.UserLocalisation.Particle
         [Test]
         public void TestNoiseRangeCorrect()
         {
-            this.particles.Clear();
-            float max = 1;
-            float min = -1;
-            this.rng.GenerateNoise(min, max, this.particles);
-            Assert.AreEqual(max, this.particles.Column(0).ToArray().Max(), 0.1 * max);
-            Assert.AreEqual(min, this.particles.Column(0).ToArray().Min(), 0.1 * Math.Abs(min));
+        }
+
+        /// <summary>
+        /// Test if exception is thrown when the rng is not generating numbers between 0 and 1.
+        /// </summary>
+        [Test]
+        public void TestWrongRNGSource()
+        {
+            Assert.Throws<ArgumentException>(() => new RandomNoiseGenerator(new ContinuousUniform(-1, 1)));
         }
     }
 }
