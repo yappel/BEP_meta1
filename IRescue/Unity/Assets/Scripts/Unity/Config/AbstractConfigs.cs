@@ -17,7 +17,15 @@
         protected AbstractConfigs(string path, string defaultPath)
         {
             FileIniDataParser parser = new FileIniDataParser();
-            this.userConfig = parser.ReadFile(path);
+            if (System.IO.File.Exists(path))
+            {
+                this.userConfig = parser.ReadFile(path);
+            }
+            else
+            {
+                System.IO.File.Copy(defaultPath, path);
+            }
+
             this.defaultConfig = parser.ReadFile(defaultPath);
         }
 
@@ -82,7 +90,7 @@
 
             defaultUsed = true;
             this.TryGetDefaultValue(section, key, out value);
-            throw new KeyNotFoundException($"Could not find section and key pair '{section}:{key}' in the config file. Default value is used.");
+            throw new KeyNotFoundException(string.Format("Could not find section and key pair '{0}:{1}' in the config file. Default value is used.", section, key));
         }
 
         protected void TryGetVector3(string section, string keyx, string keyy, string keyz, bool forceDefault, out Vector3 parsed)
@@ -111,10 +119,11 @@
         {
             if (defaultUsed)
             {
-                throw new WrongDefaultConfigFileException($"The value in the default config file for the key '{section}:{key}' could not be parsed to a {type}");
+                throw new WrongDefaultConfigFileException(string.Format(
+                    "The value in the default config file for the key '{0}:{1}' could not be parsed to a {2}", section, key, type));
             }
 
-            throw new ParsingException($"Could not parse {value} to a {type}.");
+            throw new ParsingException(string.Format("Could not parse {0} to a {1}.", value, type));
         }
 
         private void TryGetDefaultValue(string section, string key, out string value)
@@ -122,7 +131,7 @@
             string sectionKeyPair = section + this.defaultConfig.SectionKeySeparator + key;
             if (!this.defaultConfig.TryGetKey(sectionKeyPair, out value))
             {
-                throw new WrongDefaultConfigFileException($"Could not find section and key pair '{section}:{key}' in the default config file.");
+                throw new WrongDefaultConfigFileException(string.Format("Could not find section and key pair '{0}:{1}' in the default config file.", section, key));
             }
         }
     }

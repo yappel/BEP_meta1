@@ -10,6 +10,7 @@ namespace Assets.Scripts.Unity
     using System.Linq;
 
     using Assets.Scripts.Unity.Config;
+    using Assets.Scripts.Unity.WaterTracking;
 
     using Enums;
     using IRescue.UserLocalisation;
@@ -30,6 +31,10 @@ namespace Assets.Scripts.Unity
 
         private GeneralConfigs generalConfigs;
 
+        private MarkerConfigs markerConfigs;
+
+        private AbstractLocalizerCoupler localizerCoupler;
+
         /// <summary>
         ///  Called when the game starts.
         /// </summary>
@@ -38,7 +43,9 @@ namespace Assets.Scripts.Unity
             // Start in 2d mode
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
-            this.generalConfigs = new GeneralConfigs();
+            this.markerConfigs = new MarkerConfigs();
+            this.generalConfigs = new GeneralConfigs(this.markerConfigs);
+            this.localizerCoupler = LocalizerCouplerFactory.Get(this.generalConfigs.UserLocalizer);
 
             //Init sensors
             this.InitSensorControllers();
@@ -55,13 +62,17 @@ namespace Assets.Scripts.Unity
         {
             if (!this.generalConfigs.IgnoreIMUData)
             {
-                gameObject.AddComponent<ImuSensorController>().Init(this.generalConfigs.IMUSource);
+                ImuSensorController component = this.gameObject.AddComponent<ImuSensorController>();
+                component.Init(this.generalConfigs.IMUSource);
+                this.localizerCoupler.RegisterSource(component);
             }
 
             if (!this.generalConfigs.IgnoreMarkers)
             {
-                gameObject.AddComponent<MarkerSensorController>().Init(this.generalConfigs.MarkerSensor);
+                MarkerSensorController component = this.gameObject.AddComponent<MarkerSensorController>();
+                component.Init(this.generalConfigs.MarkerSensor);
                 this.InitMarker();
+                this.localizerCoupler.RegisterSource(component);
             }
         }
 
@@ -72,7 +83,7 @@ namespace Assets.Scripts.Unity
         {
             //TODO change to worldbox
             this.InitPlanes(200, 200);
-            gameObject.AddComponent<UserController>().Init(this.generalConfigs.UserLocalizer);
+            this.gameObject.AddComponent<UserController>().Init(this.generalConfigs.UserLocalizer);
         }
 
         /// <summary>
@@ -80,7 +91,7 @@ namespace Assets.Scripts.Unity
         /// </summary>
         private void InitInputHandlers()
         {
-            gameObject.AddComponent<GestureEventController>().Init();
+            this.gameObject.AddComponent<GestureEventController>().Init();
         }
 
 
@@ -93,7 +104,7 @@ namespace Assets.Scripts.Unity
             IEnumerable<AbstractSensorController> sensorControllers = this.GetAbstractControllers();
             foreach (AbstractSensorController controller in sensorControllers)
             {
-                gameObject.AddComponent(controller.GetType());
+                this.gameObject.AddComponent(controller.GetType());
             }
         }
 

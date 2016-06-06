@@ -17,6 +17,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     public class MarkerLocations
     {
         /// <summary>
+        /// Gets the default value to use when there is no entry for a marker in the config file.
+        /// </summary>
+        public Pose DefaultValue { get; private set; }
+
+        /// <summary>
         ///   Hash table of the markers in the Scene.
         /// </summary>
         private Dictionary<int, Pose> markers;
@@ -25,10 +30,12 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Initializes a new instance of the <see cref="MarkerLocations"/> class with the markers from a defines file.
         /// </summary>
         /// <param name="path">Path to the xml file</param>
-        public MarkerLocations(string path)
+        /// <param name="defaultPose">The default value to use when there is no entry for a marker in the config file.</param>
+        /// <param name="markers">Hash table of the markers in the Scene.</param>
+        public MarkerLocations(Pose defaultPose, Dictionary<int, Pose> markers)
         {
-            this.markers = new Dictionary<int, Pose>();
-            this.LoadMarkers(path);
+            this.markers = markers;
+            this.DefaultValue = defaultPose;
         }
 
         /// <summary>
@@ -38,6 +45,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         public MarkerLocations()
         {
             this.markers = new Dictionary<int, Pose>();
+            this.DefaultValue = new Pose();
         }
 
         /// <summary>
@@ -63,52 +71,8 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             }
             else
             {
-                throw new UnallocatedMarkerException("Marker with id=" + id + " was tracked but not initialized in the XML");
+                throw new UnallocatedMarkerException("Marker with id=" + id + " was tracked but there was no entry in the config file.");
             }
-        }
-
-        /// <summary>
-        ///   Loads the given XML file and parses it to Markers.
-        /// </summary>
-        /// <param name="path">Path to the xml file</param>
-        private void LoadMarkers(string path)
-        {
-            try
-            {
-                XmlDocument xml = new XmlDocument();
-                xml.Load(path);
-                XmlNodeList nodeList = xml.SelectNodes("/markers/marker");
-                foreach (XmlNode node in nodeList)
-                {
-                    this.markers.Add(XmlConvert.ToInt32(node["id"].InnerText), this.XmlTransform(node));
-                }
-            }
-            catch (Exception ex) when (ex is IOException || ex is NullReferenceException || ex is XmlException)
-            {
-                Console.WriteLine("ERROR: {0}", ex.Message);
-                throw;
-            }
-        }
-
-        /// <summary>
-        ///   Load the marker variables from the XML node.
-        /// </summary>
-        /// <param name="node">The current XML node.</param>
-        /// <returns>The parsed marker.</returns>
-        private Pose XmlTransform(XmlNode node)
-        {
-            XmlNode xmlPosition = node.SelectSingleNode("position");
-            XmlNode xmlRotation = node.SelectSingleNode("rotation");
-            Vector3 position = new Vector3(
-                float.Parse(xmlPosition.SelectSingleNode("x").InnerText, CultureInfo.InvariantCulture),
-                float.Parse(xmlPosition.SelectSingleNode("y").InnerText, CultureInfo.InvariantCulture),
-                float.Parse(xmlPosition.SelectSingleNode("z").InnerText, CultureInfo.InvariantCulture));
-            Vector3 rotation = new Vector3(
-                float.Parse(xmlRotation.SelectSingleNode("x").InnerText, CultureInfo.InvariantCulture),
-                float.Parse(xmlRotation.SelectSingleNode("y").InnerText, CultureInfo.InvariantCulture),
-                float.Parse(xmlRotation.SelectSingleNode("z").InnerText, CultureInfo.InvariantCulture));
-
-            return new Pose(position, rotation);
         }
     }
 }

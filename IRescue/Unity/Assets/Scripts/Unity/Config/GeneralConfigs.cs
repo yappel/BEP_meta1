@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.Scripts.Unity.Config
+﻿namespace Assets.Scripts.Unity.Config
 {
+    using System.Collections.Generic;
+
     using IniParser.Exceptions;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation;
-    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Sensors.IMU;
     using IRescue.UserLocalisation.Sensors.Marker;
 
@@ -18,33 +14,53 @@ namespace Assets.Scripts.Unity.Config
 
     public class GeneralConfigs : AbstractConfigs
     {
-
         /// <summary>
         /// TODO
         /// </summary>
         private const string DefaultPath = "";
 
-        private static readonly string DefaultUserPath = Application.persistentDataPath + "GeneralConfig.txt";
-
-        private const string UserCanMoveKey = "usercanmove";
-
         private const string IgnoreIMUDataKey = "ignoreimudata";
 
         private const string IgnoreMarkersKey = "ignoremarkers";
 
-        private const string TrackWaterKey = "trackwater";
+        private const int IMUBuffersize = 60;
 
         private const string JawsKey = "jaws";
 
         private const string LocalizerNameKey = "localizername";
 
-        private IDistribution markerPosDist;
+        private const string NoiseGeneratorKey = "noisegenerator";
 
-        private IDistribution markerOriDist;
+        private const string ParticleAmountKey = "particleamount";
 
-        private IDistribution imuPosDist;
+        private const string ParticleGeneratorKey = "particlegenerator";
 
-        private IDistribution imoOriDist;
+        private const string ResampleNoiseSizeKey = "resamplernoise";
+
+        private const string ResamplerKey = "resampler";
+
+        private const string SmootherKey = "smoothingalgorithm";
+
+        private const string TrackWaterKey = "trackwater";
+
+        private const string UserCanMoveKey = "usercanmove";
+
+        private const string FieldSizeXmaxKey = "xmax";
+        private const string FieldSizeXminKey = "xmin";
+        private const string FieldSizeYmaxKey = "ymax";
+        private const string FieldSizeYminKey = "ymin";
+        private const string FieldSizeZmaxKey = "zmax";
+        private const string FieldSizeZminKey = "zmin";
+
+        private static readonly string DefaultUserPath = Application.persistentDataPath + "GeneralConfig.txt";
+
+        private Normal imoOriDist = new Normal(1);
+
+        private Normal imuPosDist = new Normal(0.1);
+
+        private IDistribution markerOriDist = new Normal(1);
+
+        private IDistribution markerPosDist = new Normal(0.1);
 
         /// <summary>
         /// Instantiates a new <see cref="GeneralConfigs"/>.
@@ -59,10 +75,75 @@ namespace Assets.Scripts.Unity.Config
             this.IgnoreMarkers = this.GetBool(IgnoreMarkersKey);
             this.TrackWater = this.GetBool(TrackWaterKey);
             this.Jaws = this.GetBool(JawsKey);
+            this.fieldSize = this.CreateFieldSize();
             this.UserLocalizer = this.CreateUserLocalizer();
             this.IMUSource = this.CreateIMUSource();
             this.MarkerSensor = this.CreateMarkerSensor(markerConfigs);
+        }
 
+        private FieldSize CreateFieldSize()
+        {
+            FieldSize size = new FieldSize();
+            this.TryGetFloat("fieldsize", FieldSizeXmaxKey, false, out size.Xmax);
+            this.TryGetFloat("fieldsize", FieldSizeXminKey, false, out size.Xmin);
+            this.TryGetFloat("fieldsize", FieldSizeYmaxKey, false, out size.Ymax);
+            this.TryGetFloat("fieldsize", FieldSizeYminKey, false, out size.Ymin);
+            this.TryGetFloat("fieldsize", FieldSizeZmaxKey, false, out size.Zmax);
+            this.TryGetFloat("fieldsize", FieldSizeZminKey, false, out size.Zmin);
+            return size;
+        }
+
+        /// <summary>
+        /// Instantiates a new <see cref="GeneralConfigs"/>.
+        /// Contains information about the general configurations of the application.
+        /// </summary>
+        public GeneralConfigs(MarkerConfigs markerConfigs)
+            : this(DefaultUserPath, markerConfigs)
+        {
+        }
+
+        /// <summary>
+        /// The size of the trainingsarea.
+        /// </summary>
+        public FieldSize fieldSize { get; private set; }
+
+        /// <summary>
+        /// If the IMU sensor should be ignored.
+        /// </summary>
+        public bool IgnoreIMUData { get; private set; }
+
+        /// <summary>
+        /// If the marker tracking sensors should be ignored.
+        /// </summary>
+        public bool IgnoreMarkers { get; private set; }
+
+        public IMUSource IMUSource { get; private set; }
+
+        /// <summary>
+        /// If jaws feature should be enabled.
+        /// </summary>
+        public bool Jaws { get; private set; }
+
+        public MarkerSensor MarkerSensor { get; private set; }
+
+        /// <summary>
+        /// If application should track the current water level.
+        /// </summary>
+        public bool TrackWater { get; private set; }
+
+        /// <summary>
+        /// If the user should be able to move around in the world.
+        /// </summary>
+        public bool UserCanMove { get; private set; }
+
+        /// <summary>
+        /// The class used to determine the pose of the user at a certain times stamp.
+        /// </summary>
+        public IUserLocalizer UserLocalizer { get; private set; }
+
+        private IMUSource CreateIMUSource()
+        {
+            return this.IgnoreIMUData ? null : new IMUSource(this.imuPosDist, this.imoOriDist, IMUBuffersize);
         }
 
         private MarkerSensor CreateMarkerSensor(MarkerConfigs markerConfigs)
@@ -71,18 +152,43 @@ namespace Assets.Scripts.Unity.Config
             {
                 return null;
             }
-            //MarkerSensor sensor = new MarkerSensor(markerConfigs, this.markerPosDist, this.markerOriDist);
-            throw new NotImplementedException();
+
+            Dictionary<int, Pose> markers = new Dictionary<int, Pose>();
+            foreach (KeyValuePair<int, MarkerConfig> pair in markerConfigs.markerConfigs)
+            {
+                markers.Add(pair.Key, new Pose(pair.Value.Postion, pair.Value.Orientation));
+            }
+
+            MarkerSensor sensor = new MarkerSensor(new MarkerLocations(markers), this.markerPosDist, this.markerOriDist);
+            return sensor;
         }
 
-        private IMUSource CreateIMUSource()
+        private IUserLocalizer CreateParticleFilter()
         {
-            throw new NotImplementedException();
+            int particleAmount;
+            this.TryGetInt(string.Empty, ParticleAmountKey, false, out particleAmount);
+
+            float resampleNoiseSize;
+            this.TryGetFloat(string.Empty, ResampleNoiseSizeKey, false, out resampleNoiseSize);
+
+            string particleGenerator;
+            this.TryGetString(string.Empty, ParticleGeneratorKey, false, out particleGenerator);
+
+            string resampler;
+            this.TryGetString(string.Empty, ResamplerKey, false, out resampler);
+
+            string noiseGenerator;
+            this.TryGetString(string.Empty, NoiseGeneratorKey, false, out noiseGenerator);
+
+            string smoother;
+            this.TryGetString(string.Empty, SmootherKey, false, out smoother);
+
+            return ParticleFilterFactory.Create(particleAmount, resampleNoiseSize, this.fieldSize, particleGenerator, resampler, noiseGenerator, smoother);
         }
 
-        private AbstractUserLocalizer CreateUserLocalizer()
+        private IUserLocalizer CreateUserLocalizer()
         {
-            String localizerName;
+            string localizerName;
             this.TryGetString(string.Empty, LocalizerNameKey, false, out localizerName);
             switch (localizerName)
             {
@@ -93,64 +199,11 @@ namespace Assets.Scripts.Unity.Config
             }
         }
 
-        private AbstractUserLocalizer CreateParticleFilter()
-        {
-            throw new NotImplementedException();
-        }
-
         private bool GetBool(string key)
         {
             bool res;
             this.TryGetBool(string.Empty, key, false, out res);
             return res;
         }
-
-        /// <summary>
-        /// Instantiates a new <see cref="GeneralConfigs"/>.
-        /// Contains information about the general configurations of the application.
-        /// </summary>
-        public GeneralConfigs(MarkerConfigs markerConfigs) : this(DefaultUserPath, markerConfigs)
-        {
-
-        }
-
-        /// <summary>
-        /// The class used to determine the pose of the user at a certain times stamp.
-        /// </summary>
-        public AbstractUserLocalizer UserLocalizer { get; }
-
-        public IMUSource IMUSource { get; }
-
-        public MarkerSensor MarkerSensor { get; }
-
-        /// <summary>
-        /// If the user should be able to move around in the world.
-        /// </summary>
-        public bool UserCanMove { get; }
-
-        /// <summary>
-        /// If the IMU sensor should be ignored.
-        /// </summary>
-        public bool IgnoreIMUData { get; }
-
-        /// <summary>
-        /// If the marker tracking sensors should be ignored.
-        /// </summary>
-        public bool IgnoreMarkers { get; }
-
-        /// <summary>
-        /// If application should track the current water level.
-        /// </summary>
-        public bool TrackWater { get; }
-
-        /// <summary>
-        /// If jaws feature should be enabled.
-        /// </summary>
-        public bool Jaws { get; }
-
-        /// <summary>
-        /// The size of the trainingsarea.
-        /// </summary>
-        public FieldSize fieldSize { get; }
     }
 }

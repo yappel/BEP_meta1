@@ -9,6 +9,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
     using Core.DataTypes;
     using Core.Distributions;
     using Core.Utils;
+
     using static MathNet.Numerics.Trig;
 
     /// <summary>
@@ -54,7 +55,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// <summary>
         /// Initializes a new instance of the <see cref="MarkerSensor"/> class.
         /// </summary>
-        /// <param name="markerLocations">The MarkerLocations object storing all markers.</param>
+        /// <param name="markerLocations">The object storing all markers.</param>
         /// <param name="posDistType">The type of probability distribution belonging to the measurements of the position.</param>
         /// <param name="oriDistType">The type of probability distribution belonging to the measurements of the orientation.</param>
         public MarkerSensor(MarkerLocations markerLocations, IDistribution posDistType, IDistribution oriDistType)
@@ -96,33 +97,35 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         {
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
+                Pose markerWorldPose = this.markerLocations.DefaultValue;
                 try
                 {
-                    Pose markerWorldPose = this.markerLocations.GetMarker(pair.Key);
-                    Pose markerUserPose = pair.Value;
-
-                    TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
-                    TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
-                    TransformationMatrix transformationUserToWorld = new TransformationMatrix();
-                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
-                    Vector4 position = new Vector4(0, 0, 0, 1);
-                    transformationUserToWorld.Multiply(position, position);
-
-                    // TODO Could be faster => add method in Vector4 to create a Vector3 from it
-                    Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-                    this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
-
-                    RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
-                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
-                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
-
-                    this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
-                    this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
+                    markerWorldPose = this.markerLocations.GetMarker(pair.Key);
                 }
                 catch (UnallocatedMarkerException e)
                 {
                     Console.Error.WriteLine("ERROR: {0}", e.Message);
                 }
+
+                Pose markerUserPose = pair.Value;
+
+                TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
+                TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
+                TransformationMatrix transformationUserToWorld = new TransformationMatrix();
+                transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
+                Vector4 position = new Vector4(0, 0, 0, 1);
+                transformationUserToWorld.Multiply(position, position);
+
+                // TODO Could be faster => add method in Vector4 to create a Vector3 from it
+                Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+                this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
+
+                RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
+                Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
+                this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
+
+                this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
+                this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
             }
         }
 

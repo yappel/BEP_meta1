@@ -2,10 +2,10 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Assets.Scripts.Unity
+namespace Assets.Scripts.Unity.WaterTracking
 {
-    using Meta;
     using UnityEngine;
+
     using WaterLevelTracking;
 
     /// <summary>

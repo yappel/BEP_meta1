@@ -28,12 +28,6 @@ public abstract class AbstractLocalizerCoupler
     }
 
     /// <summary>
-    /// Return the localizer filter
-    /// </summary>
-    /// <returns>the localizer</returns>
-    public abstract IUserLocalizer GetLocalizer();
-
-    /// <summary>
     /// Register a acceleration source
     /// </summary>
     /// <param name="source">The source to register</param>

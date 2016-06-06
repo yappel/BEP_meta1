@@ -8,6 +8,7 @@ namespace Assets.Scripts.Unity.SourceCouplers
     using Enums;
 
     using IRescue.UserLocalisation;
+    using IRescue.UserLocalisation.Particle;
 
     /// <summary>
     ///  Factory to create a AbstractLocalizerCoupler.
@@ -19,14 +20,14 @@ namespace Assets.Scripts.Unity.SourceCouplers
         /// </summary>
         /// <param name="localizer">Enum of the user filter name</param>
         /// <returns>The localizer coupler</returns>
-        public static AbstractLocalizerCoupler Get(AbstractUserLocalizer localizer)
+        public static AbstractLocalizerCoupler Get(IUserLocalizer localizer)
         {
-            switch (localizer.GetType())
+            switch (localizer.GetType().ToString())
             {
-                case Filters.Particle:
-                    return new ParticleFilterCoupler();
+                case "ParticleFilter":
+                    return new ParticleFilterCoupler((ParticleFilter)localizer);
                 default:
-                    throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer), "filter");
+                    throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer.GetType()), nameof(localizer));
             }
         }
     }

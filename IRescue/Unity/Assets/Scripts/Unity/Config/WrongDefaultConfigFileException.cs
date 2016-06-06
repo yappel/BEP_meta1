@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.Scripts.Unity.Config
+﻿namespace Assets.Scripts.Unity.Config
 {
+    using System;
+
     public class WrongDefaultConfigFileException : Exception
     {
         public WrongDefaultConfigFileException(string message)
