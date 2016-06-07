@@ -36,6 +36,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.InitButton("ToggleButton", () => this.OnToggleButton());
             this.InitButton("SaveButton", () => this.OnSaveButton());
             this.InitButton("LoadButton", () => this.OnLoadButton());
+            this.InitButton("RunButton", () => this.StateContext.SetState(new RunningState(this.StateContext)));
             this.pointTime = StopwatchSingleton.Time;
         }
 
