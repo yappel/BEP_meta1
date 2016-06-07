@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace UserLocalisation.Test.Particle.NoiseGenerators
+namespace UserLocalisation.Test.Particle.Algos.NoiseGenerators
 {
     using System;
     using System.Linq;

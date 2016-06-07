@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Core.Test
+namespace Core.Test.Utils
 {
     using System;
     using IRescue.Core.DataTypes;
