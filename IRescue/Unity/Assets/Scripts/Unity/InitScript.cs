@@ -44,6 +44,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
+            Meta.MetaUI.Instance.enableGrid = false;
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Assets.Scripts.Unity
         ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
         /// </summary>
         /// <param name="localizer">The Localizer filter</param>
-        private void InitUser(AbstractUserLocalizer localizer)
+        private void InitUser(IUserLocalizer localizer)
         {
             gameObject.AddComponent<UserController>().Init(localizer);
         }
