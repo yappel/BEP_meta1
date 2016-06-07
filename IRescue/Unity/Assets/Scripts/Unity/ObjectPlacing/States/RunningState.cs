@@ -23,7 +23,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void OnConfigButton()
         {
-            this.StateContext.SetState(new ConfigState(this.StateContext));
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new ConfigState(this.StateContext));
+            }
         }
     }
 }

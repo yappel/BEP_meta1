@@ -69,7 +69,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void OnBackButton()
         {
-            this.StateContext.SetState(new RunningState(this.StateContext));
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new RunningState(this.StateContext));
+            }
         }
 
         /// <summary>
@@ -77,7 +80,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         private void OnEditModeButton()
         {
-            this.StateContext.SetState(new NeutralState(this.StateContext));
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new NeutralState(this.StateContext));
+            }
         }
     }
 }
