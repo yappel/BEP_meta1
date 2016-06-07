@@ -36,7 +36,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.InitButton("ToggleButton", () => this.OnToggleButton());
             this.InitButton("SaveButton", () => this.OnSaveButton());
             this.InitButton("LoadButton", () => this.OnLoadButton());
+            this.InitButton("RunButton", () => this.OnRunButton());
             this.pointTime = StopwatchSingleton.Time;
+        }
+
+        /// <summary>
+        /// Set the running state as active
+        /// </summary>
+        public void OnRunButton()
+        {
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new RunningState(this.StateContext));
+            }
         }
 
         /// <summary>
