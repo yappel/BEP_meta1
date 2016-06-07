@@ -21,7 +21,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Go to the config state
         /// </summary>
-        private void OnConfigButton()
+        public void OnConfigButton()
         {
             if (this.CanSwitchState())
             {
