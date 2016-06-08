@@ -1,7 +1,11 @@
 fileFormatVersion: 2
-guid: b863046710b4ff44484e1871650952a2
-timeCreated: 1465122170
-licenseType: Free
+guid: 8e7d867597049c642bb42e23f2937dc5
+labels:
+- Fabric
+- Military
+- Net
+- Pattern
+- Camo
 NativeFormatImporter:
   userData: 
   assetBundleName: 
