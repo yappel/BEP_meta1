@@ -58,15 +58,6 @@ public class MarkerSensorController : AbstractSensorController
     }
 
     /// <summary>
-    ///   Return the Orientation source.
-    /// </summary>
-    /// <returns>The IOrientationSource</returns>
-    public override IOrientationSource GetOrientationSource()
-    {
-        return this.markerSensor;
-    }
-
-    /// <summary>
     ///   Return the position source.
     /// </summary>
     /// <returns>the IPositionSource</returns>
@@ -82,7 +73,8 @@ public class MarkerSensorController : AbstractSensorController
     {
         if (this.ImuInitialized())
         {
-            this.markerSensor.UpdateLocations(IRescue.Core.Utils.StopwatchSingleton.Time, this.GetVisibleMarkers());
+            long t = IRescue.Core.Utils.StopwatchSingleton.Time;
+            this.markerSensor.UpdateLocations(t, this.GetVisibleMarkers());
         }
     }
 

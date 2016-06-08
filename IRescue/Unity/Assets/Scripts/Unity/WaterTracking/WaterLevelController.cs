@@ -31,17 +31,19 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// Initializes the water plane
         /// </summary>
-        /// <param name="x">the width of the plane</param>
-        /// <param name="z">the depth of the plane</param>
-        public void Init(float x, float z)
+        /// <param name="parent">Parent of the water plane, world box</param>
+        /// <param name="x">the width of the plane in meters</param>
+        /// <param name="z">the depth of the plane in meters</param>
+        public void Init(Transform parent, float x, float z)
         {
             this.waterLevelTracker = new WaterLevelTracker();
             this.waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             this.waterPlane.name = "WaterPlane";
-            this.waterPlane.transform.position = new Vector3(x * 5, -10, z * 5);
-            this.waterPlane.transform.localScale = new Vector3(x, 1, z);
+            this.waterPlane.transform.position = new Vector3(x, -10, z);
+            this.waterPlane.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
             this.waterPlane.GetComponent<MeshRenderer>().material.shader = Shader.Find("Masked/Mask");
             this.waterPlane.GetComponent<MeshRenderer>().material.renderQueue = 2990;
+            this.waterPlane.transform.parent = parent;
         }
 
         /// <summary>

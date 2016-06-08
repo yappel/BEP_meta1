@@ -4,6 +4,7 @@
 
 using Assets.Scripts.Enums;
 using Assets.Scripts.Unity.SourceCouplers;
+using IRescue.Core.DataTypes;
 using NUnit.Framework;
 
 /// <summary>
@@ -17,6 +18,7 @@ public class LocalizerFactoryTest
     [Test]
     public void ParticleTest()
     {
-        Assert.True(LocalizerFactory.Get(Filters.Particle) is ParticleFilterCoupler);
+        FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+        Assert.True(LocalizerFactory.Get(Filters.Particle, fieldSize) is ParticleFilterCoupler);
     }
 }
