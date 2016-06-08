@@ -69,6 +69,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                         if (Meta.MetaCameraMode.monocular)
                         {
                             toggles[i].isOn = true;
+                            this.Set2D(true);
                         }
 
                         toggles[i].onValueChanged.AddListener((x) => this.Set2D(true));
@@ -77,6 +78,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                         if (!Meta.MetaCameraMode.monocular)
                         {
                             toggles[i].isOn = true;
+                            this.Set2D(false);
                         }
                         toggles[i].onValueChanged.AddListener((x) => this.Set2D(false));
                         break;
