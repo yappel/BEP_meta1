@@ -4,10 +4,10 @@
 
 namespace IRescue.UserLocalisation.Feedback
 {
-    using IRescue.Core.DataTypes;
+    using Core.DataTypes;
 
     /// <summary>
-    /// Interface for classes able to receive feedback data.
+    /// Interface for classes able to receive feedback data about the orientation.
     /// </summary>
     public interface IOrientationFeedbackReceiver
     {

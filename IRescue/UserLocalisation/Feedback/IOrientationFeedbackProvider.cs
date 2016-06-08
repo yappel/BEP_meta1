@@ -1,7 +1,12 @@
-﻿namespace IRescue.UserLocalisation.Feedback
-{
-    using IRescue.Core.DataTypes;
+﻿// <copyright file="IOrientationFeedbackProvider.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
 
+namespace IRescue.UserLocalisation.Feedback
+{
+    /// <summary>
+    /// Provides feedback about the orientation in Tait-Bryan angles.
+    /// </summary>
     public interface IOrientationFeedbackProvider
     {
         /// <summary>

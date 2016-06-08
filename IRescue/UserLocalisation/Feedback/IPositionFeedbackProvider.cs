@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// <copyright file="IPositionFeedbackProvider.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
 
 namespace IRescue.UserLocalisation.Feedback
 {
-    using IRescue.Core.DataTypes;
-
+    /// <summary>
+    /// Provides feedback about the position.
+    /// </summary>
     public interface IPositionFeedbackProvider
     {
         /// <summary>

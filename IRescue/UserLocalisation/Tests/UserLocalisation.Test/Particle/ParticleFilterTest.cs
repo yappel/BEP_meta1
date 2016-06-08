@@ -10,6 +10,7 @@ namespace UserLocalisation.Test.Particle
     using System.Text;
 
     using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation.Feedback;
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
@@ -164,6 +165,52 @@ namespace UserLocalisation.Test.Particle
             }
 
             Assert.Pass();
+        }
+
+        /// <summary>
+        /// Test if added feedback receivers receive feedback.
+        /// </summary>
+        [Test]
+        public void TestAddingFeedbackReceivers()
+        {
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+            Mock<IOrientationFeedbackReceiver> orifeed = new Mock<IOrientationFeedbackReceiver>();
+            filter.RegisterReceiver(orifeed.Object);
+            Mock<IPositionFeedbackReceiver> posfeed = new Mock<IPositionFeedbackReceiver>();
+            filter.RegisterReceiver(posfeed.Object);
+            filter.CalculatePose(10);
+            orifeed.Verify(f => f.NotifyOrientationFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Once);
+            posfeed.Verify(f => f.NotifyPositionFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Once);
+        }
+
+        /// <summary>
+        /// Test if unregistered feedback receivers do not receive feedback.
+        /// </summary>
+        [Test]
+        public void TestRemovingFeedbackReceivers()
+        {
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+            Mock<IOrientationFeedbackReceiver> orifeed = new Mock<IOrientationFeedbackReceiver>();
+            filter.RegisterReceiver(orifeed.Object);
+            filter.RegisterReceiver(orifeed.Object);
+            filter.UnregisterReceiver(orifeed.Object);
+            Mock<IPositionFeedbackReceiver> posfeed = new Mock<IPositionFeedbackReceiver>();
+            filter.RegisterReceiver(posfeed.Object);
+            filter.RegisterReceiver(posfeed.Object);
+            filter.UnregisterReceiver(posfeed.Object);
+            filter.CalculatePose(10);
+            posfeed.Verify(f => f.NotifyPositionFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Never);
+            orifeed.Verify(f => f.NotifyOrientationFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Never);
         }
     }
 }

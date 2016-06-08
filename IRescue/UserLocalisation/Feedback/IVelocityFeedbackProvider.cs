@@ -1,8 +1,13 @@
-﻿namespace IRescue.UserLocalisation.Feedback
+﻿// <copyright file="IVelocityFeedbackProvider.cs" company="Delft University of Technology">
+// Copyright (c) Delft University of Technology. All rights reserved.
+// </copyright>
+namespace IRescue.UserLocalisation.Feedback
 {
+    /// <summary>
+    /// Provides feedback about the velocity.
+    /// </summary>
     public interface IVelocityFeedbackProvider
     {
-
         /// <summary>
         /// Registers a feedback receiver so it will be notified when new feedback is available.
         /// </summary>
