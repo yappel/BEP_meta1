@@ -58,15 +58,6 @@ public class MarkerSensorController : AbstractSensorController
     }
 
     /// <summary>
-    ///   Return the Orientation source.
-    /// </summary>
-    /// <returns>The IOrientationSource</returns>
-    public override IOrientationSource GetOrientationSource()
-    {
-        return this.markerSensor;
-    }
-
-    /// <summary>
     ///   Return the position source.
     /// </summary>
     /// <returns>the IPositionSource</returns>

@@ -8,18 +8,20 @@ namespace Assets.Scripts.Unity
     using System.Collections.Generic;
     using System.Linq;
     using Enums;
+    using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation;
     using ObjectPlacing;
     using SensorControllers;
     using SourceCouplers;
-    using UnityEngine;
-    using IRescue.UserLocalisation;
-    using IRescue.Core.DataTypes;    /// <summary>
-                                     ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
-                                     /// </summary>
+    using UnityEngine;  
+    
+    /// <summary>
+    ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
+    /// </summary>
     public class InitScript : MonoBehaviour
     {
         /// <summary>
-        /// Enum type of the filter that is going to be used
+        /// Type of the filter that is going to be used
         /// </summary>
         private Filters usedFilter = Filters.Particle;
 
@@ -37,7 +39,7 @@ namespace Assets.Scripts.Unity
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.AddControllers();
-            FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            FieldSize fieldSize = new FieldSize() { Xmax = 15, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 15, Zmin = 0 };
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter, fieldSize);
             this.InitControllers(coupler);
             this.InitMarker();

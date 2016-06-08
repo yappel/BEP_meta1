@@ -39,11 +39,6 @@ namespace Assets.Scripts.Unity
             this.localizer = localizer;
             this.fieldSize = fieldSize;
             this.InitPlanes();
-
-            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.parent = this.transform;
-            cube.transform.localPosition = new UnityEngine.Vector3(1.5f, 1.5f, 3);
-            cube.transform.localRotation = Quaternion.Euler(0, 0, 0);
             this.metaFrame = GameObject.Find("MetaWorld/MetaFrame").transform;
         }
 
@@ -54,10 +49,7 @@ namespace Assets.Scripts.Unity
         {
             Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
             UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
-            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);            
-
-            rot = new UnityEngine.Vector3();
-
+            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
             Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
             this.transform.position = -1 * (rotation * pos);
             this.transform.rotation = rotation;
