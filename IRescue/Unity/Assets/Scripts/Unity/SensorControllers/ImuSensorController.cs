@@ -86,15 +86,6 @@ namespace Assets.Scripts.Unity.SensorControllers
         }
 
         /// <summary>
-        ///   Return the position source.
-        /// </summary>
-        /// <returns>the IPositionSource</returns>
-        public override IPositionSource GetPositionSource()
-        {
-            return null;
-        }
-
-        /// <summary>
         ///   Return the velocity source.
         /// </summary>
         /// <returns>the IVelocitySource</returns>
