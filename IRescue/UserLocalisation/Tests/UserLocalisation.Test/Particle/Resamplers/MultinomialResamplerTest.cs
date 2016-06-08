@@ -1,7 +1,7 @@
 ﻿// <copyright file="MultinomialResamplerTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace UserLocalisation.Test.Particle.Resamplers
+namespace UserLocalisation.Test.Particle.Algos.Resamplers
 {
     using System.Collections.Generic;
 

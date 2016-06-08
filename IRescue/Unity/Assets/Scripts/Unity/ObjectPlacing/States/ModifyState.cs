@@ -58,6 +58,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             if (this.CanSwitchState())
             {
                 this.ChangeOutlineRender(this.defaultShader);
+                MeshRenderer[] meshes = this.gameObject.gameObject.GetComponentsInChildren<MeshRenderer>();
+                for (int i = 0; i < meshes.Length; i++)
+                {
+                    meshes[i].material.renderQueue = 3000;
+                }
+
                 this.StateContext.SetState(new NeutralState(this.StateContext));
             }
         }

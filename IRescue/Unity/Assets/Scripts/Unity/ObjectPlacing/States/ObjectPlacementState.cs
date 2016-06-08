@@ -65,6 +65,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private Shader defaultShader = Shader.Find("Standard");
 
         /// <summary>
+        /// Boolean if the user has pointed at the current iteration
+        /// </summary>
+        private bool hasPointed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class. The object will be scaled to 1 meter big.
         /// </summary>
         /// <param name="stateContext">State context</param>
@@ -95,7 +100,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
-            this.gameObject.GetComponent<MeshRenderer>().material.renderQueue = 3030;
             this.InitButton("BackButton", () => this.OnBackButton());
             this.gameObject.transform.position = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
@@ -109,6 +113,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
+            this.hasPointed = true;
             if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 30f))
             {
                 this.ChangeOutlineRender(Color.yellow);
@@ -138,6 +143,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             this.hoverTime = StopwatchSingleton.Time;
             this.ChangeOutlineRender(Color.red);
+        }
+
+        /// <summary>
+        /// Set the outline red if the user is not pointing.
+        /// </summary>
+        public override void RunLateUpdate()
+        {
+            if (!this.hasPointed)
+            {
+                this.ChangeOutlineRender(Color.red);
+            }
+
+            this.hasPointed = false;
         }
 
         /// <summary>

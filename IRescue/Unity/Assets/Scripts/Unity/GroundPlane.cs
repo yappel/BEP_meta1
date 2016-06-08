@@ -18,10 +18,19 @@ namespace Assets.Scripts.Unity
         /// <param name="z">depth of the ground plane in meter</param>
         public void Init(float x, float z)
         {
+            bool debug = false;
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.position = new Vector3(x, 0, z);
             this.gameObject.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
-            this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            this.gameObject.transform.position = new Vector3(x, 0, z);
+            if (debug)
+            {
+                this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
+                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(10 * x, 10 * x);
+            }
+            else
+            {
+                this.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            }
         }
     }
 }

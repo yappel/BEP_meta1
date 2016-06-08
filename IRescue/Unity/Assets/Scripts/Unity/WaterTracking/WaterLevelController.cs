@@ -42,7 +42,7 @@ namespace Assets.Scripts.Unity
             this.waterPlane.transform.position = new Vector3(x, -10, z);
             this.waterPlane.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
             this.waterPlane.GetComponent<MeshRenderer>().material.shader = Shader.Find("Masked/Mask");
-            this.waterPlane.GetComponent<MeshRenderer>().material.renderQueue = 3020;
+            this.waterPlane.GetComponent<MeshRenderer>().material.renderQueue = 2990;
             this.waterPlane.transform.parent = parent;
         }
 
