@@ -198,7 +198,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
                 }
                 else
                 {
-                    this.stateContext.CurrentState.OnPoint(gameObject);
+                    this.stateContext.CurrentState.OnPoint(gameObject.GetComponentInParent<BuildingPlane>().gameObject);
                 }
             }
         }

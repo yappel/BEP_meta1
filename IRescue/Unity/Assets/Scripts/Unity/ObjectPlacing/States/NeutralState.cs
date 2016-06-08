@@ -34,7 +34,35 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public NeutralState(StateContext stateContext) : base(stateContext)
         {
             this.InitButton("ToggleButton", () => this.OnToggleButton());
+            this.InitButton("SaveButton", () => this.OnSaveButton());
+            this.InitButton("LoadButton", () => this.OnLoadButton());
             this.pointTime = StopwatchSingleton.Time;
+        }
+
+        /// <summary>
+        /// Go to the save state
+        /// </summary>
+        public void OnSaveButton()
+        {
+            if (this.StateContext.SaveFilePath != null)
+            {
+                new SaveState(this.StateContext, true);
+            }
+            else if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new SaveState(this.StateContext));
+            }
+        }
+
+        /// <summary>
+        /// Go to the load state
+        /// </summary>
+        public void OnLoadButton()
+        {
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new LoadState(this.StateContext));
+            }
         }
 
         /// <summary>
