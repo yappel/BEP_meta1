@@ -3,6 +3,7 @@
 // </copyright>
 
 using Assets.Scripts.Unity.ObjectPlacing.States;
+using IRescue.Core.Utils;
 using NUnit.Framework;
 
 /// <summary>
@@ -11,11 +12,48 @@ using NUnit.Framework;
 public class RunningStateTest
 {
     /// <summary>
-    /// Test so it shows up in unity tests
+    /// The used state context
+    /// </summary>
+    private StateContext stateContext;
+
+    /// <summary>
+    /// The tested state
+    /// </summary>
+    private RunningState runningState;
+
+    /// <summary>
+    /// Setup the test
+    /// </summary>
+    [SetUp]
+    public void Setup()
+    {
+        this.stateContext = new StateContext(null);
+        this.runningState = new RunningState(this.stateContext);
+        this.stateContext.SetState(this.runningState);
+    }
+
+    /// <summary>
+    /// Standard test for this method when it cannot swap state
     /// </summary>
     [Test]
-    public void EmptyTest()
+    public void OnConfigButtonFalseTest()
     {
-        return;
+        this.runningState.OnConfigButton();
+        Assert.True(this.stateContext.CurrentState is RunningState);
+    }
+
+    /// <summary>
+    /// Standard test for this method when it can swap states
+    /// </summary>
+    [Test]
+    public void OnConfigButtonTest()
+    {
+        long now = StopwatchSingleton.Time;
+        while (StopwatchSingleton.Time - now < 1500)
+        {
+        }
+
+        this.runningState.OnConfigButton();
+        Assert.True(this.stateContext.CurrentState is ConfigState);
     }
 }
