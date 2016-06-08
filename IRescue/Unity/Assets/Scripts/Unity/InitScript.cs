@@ -35,6 +35,7 @@ namespace Assets.Scripts.Unity
         public void Start()
         {
             // Start in 2d mode
+            GameObject.FindObjectOfType<Meta.MetaKeyboard>().gameObject.AddComponent<Meta.MetaBody>().hud = true;
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.InitPlanes(200, 200);
@@ -43,6 +44,7 @@ namespace Assets.Scripts.Unity
             this.InitControllers(coupler);
             this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
+            Meta.MetaUI.Instance.enableGrid = false;
         }
 
         /// <summary>
@@ -112,8 +114,7 @@ namespace Assets.Scripts.Unity
         {
             GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             groundPlane.AddComponent<GroundPlane>().Init(width, depth);
-            GameObject waterPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            waterPlane.AddComponent<WaterLevelController>().Init(width, depth);
+            this.gameObject.AddComponent<WaterLevelController>().Init(width, depth);
         }
     }
 }

@@ -160,7 +160,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 (entryWidth / 2) - ((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
             entry.transform.GetComponentInChildren<Text>().text = name;
             entry.AddComponent<Selector>().Init(this);
-            if (name == "DefaultObject")
+            if ((ObjectPath + "/" + name).Equals(this.StateContext.SelectedBuilding))
             {
                 entry.GetComponent<Selector>().OnPointerDown(null);
             }

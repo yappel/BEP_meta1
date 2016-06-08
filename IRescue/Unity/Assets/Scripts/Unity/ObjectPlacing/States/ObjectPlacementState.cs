@@ -95,7 +95,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
-            this.gameObject.GetComponent<MeshRenderer>().material.renderQueue = 3030;
             this.InitButton("BackButton", () => this.OnBackButton());
             this.gameObject.transform.position = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();

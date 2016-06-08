@@ -27,6 +27,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Gets or sets the path to the save file if something is loaded. Is null otherwise
+        /// </summary>
+        public string SaveFilePath { get; set; }
+
+        /// <summary>
         /// Gets the time of the last state switch
         /// </summary>
         public long PreviousSwitchTime { get; private set; }
