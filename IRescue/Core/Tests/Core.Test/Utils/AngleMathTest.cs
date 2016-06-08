@@ -1,7 +1,7 @@
 ﻿// <copyright file="AngleMathTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace Core.Test
+namespace Core.Test.Utils
 {
     using System;
 

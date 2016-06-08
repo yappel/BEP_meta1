@@ -7,7 +7,6 @@ using Assets.Scripts.Unity.ObjectPlacing.States;
 using IRescue.Core.Utils;
 using Meta;
 using NUnit.Framework;
-using System.Threading;
 using UnityEngine;
 
 /// <summary>
