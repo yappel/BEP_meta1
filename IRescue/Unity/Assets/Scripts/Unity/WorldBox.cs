@@ -47,13 +47,16 @@ namespace Assets.Scripts.Unity
         /// </summary>
         public void LateUpdate()
         {
-            Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
-            UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
-            UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
-            Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
-            this.transform.position = -1 * (rotation * pos);
-            this.transform.rotation = rotation;
-            this.metaFrame.rotation = new Quaternion();
+            if (Meta.MetaCore.Instance.initialized)
+            {
+                Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
+                UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
+                UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
+                Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
+                this.transform.position = -1 * (rotation * pos);
+                this.transform.rotation = rotation;
+                this.metaFrame.rotation = new Quaternion();
+            }
         }
 
         /// <summary>
