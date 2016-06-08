@@ -27,7 +27,7 @@ public class ImuSensorControllerTest
     {
         var gameObject = new GameObject();
         this.imuSensorController = gameObject.AddComponent<ImuSensorController>();
-        this.imuSensorController.Init(new IMUSource(new IRescue.Core.Distributions.Normal(1), new IRescue.Core.Distributions.Normal(1), 100));
+        this.imuSensorController.Init();
     }
 
     /// <summary>

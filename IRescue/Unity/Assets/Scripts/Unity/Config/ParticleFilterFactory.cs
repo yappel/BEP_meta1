@@ -44,7 +44,7 @@
                 case "movingaverage0_5sec":
                     return new MovingAverageSmoother(500);
                 default:
-                    throw new ParsingException(string.Format("There is no kind of smoothing algorithm associated with the value {0}", smootherString));
+                    return new MovingAverageSmoother(1000);
 
             }
         }
@@ -60,7 +60,7 @@
                 case "randomuniform":
                     return new RandomNoiseGenerator(new ContinuousUniform());
                 default:
-                    throw new ParsingException(string.Format("There is no kind of noise generator associated with the value {0}", noiseGeneratorString));
+                    return new RandomNoiseGenerator(new ContinuousUniform());
             }
         }
 
@@ -76,7 +76,7 @@
                 case "multinomial":
                     return new MultinomialResampler();
                 default:
-                    throw new ParsingException(string.Format("There is no kind of resampling algorithm associated with the value {0}", resamplerString));
+                    return new MultinomialResampler();
             }
         }
 
@@ -91,7 +91,7 @@
                 case "randomuniform":
                     return new RandomParticleGenerator(new ContinuousUniform());
                 default:
-                    throw new ParsingException(string.Format("There is no kind of particle generator associated with the value {0}", particleGenerator));
+                    return new RandomParticleGenerator(new ContinuousUniform());
             }
         }
     }

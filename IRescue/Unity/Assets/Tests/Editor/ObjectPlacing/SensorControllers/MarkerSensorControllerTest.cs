@@ -2,6 +2,10 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using System.Collections.Generic;
+
+using Assets.Scripts.Unity.Config;
+
 using IRescue.Core.Distributions;
 
 using NUnit.Framework;
@@ -25,7 +29,11 @@ public class MarkerSensorControllerTest
     {
         var gameObject = new GameObject();
         this.markerSensorController = gameObject.AddComponent<MarkerSensorController>();
-        this.markerSensorController.Init(new IRescue.UserLocalisation.Sensors.Marker.MarkerSensor(new IRescue.UserLocalisation.Sensors.Marker.MarkerLocations(), new Normal(1), new Normal(1)));
+        string markerconfigpath = System.IO.Path.GetFullPath(@"Assets\Tests\Resources\GoodMarkerConfig.ini");
+        string markerconfigpath2 = System.IO.Path.GetFullPath(@"Assets\Tests\Resources\GoodMarkerConfig2.ini");
+        List<string> errors;
+        MarkerConfigs markers = new MarkerConfigs(markerconfigpath, markerconfigpath2, out errors);
+        this.markerSensorController.Init(markers);
     }
 
     /// <summary>

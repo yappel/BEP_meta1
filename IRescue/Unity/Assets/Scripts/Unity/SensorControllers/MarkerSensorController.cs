@@ -3,6 +3,9 @@
 // </copyright>
 
 using System.Collections.Generic;
+using System.Linq;
+
+using Assets.Scripts.Unity.Config;
 using Assets.Scripts.Unity.SensorControllers;
 using IRescue.Core.DataTypes;
 using IRescue.Core.Distributions;
@@ -38,11 +41,23 @@ public class MarkerSensorController : AbstractSensorController
     private Transform markerTransform;
 
     /// <summary>
+    /// TODO fix distributions
+    /// </summary>
+    private IDistribution markerOriDist = new Normal(1);
+
+    /// <summary>
+    /// TODO fix distributions
+    /// </summary>
+    private IDistribution markerPosDist = new Normal(0.1);
+
+    /// <summary>
     ///  Adds the source to the source controller.
     /// </summary>
-    public void Init(MarkerSensor markerSensor)
+    public void Init(MarkerConfigs markerConfigs)
     {
-        this.markerSensor = markerSensor;
+        Dictionary<int, Pose> markers = markerConfigs.markerConfigs.ToDictionary(pair => pair.Key, pair => new Pose(pair.Value.Postion, pair.Value.Orientation));
+        Pose defaultPose = new Pose(markerConfigs.Default.Postion, markerConfigs.Default.Orientation);
+        this.markerSensor = new MarkerSensor(new MarkerLocations(defaultPose, markers), this.markerPosDist, this.markerOriDist);
         this.markerDetector = MarkerDetector.Instance;
         this.markerTransform = new GameObject().transform;
     }

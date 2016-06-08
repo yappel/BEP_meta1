@@ -20,11 +20,23 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// </summary>
         private IMUSource imuSource;
 
+        private const int IMUBuffersize = 60;
+
+        /// <summary>
+        /// TODO fix distributions
+        /// </summary>
+        private Normal imoOriDist = new Normal(1);
+
+        /// <summary>
+        /// TODO fix distributions
+        /// </summary>
+        private Normal imuPosDist = new Normal(0.1);
+
+
         /// <summary>Adds the source to the source controller.</summary>
-        /// <param name="imuSource">The IMU Source.</param>
-        public void Init(IMUSource imuSource)
+        public void Init()
         {
-            this.imuSource = imuSource;
+            this.imuSource = new IMUSource(this.imuPosDist, this.imoOriDist, IMUBuffersize);
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿namespace Assets.Scripts.Unity.Config
 {
+    using System;
     using System.Collections.Generic;
 
     using IniParser.Exceptions;
@@ -21,9 +22,7 @@
 
         private const string IgnoreIMUDataKey = "ignoreimudata";
 
-        private const string IgnoreMarkersKey = "ignoremarkers";
-
-        private const int IMUBuffersize = 60;
+        private const string IgnoreMarkersKey = "ignoremarkerdata";
 
         private const string JawsKey = "jaws";
 
@@ -52,24 +51,23 @@
         private const string FieldSizeZmaxKey = "zmax";
         private const string FieldSizeZminKey = "zmin";
 
-        private static readonly string DefaultUserPath = Application.persistentDataPath + "GeneralConfig.txt";
+        private static readonly string DefaultUserPath = Application.dataPath + "GeneralConfig.txt";
 
-        private Normal imoOriDist = new Normal(1);
 
-        private Normal imuPosDist = new Normal(0.1);
 
-        private IDistribution markerOriDist = new Normal(1);
+        private const string DefaultSection = "misc";
 
-        private IDistribution markerPosDist = new Normal(0.1);
+        private List<string> errors;
 
         /// <summary>
         /// Instantiates a new <see cref="GeneralConfigs"/>.
         /// Contains information about the general configurations of the application.
         /// </summary>
         /// <param name="path">Path to the configuration file to use.</param>
-        public GeneralConfigs(string path, string defaultPath, MarkerConfigs markerConfigs)
+        public GeneralConfigs(string path, string defaultPath, out List<string> errors)
             : base(path, defaultPath)
         {
+            this.errors = new List<string>();
             this.UserCanMove = this.GetBool(UserCanMoveKey);
             this.IgnoreIMUData = this.GetBool(IgnoreIMUDataKey);
             this.IgnoreMarkers = this.GetBool(IgnoreMarkersKey);
@@ -77,8 +75,7 @@
             this.Jaws = this.GetBool(JawsKey);
             this.fieldSize = this.CreateFieldSize();
             this.UserLocalizer = this.CreateUserLocalizer();
-            this.IMUSource = this.CreateIMUSource();
-            this.MarkerSensor = this.CreateMarkerSensor(markerConfigs);
+            errors = this.errors;
         }
 
         /// <summary>
@@ -86,29 +83,20 @@
         /// Contains information about the general configurations of the application.
         /// </summary>
         /// <param name="path">Path to the configuration file to use.</param>
-        public GeneralConfigs(string path, MarkerConfigs markerConfigs)
-            : this(path, DefaultPath, markerConfigs)
+        public GeneralConfigs(string path, out List<string> errors)
+            : this(path, DefaultPath, out errors)
         {
-            this.UserCanMove = this.GetBool(UserCanMoveKey);
-            this.IgnoreIMUData = this.GetBool(IgnoreIMUDataKey);
-            this.IgnoreMarkers = this.GetBool(IgnoreMarkersKey);
-            this.TrackWater = this.GetBool(TrackWaterKey);
-            this.Jaws = this.GetBool(JawsKey);
-            this.fieldSize = this.CreateFieldSize();
-            this.UserLocalizer = this.CreateUserLocalizer();
-            this.IMUSource = this.CreateIMUSource();
-            this.MarkerSensor = this.CreateMarkerSensor(markerConfigs);
         }
 
         private FieldSize CreateFieldSize()
         {
             FieldSize size = new FieldSize();
-            this.TryGetFloat("fieldsize", FieldSizeXmaxKey, false, out size.Xmax);
-            this.TryGetFloat("fieldsize", FieldSizeXminKey, false, out size.Xmin);
-            this.TryGetFloat("fieldsize", FieldSizeYmaxKey, false, out size.Ymax);
-            this.TryGetFloat("fieldsize", FieldSizeYminKey, false, out size.Ymin);
-            this.TryGetFloat("fieldsize", FieldSizeZmaxKey, false, out size.Zmax);
-            this.TryGetFloat("fieldsize", FieldSizeZminKey, false, out size.Zmin);
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeXmaxKey, false, out size.Xmax));
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeXminKey, false, out size.Xmin));
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeYmaxKey, false, out size.Ymax));
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeYminKey, false, out size.Ymin));
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeZmaxKey, false, out size.Zmax));
+            this.errors.AddRange(this.TryGetFloat("fieldsize", FieldSizeZminKey, false, out size.Zmin));
             return size;
         }
 
@@ -116,8 +104,8 @@
         /// Instantiates a new <see cref="GeneralConfigs"/>.
         /// Contains information about the general configurations of the application.
         /// </summary>
-        public GeneralConfigs(MarkerConfigs markerConfigs)
-            : this(DefaultUserPath, markerConfigs)
+        public GeneralConfigs(out List<string> errors)
+            : this(DefaultUserPath, out errors)
         {
         }
 
@@ -136,14 +124,10 @@
         /// </summary>
         public bool IgnoreMarkers { get; private set; }
 
-        public IMUSource IMUSource { get; private set; }
-
         /// <summary>
         /// If jaws feature should be enabled.
         /// </summary>
         public bool Jaws { get; private set; }
-
-        public MarkerSensor MarkerSensor { get; private set; }
 
         /// <summary>
         /// If application should track the current water level.
@@ -160,47 +144,25 @@
         /// </summary>
         public IUserLocalizer UserLocalizer { get; private set; }
 
-        private IMUSource CreateIMUSource()
-        {
-            return this.IgnoreIMUData ? null : new IMUSource(this.imuPosDist, this.imoOriDist, IMUBuffersize);
-        }
-
-        private MarkerSensor CreateMarkerSensor(MarkerConfigs markerConfigs)
-        {
-            if (this.IgnoreMarkers)
-            {
-                return null;
-            }
-
-            Dictionary<int, Pose> markers = new Dictionary<int, Pose>();
-            foreach (KeyValuePair<int, MarkerConfig> pair in markerConfigs.markerConfigs)
-            {
-                markers.Add(pair.Key, new Pose(pair.Value.Postion, pair.Value.Orientation));
-            }
-
-            MarkerSensor sensor = new MarkerSensor(new MarkerLocations(markers), this.markerPosDist, this.markerOriDist);
-            return sensor;
-        }
-
         private IUserLocalizer CreateParticleFilter()
         {
             int particleAmount;
-            this.TryGetInt(string.Empty, ParticleAmountKey, false, out particleAmount);
+            this.errors.AddRange(this.TryGetInt(DefaultSection, ParticleAmountKey, false, out particleAmount));
 
             float resampleNoiseSize;
-            this.TryGetFloat(string.Empty, ResampleNoiseSizeKey, false, out resampleNoiseSize);
+            this.errors.AddRange(this.TryGetFloat(DefaultSection, ResampleNoiseSizeKey, false, out resampleNoiseSize));
 
             string particleGenerator;
-            this.TryGetString(string.Empty, ParticleGeneratorKey, false, out particleGenerator);
+            this.errors.Add(this.TryGetString(DefaultSection, ParticleGeneratorKey, false, out particleGenerator));
 
             string resampler;
-            this.TryGetString(string.Empty, ResamplerKey, false, out resampler);
+            this.errors.Add(this.TryGetString(DefaultSection, ResamplerKey, false, out resampler));
 
             string noiseGenerator;
-            this.TryGetString(string.Empty, NoiseGeneratorKey, false, out noiseGenerator);
+            this.errors.Add(this.TryGetString(DefaultSection, NoiseGeneratorKey, false, out noiseGenerator));
 
             string smoother;
-            this.TryGetString(string.Empty, SmootherKey, false, out smoother);
+            this.errors.Add(this.TryGetString(DefaultSection, SmootherKey, false, out smoother));
 
             return ParticleFilterFactory.Create(particleAmount, resampleNoiseSize, this.fieldSize, particleGenerator, resampler, noiseGenerator, smoother);
         }
@@ -208,20 +170,23 @@
         private IUserLocalizer CreateUserLocalizer()
         {
             string localizerName;
-            this.TryGetString(string.Empty, LocalizerNameKey, false, out localizerName);
+            this.errors.Add(this.TryGetString(DefaultSection, LocalizerNameKey, false, out localizerName));
             switch (localizerName)
             {
                 case "particlefilter":
                     return this.CreateParticleFilter();
                 default:
-                    throw new ParsingException("Localizer name not recognized");
+                    this.errors.Add("Localizer name given by user not recognized");
+                    break;
             }
+
+            return null;
         }
 
         private bool GetBool(string key)
         {
             bool res;
-            this.TryGetBool(string.Empty, key, false, out res);
+            this.errors.AddRange(this.TryGetBool(DefaultSection, key, false, out res));
             return res;
         }
     }

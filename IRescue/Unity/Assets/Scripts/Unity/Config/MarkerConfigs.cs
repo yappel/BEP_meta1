@@ -44,8 +44,8 @@ namespace Assets.Scripts.Unity.Config
         /// The configuration information about the markers places in the world.
         /// </summary>
         /// <param name="path">Path to the config file to use.</param>
-        public MarkerConfigs(string path, string defaultPath)
-            : base(path, defaultPath)
+        public MarkerConfigs(string path, string defaultPath, out List<string> errors)
+            : base(path, defaultPath, out errors)
         {
         }
 
@@ -54,8 +54,8 @@ namespace Assets.Scripts.Unity.Config
         /// The configuration information about the markers places in the world.
         /// </summary>
         /// <param name="path">Path to the config file to use.</param>
-        public MarkerConfigs(string path)
-            : this(path, DefaultPath)
+        public MarkerConfigs(string path, out List<string> errors)
+            : this(path, DefaultPath, out errors)
         {
         }
 
@@ -63,17 +63,17 @@ namespace Assets.Scripts.Unity.Config
         /// Initializes a new instance of the <see cref="MarkerConfigs"/> class.
         ///  The configuration information about the markers places in the world.
         /// </summary>
-        public MarkerConfigs()
-            : this(DefaultUserPath)
+        public MarkerConfigs(out List<string> errors)
+            : this(DefaultUserPath, out errors)
         {
         }
 
         protected override MarkerConfig CreateMarkerConfig(string section)
         {
             MarkerConfig newconfig = default(MarkerConfig);
-            this.TryGetDouble(section, SizeKey, false, out newconfig.Size);
-            this.TryGetVector3(section, PosXKey, PosYKey, PosZKey, false, out newconfig.Postion);
-            this.TryGetVector3(section, OriXKey, OriYKey, OriZKey, false, out newconfig.Orientation);
+            this.errors.AddRange(this.TryGetDouble(section, SizeKey, false, out newconfig.Size));
+            this.errors.AddRange(this.TryGetVector3(section, PosXKey, PosYKey, PosZKey, false, out newconfig.Postion));
+            this.errors.AddRange(this.TryGetVector3(section, OriXKey, OriYKey, OriZKey, false, out newconfig.Orientation));
             return newconfig;
         }
     }

@@ -27,23 +27,23 @@
 
         private Dictionary<int, WaterMarkerConfig> waterMarkerConfigs;
 
-        public WaterLevelMarkerConfigs()
-            : this(DefaultUserPath)
+        public WaterLevelMarkerConfigs(out List<string> errors)
+            : this(DefaultUserPath, out errors)
         {
         }
 
-        public WaterLevelMarkerConfigs(string path)
-            : base(path, DefaultPath)
+        public WaterLevelMarkerConfigs(string path, out List<string> errors)
+            : base(path, DefaultPath, out errors)
         {
         }
 
         protected override WaterMarkerConfig CreateMarkerConfig(string sectionName)
         {
             WaterMarkerConfig newconfig = new WaterMarkerConfig();
-            this.TryGetDouble(sectionName, DistanceToFirstStripeKey, false, out newconfig.DistanceToFirstStripe);
-            this.TryGetDouble(sectionName, StripeHeightKey, false, out newconfig.StripeHeight);
-            this.TryGetDouble(sectionName, StripeWidthKey, false, out newconfig.StripeWidth);
-            this.TryGetDouble(sectionName, StripeAmountKey, false, out newconfig.StripeAmount);
+            this.errors.AddRange(this.TryGetDouble(sectionName, DistanceToFirstStripeKey, false, out newconfig.DistanceToFirstStripe));
+            this.errors.AddRange(this.TryGetDouble(sectionName, StripeHeightKey, false, out newconfig.StripeHeight));
+            this.errors.AddRange(this.TryGetDouble(sectionName, StripeWidthKey, false, out newconfig.StripeWidth));
+            this.errors.AddRange(this.TryGetDouble(sectionName, StripeAmountKey, false, out newconfig.StripeAmount));
             return newconfig;
         }
     }

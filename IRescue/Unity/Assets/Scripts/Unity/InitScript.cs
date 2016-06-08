@@ -43,8 +43,14 @@ namespace Assets.Scripts.Unity
             // Start in 2d mode
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
-            this.markerConfigs = new MarkerConfigs();
-            this.generalConfigs = new GeneralConfigs(this.markerConfigs);
+            List<string> GeneralConfigErrors;
+            List<string> MarkerConfigErrors;
+            this.generalConfigs = new GeneralConfigs(out GeneralConfigErrors);
+            if (this.generalConfigs.TrackWater || this.generalConfigs.IgnoreMarkers)
+            {
+                this.markerConfigs = new MarkerConfigs(out MarkerConfigErrors);
+            }
+
             this.localizerCoupler = LocalizerCouplerFactory.Get(this.generalConfigs.UserLocalizer);
 
             //Init sensors
@@ -63,14 +69,14 @@ namespace Assets.Scripts.Unity
             if (!this.generalConfigs.IgnoreIMUData)
             {
                 ImuSensorController component = this.gameObject.AddComponent<ImuSensorController>();
-                component.Init(this.generalConfigs.IMUSource);
+                component.Init();
                 this.localizerCoupler.RegisterSource(component);
             }
 
             if (!this.generalConfigs.IgnoreMarkers)
             {
                 MarkerSensorController component = this.gameObject.AddComponent<MarkerSensorController>();
-                component.Init(this.generalConfigs.MarkerSensor);
+                component.Init(this.markerConfigs);
                 this.InitMarker();
                 this.localizerCoupler.RegisterSource(component);
             }
