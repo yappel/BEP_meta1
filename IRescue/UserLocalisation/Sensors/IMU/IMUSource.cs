@@ -10,12 +10,14 @@ namespace IRescue.UserLocalisation.Sensors.IMU
     using Core.Distributions;
     using Core.Utils;
 
+    using IRescue.UserLocalisation.Feedback;
+
     /// <summary>
     ///     The IMU Source provides data from sensors in an IMU and computes _values which can be derived from this.
     ///     Implements <see cref="IAccelerationSource" />, <see cref="IDisplacementSource" />, <see cref="IVelocitySource" />
     ///     and <see cref="IOrientationSource" /> to provide data on acceleration, displacement, orientation and velocity.
     /// </summary>
-    public class IMUSource : IAccelerationSource, IDisplacementSource, IOrientationSource, IVelocitySource
+    public class IMUSource : IAccelerationSource, IDisplacementSource, IOrientationSource, IVelocitySource, IVelocityFeedbackReceiver, IOrientationFeedbackReceiver
     {
         /// <summary>
         ///     The type of probability distribution belonging to the measurements of the acceleration.
@@ -75,7 +77,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <summary>
         ///     Pointer to the last added velocity measurement.
         /// </summary>
-        private int velocityPointer = -1;
+        private int velocityPointer;
 
         /// <summary>
         ///     Size of the currently stored velocities.
@@ -286,7 +288,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
 
             //// TODO fix std and time
-            return new Measurement<Vector3>(displacement, endTimeStamp, this.accDistType);
+            return new Measurement<Vector3>(displacement, endTimeStamp, new Normal(double.MaxValue));
         }
 
         /// <summary>
@@ -490,8 +492,9 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 vel.Add(this.velocity[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)], vel);
                 this.velocity[this.velocityPointer] = vel;
                 this.velocityStd[this.velocityPointer] =
-                    this.velocityStd[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)]
-                    + (float)Math.Sqrt(2 * Math.Pow(this.accDistType.Stddev, 2));
+                    (float)Math.Sqrt(
+                        Math.Pow(this.velocityStd[this.Mod(this.velocityPointer - 1, this.measurementBufferSize)], 2) +
+                        Math.Pow(this.accDistType.Stddev, 2));
                 if (this.velocitySize < this.measurementBufferSize)
                 {
                     this.velocitySize++;
@@ -586,6 +589,51 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             }
 
             return res;
+        }
+
+        /// <inheritdoc/>
+        public void NotifyVelocityFeedback(FeedbackData<Vector3> data)
+        {
+            int index = -1;
+            for (int i = 0; i < Math.Min(this.measurementBufferSize, this.measurementSize); i++)
+            {
+                if (this.timeStamps[i] < data.TimeStamp)
+                {
+                    continue;
+                }
+
+                index = data.TimeStamp - this.timeStamps[i - 1] >= this.timeStamps[i] - data.TimeStamp ? i - 1 : i;
+                if (this.velocityStd[index] <= data.Stddev)
+                {
+                    return;
+                }
+
+                break;
+            }
+
+            if (index < 0)
+            {
+                return;
+            }
+
+            this.velocity[this.Mod(index, this.measurementSize)] = data.Data;
+            this.velocityStd[this.Mod(index, this.measurementSize)] = data.Stddev;
+            int range = index > this.velocityPointer ? index - this.velocityPointer : (this.velocityPointer + this.measurementBufferSize) - index;
+
+            for (int i = 1; i < range; i++)
+            {
+                int current = this.Mod(index + i, this.measurementSize);
+                int prev = this.Mod((index + i) - 1, this.measurementSize);
+                Vector3 dv = this.CalculateDeltaV(this.accelerations[prev], this.accelerations[current], this.timeStamps[prev], this.timeStamps[current]);
+                this.velocity[this.Mod(current - 1, this.measurementSize)].Add(dv, this.velocity[current]);
+                this.velocityStd[current] = (float)Math.Sqrt(Math.Pow(this.velocityStd[prev], 2) + Math.Pow(this.accDistType.Stddev, 2));
+            }
+        }
+
+        /// <inheritdoc/>
+        public void NotifyOrientationFeedback(FeedbackData<Vector3> data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

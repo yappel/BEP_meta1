@@ -9,7 +9,12 @@ namespace IRescue.UserLocalisation.Feedback
     /// <summary>
     /// Interface for classes able to receive feedback data.
     /// </summary>
-    public interface IOrientationFeedbackReceiver : IFeedbackReceiver<Vector3>
+    public interface IOrientationFeedbackReceiver
     {
+        /// <summary>
+        /// Notifies the feedback provider that there is new feedback data available.
+        /// </summary>
+        /// <param name="data">The orientation in Tait-Bryan angles.</param>
+        void NotifyOrientationFeedback(FeedbackData<Vector3> data);
     }
 }

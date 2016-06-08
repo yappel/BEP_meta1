@@ -9,7 +9,12 @@ namespace IRescue.UserLocalisation.Feedback
     /// <summary>
     /// Interface for classes able to receive feedback data.
     /// </summary>
-    public interface IVelocityFeedbackReceiver : IFeedbackReceiver<Vector3>
+    public interface IVelocityFeedbackReceiver
     {
+        /// <summary>
+        /// Notifies the feedback provider that there is new feedback data available.
+        /// </summary>
+        /// <param name="data">The velocity in m/s in the xyz axis.</param>
+        void NotifyVelocityFeedback(FeedbackData<Vector3> data);
     }
 }

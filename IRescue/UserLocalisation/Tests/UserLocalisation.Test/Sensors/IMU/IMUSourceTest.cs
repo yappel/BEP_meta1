@@ -588,6 +588,32 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(new[] { 19, 19 }, resori.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
         }
 
+        [Test]
+        public void TestGettingVelocityFeedback()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, new Vector3());
+            this.source.AddMeasurements(1000, this.standardAcceleration, new Vector3());
+            this.source.AddMeasurements(2000, this.standardAcceleration, new Vector3());
+            this.source.AddMeasurements(3000, this.standardAcceleration, new Vector3());
+            this.source.AddMeasurements(4000, this.standardAcceleration, new Vector3());
+            Assert.AreEqual(this.source.GetVelocity(0).Data, new Vector3());
+            Assert.AreEqual(this.standardAcceleration, this.source.GetVelocity(1000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(2), this.source.GetVelocity(2000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(3), this.source.GetVelocity(3000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(4), this.source.GetVelocity(4000).Data);
+            this.source.NotifyVelocityFeedback(new IRescue.UserLocalisation.Feedback.FeedbackData<Vector3>()
+            {
+                Data = new Vector3(),
+                Stddev = 0.1f,
+                TimeStamp = 1
+            });
+            Assert.AreEqual(new Vector3(), this.source.GetVelocity(1000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(1), this.source.GetVelocity(2000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(2), this.source.GetVelocity(3000).Data);
+            Assert.AreEqual(this.standardAcceleration.Multiply(3), this.source.GetVelocity(4000).Data);
+
+        }
+
         /// <summary>
         /// Assert that all elements in the vectors match with possible deviation 0.0001.
         /// </summary>

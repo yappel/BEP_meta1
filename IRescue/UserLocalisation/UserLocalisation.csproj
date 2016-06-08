@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Feedback\FeedbackData.cs" />
-    <Compile Include="Feedback\IFeedbackReceiver.cs" />
     <Compile Include="Feedback\IOrientationFeedbackProvider.cs" />
     <Compile Include="Feedback\IOrientationFeedbackReceiver.cs" />
     <Compile Include="Feedback\IPositionFeedbackProvider.cs" />

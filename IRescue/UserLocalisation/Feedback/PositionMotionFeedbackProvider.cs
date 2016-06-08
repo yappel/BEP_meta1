@@ -22,11 +22,8 @@
             this.velReceivers = new List<IVelocityFeedbackReceiver>();
         }
 
-        /// <summary>
-        /// Notifies the feedback provider that there is new feedback data available.
-        /// </summary>
-        /// <param name="data">The feedback data.</param>
-        public void Notify(FeedbackData<Vector3> data)
+        /// <inheritdoc/>
+        public void NotifyPositionFeedback(FeedbackData<Vector3> data)
         {
             if ((this.previousData != null) && (data.TimeStamp <= this.previousData.Value.TimeStamp))
             {
@@ -40,7 +37,7 @@
                 for (int index = 0; index < this.velReceivers.Count; index++)
                 {
                     IVelocityFeedbackReceiver receiver = this.velReceivers[index];
-                    receiver.Notify(velocityFeedback.Value);
+                    receiver.NotifyVelocityFeedback(velocityFeedback.Value);
                 }
             }
 

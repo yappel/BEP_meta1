@@ -26,9 +26,9 @@ namespace IRescue.UserLocalisation.Particle
         /// <summary>
         /// List with all registered <see cref="IPositionFeedbackReceiver"/>s.
         /// </summary>
-        private List<IFeedbackReceiver<Vector3>> posReceivers;
+        private List<IPositionFeedbackReceiver> posReceivers;
 
-        private List<IFeedbackReceiver<Vector3>> oriReceivers;
+        private List<IOrientationFeedbackReceiver> oriReceivers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
@@ -42,8 +42,8 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="smoother">See smoother argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
         public ParticleFilter(int particleAmount, float resampleNoiseSize, FieldSize fieldSize, IParticleGenerator particleGenerator, IResampler resampler, INoiseGenerator noiseGenerator, ISmoother smoother)
         {
-            this.posReceivers = new List<IFeedbackReceiver<Vector3>>();
-            this.oriReceivers = new List<IFeedbackReceiver<Vector3>>();
+            this.posReceivers = new List<IPositionFeedbackReceiver>();
+            this.oriReceivers = new List<IOrientationFeedbackReceiver>();
             this.positionFilter = new PositionParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, fieldSize, smoother);
             this.orientationFilter = new OrientationParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, smoother.Clone());
         }
@@ -63,31 +63,31 @@ namespace IRescue.UserLocalisation.Particle
 
         private void NotifyPosFeedbackReceivers(long timeStamp, Pose result)
         {
-            this.NotifyFeedbackReceivers(
-                new FeedbackData<Vector3>()
-                {
-                    Data = result.Position,
-                    Stddev = this.positionFilter.GetConfidence(),
-                    TimeStamp = timeStamp
-                }, this.posReceivers);
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>()
+            {
+                Data = result.Position,
+                Stddev = this.positionFilter.GetConfidence(),
+                TimeStamp = timeStamp
+            };
+
+            for (int i = 0; i < this.posReceivers.Count; i++)
+            {
+                this.posReceivers[i].NotifyPositionFeedback(feedback);
+            }
         }
 
         private void NotifyOriFeedbackReceivers(long timeStamp, Pose result)
         {
-            this.NotifyFeedbackReceivers(
-                new FeedbackData<Vector3>()
-                {
-                    Data = result.Orientation,
-                    Stddev = this.orientationFilter.GetConfidence(),
-                    TimeStamp = timeStamp
-                }, this.oriReceivers);
-        }
-
-        private void NotifyFeedbackReceivers(FeedbackData<Vector3> feedback, List<IFeedbackReceiver<Vector3>> receivers)
-        {
-            for (int i = 0; i < receivers.Count; i++)
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>()
             {
-                receivers[i].Notify(feedback);
+                Data = result.Orientation,
+                Stddev = this.orientationFilter.GetConfidence(),
+                TimeStamp = timeStamp
+            };
+
+            for (int i = 0; i < this.oriReceivers.Count; i++)
+            {
+                this.oriReceivers[i].NotifyOrientationFeedback(feedback);
             }
         }
 

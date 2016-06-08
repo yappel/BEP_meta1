@@ -9,7 +9,12 @@ namespace IRescue.UserLocalisation.Feedback
     /// <summary>
     /// Interface for classes able to receive feedback data.
     /// </summary>
-    public interface IPositionFeedbackReceiver : IFeedbackReceiver<Vector3>
+    public interface IPositionFeedbackReceiver
     {
+        /// <summary>
+        /// Notifies the feedback provider that there is new feedback data available.
+        /// </summary>
+        /// <param name="data">The position in meters in the xyz axis.</param>
+        void NotifyPositionFeedback(FeedbackData<Vector3> data);
     }
 }
