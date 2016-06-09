@@ -30,8 +30,8 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// </summary>
     public ParticleFilterCoupler()
     {
-        FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
-        int particleamount = 30;
+        FieldSize fieldSize = new FieldSize() { Xmax = 5, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 5, Zmin = 0 };
+        int particleamount = 300;
         IParticleGenerator prtclgen = new RandomParticleGenerator(new ContinuousUniform());
         INoiseGenerator noisegen = new RandomNoiseGenerator(new ContinuousUniform());
         IResampler resampler = new MultinomialResampler();
