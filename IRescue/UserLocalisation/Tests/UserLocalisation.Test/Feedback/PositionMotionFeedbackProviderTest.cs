@@ -13,7 +13,7 @@ namespace IRescue.UserLocalisation.Particle
     using NUnit.Framework;
 
     /// <summary>
-    /// TODO TODO
+    /// Tests for the <see cref="PositionMotionFeedbackProvider"/> class
     /// </summary>
     public class PositionMotionFeedbackProviderTest
     {

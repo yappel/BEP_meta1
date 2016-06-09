@@ -93,12 +93,10 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="receiver">The receiver to register.</param>
         public void RegisterReceiver(IPositionFeedbackReceiver receiver)
         {
-            if (this.posReceivers.Contains(receiver))
+            if (!this.posReceivers.Contains(receiver))
             {
-                return;
+                this.posReceivers.Add(receiver);
             }
-
-            this.posReceivers.Add(receiver);
         }
 
         /// <summary>
@@ -107,12 +105,10 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="receiver">The receiver to register.</param>
         public void RegisterReceiver(IOrientationFeedbackReceiver receiver)
         {
-            if (this.oriReceivers.Contains(receiver))
+            if (!this.oriReceivers.Contains(receiver))
             {
-                return;
+                this.oriReceivers.Add(receiver);
             }
-
-            this.oriReceivers.Add(receiver);
         }
 
         /// <summary>
@@ -121,12 +117,10 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="receiver">The receiver to unregister.</param>
         public void UnregisterReceiver(IPositionFeedbackReceiver receiver)
         {
-            if (!this.posReceivers.Contains(receiver))
+            if (this.posReceivers.Contains(receiver))
             {
-                return;
+                this.posReceivers.Remove(receiver);
             }
-
-            this.posReceivers.Remove(receiver);
         }
 
         /// <summary>
@@ -135,12 +129,10 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="receiver">The receiver to unregister.</param>
         public void UnregisterReceiver(IOrientationFeedbackReceiver receiver)
         {
-            if (!this.oriReceivers.Contains(receiver))
+            if (this.oriReceivers.Contains(receiver))
             {
-                return;
+                this.oriReceivers.Remove(receiver);
             }
-
-            this.oriReceivers.Remove(receiver);
         }
 
         private void NotifyOriFeedbackReceivers(long timeStamp, Pose result)

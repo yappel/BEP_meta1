@@ -59,12 +59,10 @@ namespace IRescue.UserLocalisation.Feedback
         /// <param name="receiver">The receiver to register.</param>
         public void RegisterReceiver(IVelocityFeedbackReceiver receiver)
         {
-            if (this.velReceivers.Contains(receiver))
+            if (!this.velReceivers.Contains(receiver))
             {
-                return;
+                this.velReceivers.Add(receiver);
             }
-
-            this.velReceivers.Add(receiver);
         }
 
         /// <summary>
@@ -73,12 +71,10 @@ namespace IRescue.UserLocalisation.Feedback
         /// <param name="receiver">The receiver to unregister.</param>
         public void UnregisterReceiver(IVelocityFeedbackReceiver receiver)
         {
-            if (!this.velReceivers.Contains(receiver))
+            if (this.velReceivers.Contains(receiver))
             {
-                return;
+                this.velReceivers.Remove(receiver);
             }
-
-            this.velReceivers.Remove(receiver);
         }
 
         /// <summary>
