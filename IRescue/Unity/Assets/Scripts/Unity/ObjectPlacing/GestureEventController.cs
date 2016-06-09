@@ -163,6 +163,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             }
         }
 
+        private bool clicked;
+
         /// <summary>
         /// Method for the point event. A single finger fully extended.
         /// </summary>
@@ -170,14 +172,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
-            Vector3 cameraPosition = this.gameObject.transform.position;
+
+            if (Input.GetMouseButton(0))
+            {
+                point = this.GetClosestPoint(Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), Mathf.Infinity), out gameObject);
+            }
+
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.right.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
+                Debug.DrawRay(new Vector3(), Hands.right.pointer.position, Color.green);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(new Vector3(), Hands.right.pointer.position), Mathf.Infinity), out gameObject);
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.left.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(new Vector3(), Hands.left.pointer.position), Mathf.Infinity), out gameObject);
             }
 
             this.PointEvent(gameObject, point);
@@ -194,7 +202,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 if (gameObject.GetComponentInParent<BuildingPlane>() == null)
                 {
-                    this.stateContext.CurrentState.OnPoint(point);
+                    this.stateContext.CurrentState.OnPoint(gameObject.transform.InverseTransformPoint(point));
                 }
                 else
                 {

@@ -40,7 +40,7 @@ namespace Assets.Scripts.Unity
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.AddControllers();
-            FieldSize fieldSize = new FieldSize() { Xmax = 15, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 15, Zmin = 0 };
+            FieldSize fieldSize = new FieldSize() { Xmax = 15, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 20, Zmin = 0 };
             AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter, fieldSize);
             this.InitControllers(coupler);
             this.InitMarker();

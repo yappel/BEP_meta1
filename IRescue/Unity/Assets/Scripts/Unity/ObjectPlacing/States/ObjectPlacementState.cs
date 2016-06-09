@@ -101,7 +101,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
             this.InitButton("BackButton", () => this.OnBackButton());
-            this.gameObject.transform.position = location;
+            this.gameObject.transform.localPosition = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
         }
@@ -114,7 +114,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             long time = StopwatchSingleton.Time;
             this.hasPointed = true;
-            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 30f))
+            if ((position - this.gameObject.transform.localPosition).magnitude > (position.magnitude / 30f))
             {
                 this.ChangeOutlineRender(Color.yellow);
                 this.hoverTime = time;
@@ -124,7 +124,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 this.ChangeOutlineRender(Color.green);
             }
 
-            this.gameObject.transform.position = position;
+            this.gameObject.transform.localPosition = position;
             if (time - this.hoverTime > TimeToPlace + 250)
             {
                 this.hoverTime = time;
