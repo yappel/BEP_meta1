@@ -93,7 +93,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             if (this.translateModification)
             {
                 this.InitTextPane("InfoText", "Move");
-                this.previousPosition = gameObject.transform.position;
+                this.previousPosition = gameObject.transform.localPosition;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
             }
@@ -167,7 +167,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (this.translateModification)
                 {
-                    this.gameObject.transform.position = this.previousPosition;
+                    this.gameObject.transform.localPosition = this.previousPosition;
                     this.PlaceBuilding();
                 }
                 else
