@@ -20,12 +20,12 @@ namespace Assets.Scripts.Unity
         {
             bool debug = false;
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.localScale = new Vector3(x / 5f, 1, z / 5f);
-            this.gameObject.transform.position = new Vector3(x, 0, z);
+            this.gameObject.transform.localScale = new Vector3(x / 10f, 1, z / 10f);
+            this.gameObject.transform.position = new Vector3(x / 2, -1.0f, z / 2);
             if (debug)
             {
                 this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
-                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(2 * x, 2 * z);
+                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(x, z);
             }
             else
             {
