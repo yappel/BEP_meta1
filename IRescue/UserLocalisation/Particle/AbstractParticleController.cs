@@ -4,10 +4,12 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 
+    using MathNet.Numerics.Distributions;
     using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
 
@@ -46,6 +48,18 @@ namespace IRescue.UserLocalisation.Particle
         /// Gets the minimum value the particles can have.
         /// </summary>
         public float MinValue { get; }
+
+        /// <summary>
+        /// Gets the standard deviation of the distribution estimated by the current particle values and weights.
+        /// </summary>
+        public float Stddev
+        {
+            get
+            {
+                IEnumerable<double> samples = this.DistanceToValue(this.WeightedAverage()).Select((n, i) => Math.Pow(n, 2) * this.GetWeightAt(i));
+                return (float)Math.Sqrt(samples.Sum());
+            }
+        }
 
         /// <summary>
         /// Gets or sets the particle values.

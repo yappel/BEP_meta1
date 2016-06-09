@@ -56,7 +56,7 @@ namespace IRescue.UserLocalisation.Particle.Algos.Smoothers
         {
             List<Vector3> allResults = new List<Vector3>();
             List<int> toremove = new List<int>();
-            for (int i = 0; i < this.buffer.Count; i++)
+            for (int i = this.buffer.Count - 1; i >= 0; i--)
             {
                 if (this.buffer[i].TimeStamp + this.buffersize < timeStamp)
                 {
