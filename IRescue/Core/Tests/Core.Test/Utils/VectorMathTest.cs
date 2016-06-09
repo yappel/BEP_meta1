@@ -102,5 +102,32 @@ namespace Core.Test.Utils
             Assert.AreEqual(-90, vector.Y, float.Epsilon);
             Assert.AreEqual(0, vector.Z, 0.0001f);
         }
+
+        /// <summary>
+        /// Test normalizing a few orientation vectors.
+        /// </summary>
+        [Test]
+        public void TestNormalize3dVector()
+        {
+            Vector3 wrongVector = new Vector3(180, 180, 180);
+            Vector3 expected = new Vector3(0, 0, 0);
+            Vector3 actual = VectorMath.Normalize(wrongVector);
+            this.AreEqual(expected, actual);
+            wrongVector = new Vector3(180, 0, 180);
+            expected = new Vector3(0, 180, 0);
+            actual = VectorMath.Normalize(wrongVector);
+            this.AreEqual(expected, actual);
+            wrongVector = new Vector3(2, 18, -78);
+            expected = new Vector3(2, 18, -78);
+            actual = VectorMath.Normalize(wrongVector);
+            this.AreEqual(expected, actual);
+        }
+
+        private void AreEqual(Vector3 v1, Vector3 v2)
+        {
+            Assert.AreEqual(v1.X, v2.X, 10E-05);
+            Assert.AreEqual(v1.Y, v2.Y, 10E-05);
+            Assert.AreEqual(v1.Z, v2.Z, 10E-05);
+        }
     }
 }
