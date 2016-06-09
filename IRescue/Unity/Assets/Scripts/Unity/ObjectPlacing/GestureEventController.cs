@@ -173,11 +173,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing
 
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Vector3.zero, Hands.right.pointer.localPosition), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.right.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Vector3.zero, Hands.left.pointer.localPosition), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.left.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
             }
 
             this.PointEvent(gameObject, point);
