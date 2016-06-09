@@ -98,12 +98,12 @@ namespace IRescue.UserLocalisation.Feedback
             Vector3 traveledDist = new Vector3();
             data.Data.Subtract(feedbackData.Value.Data, traveledDist);
             Vector3 velocityData = new Vector3();
-            traveledDist.Divide(timediff, velocityData);
+            traveledDist.Divide(timediff / 1000f, velocityData);
             FeedbackData<Vector3>? res = new FeedbackData<Vector3>
             {
                 Data = velocityData,
                 TimeStamp = data.TimeStamp,
-                Stddev = (float)Math.Sqrt((Math.Pow(data.Stddev, 2) + Math.Pow(feedbackData.Value.Stddev, 2)) / 2)
+                Stddev = (float)Math.Sqrt(Math.Pow(data.Stddev, 2) + Math.Pow(feedbackData.Value.Stddev, 2))
             };
 
             return res;

@@ -204,9 +204,11 @@ namespace UserLocalisation.Test.Particle
             filter.RegisterReceiver(orifeed.Object);
             filter.RegisterReceiver(orifeed.Object);
             filter.UnregisterReceiver(orifeed.Object);
+            filter.UnregisterReceiver(orifeed.Object);
             Mock<IPositionFeedbackReceiver> posfeed = new Mock<IPositionFeedbackReceiver>();
             filter.RegisterReceiver(posfeed.Object);
             filter.RegisterReceiver(posfeed.Object);
+            filter.UnregisterReceiver(posfeed.Object);
             filter.UnregisterReceiver(posfeed.Object);
             filter.CalculatePose(10);
             posfeed.Verify(f => f.NotifyPositionFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Never);
