@@ -172,20 +172,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
-
             if (Input.GetMouseButton(0))
             {
                 point = this.GetClosestPoint(Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition), Mathf.Infinity), out gameObject);
             }
 
+            // TODO check the origin of the ray (middle of both eyes not right one which is the case now (change Camera.main.transform.position slightly or something from Meta)
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                Debug.DrawRay(new Vector3(), Hands.right.pointer.position, Color.green);
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(new Vector3(), Hands.right.pointer.position), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.right.pointer.localPosition), Mathf.Infinity), out gameObject);
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(new Vector3(), Hands.left.pointer.position), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.left.pointer.localPosition), Mathf.Infinity), out gameObject);
             }
 
             this.PointEvent(gameObject, point);
