@@ -25,7 +25,7 @@ namespace Assets.Scripts.Unity
             if (debug)
             {
                 this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
-                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(10 * x, 10 * x);
+                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(2 * x, 2 * z);
             }
             else
             {
