@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Feedback\PositionMotionFeedbackProviderTest.cs" />
     <Compile Include="Particle\AbstractParticleControllerTest.cs" />
     <Compile Include="Particle\CircularParticleControllerTest.cs" />
     <Compile Include="Particle\LinearParticleControllerTest.cs" />

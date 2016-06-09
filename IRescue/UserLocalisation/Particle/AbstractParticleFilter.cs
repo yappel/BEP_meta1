@@ -130,6 +130,15 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
+        /// Returns the average standard deviation of the distributions described by the particles.
+        ///  </summary>
+        /// <returns>The average standard deviation.</returns>
+        public float GetConfidence()
+        {
+            return new[] { this.ParticleControllerX.Stddev, this.ParticleControllerY.Stddev, this.ParticleControllerZ.Stddev }.Average();
+        }
+
+        /// <summary>
         /// Predict where the next value will be in this timestamp and move the particles accordingly.
         /// </summary>
         protected virtual void Predict()
