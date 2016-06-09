@@ -151,7 +151,7 @@ public class NeutralStateTest
     [Test]
     public void OnPointFalseTest()
     {
-        this.neutralState.OnPoint(new Vector3());
+        this.neutralState.OnPoint(new Vector3(0, 0, 0));
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
 
