@@ -122,6 +122,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             newBuilding.transform.parent = this.gameObject.transform.parent;
             newBuilding.name = this.gameObject.name;
             newBuilding.transform.localScale = this.gameObject.transform.localScale;
+            newBuilding.transform.localRotation = this.gameObject.transform.localRotation;
             UnityEngine.Object.Destroy(newBuilding.GetComponent<MetaBody>());
             this.ChangeOutlineRender(this.defaultShader);
             this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding));
