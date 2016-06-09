@@ -17,7 +17,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Time in milliseconds required to point steadily to place the building
         /// </summary>
-        private const int TimeToPlace = 3000;
+        private const int TimeToPlace = 2000;
 
         /// <summary>
         /// The preferred size of a created building in meters
@@ -114,7 +114,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             long time = StopwatchSingleton.Time;
             this.hasPointed = true;
-            if ((position - this.gameObject.transform.localPosition).magnitude > (position.magnitude / 30f))
+            if ((position - this.gameObject.transform.localPosition).magnitude > (position.magnitude / 20f))
             {
                 this.ChangeOutlineRender(Color.yellow);
                 this.hoverTime = time;
