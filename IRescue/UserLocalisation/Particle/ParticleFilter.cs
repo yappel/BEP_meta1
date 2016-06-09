@@ -3,8 +3,10 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
+    using System.Collections.Generic;
+
     using IRescue.Core.DataTypes;
-    using IRescue.UserLocalisation;
+    using IRescue.UserLocalisation.Feedback;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
@@ -16,9 +18,16 @@ namespace IRescue.UserLocalisation.Particle
     /// </summary>
     public class ParticleFilter : IUserLocalizer, IPositionReceiver, IOrientationReceiver, IDisplacementReceiver
     {
+        private OrientationParticleFilter orientationFilter;
+
+        private List<IOrientationFeedbackReceiver> oriReceivers;
+
         private PositionParticleFilter positionFilter;
 
-        private OrientationParticleFilter orientationFilter;
+        /// <summary>
+        /// List with all registered <see cref="IPositionFeedbackReceiver"/>s.
+        /// </summary>
+        private List<IPositionFeedbackReceiver> posReceivers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleFilter"/> class.
@@ -32,27 +41,19 @@ namespace IRescue.UserLocalisation.Particle
         /// <param name="smoother">See smoother argument of the constructor of <seealso cref="AbstractParticleFilter"/></param>
         public ParticleFilter(int particleAmount, float resampleNoiseSize, FieldSize fieldSize, IParticleGenerator particleGenerator, IResampler resampler, INoiseGenerator noiseGenerator, ISmoother smoother)
         {
+            this.posReceivers = new List<IPositionFeedbackReceiver>();
+            this.oriReceivers = new List<IOrientationFeedbackReceiver>();
             this.positionFilter = new PositionParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, fieldSize, smoother);
             this.orientationFilter = new OrientationParticleFilter(noiseGenerator, resampleNoiseSize, resampler, particleGenerator, particleAmount, smoother.Clone());
         }
 
         /// <summary>
-        ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
-        /// </summary>
-        /// <param name="timeStamp">The timestamp of the point in time to calculate the <see cref="Pose"/> at.</param>
-        /// <returns>The calculated <see cref="Pose"/></returns>
-        public Pose CalculatePose(long timeStamp)
-        {
-            return new Pose(this.positionFilter.Calculate(timeStamp), this.orientationFilter.Calculate(timeStamp));
-        }
-
-        /// <summary>
-        /// Add a position source to the receiver.
+        /// Add a displacement source to the receiver.
         /// </summary>
         /// <param name="source">The source from which data can be extracted.</param>
-        public void AddPositionSource(IPositionSource source)
+        public void AddDisplacementSource(IDisplacementSource source)
         {
-            this.positionFilter.AddPositionSource(source);
+            this.positionFilter.AddDisplacementSource(source);
         }
 
         /// <summary>
@@ -65,12 +66,103 @@ namespace IRescue.UserLocalisation.Particle
         }
 
         /// <summary>
-        /// Add a displacement source to the receiver.
+        /// Add a position source to the receiver.
         /// </summary>
         /// <param name="source">The source from which data can be extracted.</param>
-        public void AddDisplacementSource(IDisplacementSource source)
+        public void AddPositionSource(IPositionSource source)
         {
-            this.positionFilter.AddDisplacementSource(source);
+            this.positionFilter.AddPositionSource(source);
+        }
+
+        /// <summary>
+        ///   Calculates the <see cref="Pose"/> of the user at a given timestamp based on the information stored in the system.
+        /// </summary>
+        /// <param name="timeStamp">The timestamp of the point in time to calculate the <see cref="Pose"/> at.</param>
+        /// <returns>The calculated <see cref="Pose"/></returns>
+        public Pose CalculatePose(long timeStamp)
+        {
+            Pose result = new Pose(this.positionFilter.Calculate(timeStamp), this.orientationFilter.Calculate(timeStamp));
+            this.NotifyPosFeedbackReceivers(timeStamp, result);
+            this.NotifyOriFeedbackReceivers(timeStamp, result);
+            return result;
+        }
+
+        /// <summary>
+        /// Registers a feedback receiver so it will be notified when new feedback is available.
+        /// </summary>
+        /// <param name="receiver">The receiver to register.</param>
+        public void RegisterReceiver(IPositionFeedbackReceiver receiver)
+        {
+            if (!this.posReceivers.Contains(receiver))
+            {
+                this.posReceivers.Add(receiver);
+            }
+        }
+
+        /// <summary>
+        /// Registers a feedback receiver so it will be notified when new feedback is available.
+        /// </summary>
+        /// <param name="receiver">The receiver to register.</param>
+        public void RegisterReceiver(IOrientationFeedbackReceiver receiver)
+        {
+            if (!this.oriReceivers.Contains(receiver))
+            {
+                this.oriReceivers.Add(receiver);
+            }
+        }
+
+        /// <summary>
+        /// Unregisters a feedback receiver so it will not be notified when new feedback is available.
+        /// </summary>
+        /// <param name="receiver">The receiver to unregister.</param>
+        public void UnregisterReceiver(IPositionFeedbackReceiver receiver)
+        {
+            if (this.posReceivers.Contains(receiver))
+            {
+                this.posReceivers.Remove(receiver);
+            }
+        }
+
+        /// <summary>
+        /// Unregisters a feedback receiver so it will not be notified when new feedback is available.
+        /// </summary>
+        /// <param name="receiver">The receiver to unregister.</param>
+        public void UnregisterReceiver(IOrientationFeedbackReceiver receiver)
+        {
+            if (this.oriReceivers.Contains(receiver))
+            {
+                this.oriReceivers.Remove(receiver);
+            }
+        }
+
+        private void NotifyOriFeedbackReceivers(long timeStamp, Pose result)
+        {
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>
+            {
+                Data = result.Orientation,
+                Stddev = this.orientationFilter.GetConfidence(),
+                TimeStamp = timeStamp
+            };
+
+            for (int i = 0; i < this.oriReceivers.Count; i++)
+            {
+                this.oriReceivers[i].NotifyOrientationFeedback(feedback);
+            }
+        }
+
+        private void NotifyPosFeedbackReceivers(long timeStamp, Pose result)
+        {
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>
+            {
+                Data = result.Position,
+                Stddev = this.positionFilter.GetConfidence(),
+                TimeStamp = timeStamp
+            };
+
+            for (int i = 0; i < this.posReceivers.Count; i++)
+            {
+                this.posReceivers[i].NotifyPositionFeedback(feedback);
+            }
         }
     }
 }
