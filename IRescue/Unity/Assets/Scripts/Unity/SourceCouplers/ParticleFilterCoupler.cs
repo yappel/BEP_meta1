@@ -31,7 +31,7 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// <param name="fieldSize">The preferred game field size</param>
     public ParticleFilterCoupler(FieldSize fieldSize)
     {
-        int particleamount = 30;
+        int particleamount = 300;
         IParticleGenerator prtclgen = new RandomParticleGenerator(new ContinuousUniform());
         INoiseGenerator noisegen = new RandomNoiseGenerator(new ContinuousUniform());
         IResampler resampler = new MultinomialResampler();

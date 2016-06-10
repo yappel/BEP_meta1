@@ -14,7 +14,6 @@ using UnityEngine.UI;
 /// </summary>
 public class ObjectSelectStateTest
 {
-
     /// <summary>
     /// The used state context
     /// </summary>

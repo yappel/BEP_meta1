@@ -73,7 +73,7 @@ public class LoadStateTest
         this.loadState.OnBackButton();
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
-    
+
     /// <summary>
     /// Standard test for the confirm button when you have selected nothing
     /// </summary>
@@ -102,7 +102,7 @@ public class LoadStateTest
         {
         }
 
-        this.loadState.SaveFilePath = "..\\Assets\\Tests\\Resources\\testload"; 
+        this.loadState.SaveFilePath = "..\\Assets\\Tests\\Resources\\testload";
         this.loadState.OnConfirmButton();
         Assert.True(this.stateContext.CurrentState is NeutralState);
         Assert.AreEqual(2, GameObject.FindObjectsOfType<BuildingPlane>().Length);
