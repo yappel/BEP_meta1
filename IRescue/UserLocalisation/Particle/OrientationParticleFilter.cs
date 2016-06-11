@@ -4,13 +4,17 @@
 namespace IRescue.UserLocalisation.Particle
 {
     using System.Collections.Generic;
+    using System.Linq;
 
+    using IRescue.Core.DataTypes;
     using IRescue.Core.Utils;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
     using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
+
+    using MathNet.Numerics.LinearAlgebra.Single;
 
     /// <summary>
     /// Particle filter that determines the x y z Tait–Bryan angles of the user at a given timestamp.
@@ -60,8 +64,19 @@ namespace IRescue.UserLocalisation.Particle
             this.Measurements.Clear();
             for (int i = 0; i < this.orientationSources.Count; i++)
             {
-                this.Measurements.AddRange(this.orientationSources[i].GetOrientationClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp));
+                List<Measurement<Vector3>> rawmeasurments = this.orientationSources[i].GetOrientationClosestTo(this.CurrentTimeStamp, this.CurrentTimeStamp - this.PreviousTimeStamp);
+                for (int index = 0; index < rawmeasurments.Count; index++)
+                {
+                    Measurement<Vector3> measurement = rawmeasurments[index];
+                    this.Measurements.Add(this.NormalizeOrientation(measurement));
+                }
             }
+        }
+
+        private Measurement<Vector3> NormalizeOrientation(Measurement<Vector3> measurement)
+        {
+            Vector3 newVector = VectorMath.Normalize(measurement.Data);
+            return new Measurement<Vector3>(newVector, measurement.TimeStamp, measurement.DistributionType);
         }
     }
 }
