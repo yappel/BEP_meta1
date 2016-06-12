@@ -1,11 +1,10 @@
 ﻿// <copyright file="Quaternion.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     using System;
-
-    using IRescue.Core.DataTypes;
+    using System.Linq;
 
     using MathNet.Numerics;
 
@@ -16,24 +15,37 @@ namespace IRescue.Core.Datatypes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Quaternion"/> class.
+        /// Creates quaternion based equivalent to a rotation matrix.
         /// </summary>
-        /// <param name="eulerx">The Tait-Bryan x angle in radian</param>
-        /// <param name="eulery">The Tait-Bryan y angle in radian</param>
-        /// <param name="eulerz">The Tait-Bryan z angle in radian</param>
-        public Quaternion(float eulerx, float eulery, float eulerz)
+        /// <param name="rm">The rotation matrix.</param>
+        public Quaternion(RotationMatrix rm)
         {
-            double c1 = Math.Cos(eulery / 2);
-            double c2 = Math.Cos(eulerx / 2);
-            double c3 = Math.Cos(eulerz / 2);
-            double s1 = Math.Sin(eulery / 2);
-            double s2 = Math.Sin(eulerx / 2);
-            double s3 = Math.Sin(eulerz / 2);
-            this.W = (float)((c1 * c2 * c3) - (s1 * s2 * s3));
-            this.X = (float)((s1 * s2 * c3) + (c1 * c2 * s3));
-            this.Y = (float)((s1 * c2 * c3) + (c1 * s2 * s3));
-            this.Z = (float)((c1 * s2 * c3) - (s1 * c2 * s3));
-            this.EulerAnglesRadian = this.CalcEulerAngles();
-            this.EulerAnglesDegree = new Vector3(this.EulerAnglesRadian.Map(f => (float)Trig.RadianToDegree(f)).ToArray());
+            float[] methods =
+                {
+                    rm[0, 0] + rm[1, 1] + rm[2, 2],
+                    rm[0, 0] - rm[1, 1] - rm[2, 2],
+                    ((-1 * rm[0, 0]) + rm[1, 1]) - rm[2, 2],
+                    ((-1 * rm[0, 0]) - rm[1, 1]) + rm[2, 2]
+                };
+
+            switch (methods.ToList().IndexOf(methods.Max()))
+            {
+                case 0:
+                    this.Diagonal1Solution(rm);
+                    break;
+                case 1:
+                    this.Diagonal2Solution(rm);
+                    break;
+                case 2:
+                    this.Diagonal3Solution(rm);
+                    break;
+                case 3:
+                    this.Diagonal4Solution(rm);
+                    break;
+            }
+
+            this.EulerAnglesDegree = this.CalcEulerAngles();
+            this.EulerAnglesRadian = new Vector3(this.EulerAnglesDegree.Map(f => (float)Trig.DegreeToRadian(f)).ToArray());
         }
 
         /// <summary>
@@ -49,29 +61,74 @@ namespace IRescue.Core.Datatypes
         /// <summary>
         /// Gets the w coordinate.
         /// </summary>
-        public float W { get; }
+        public float W { get; private set; }
 
         /// <summary>
         /// Gets the x coordinate.
         /// </summary>
-        public float X { get; }
+        public float X { get; private set; }
 
         /// <summary>
         /// Gets the y coordinate.
         /// </summary>
-        public float Y { get; }
+        public float Y { get; private set; }
 
         /// <summary>
         /// Gets the z coordinate.
         /// </summary>
-        public float Z { get; }
+        public float Z { get; private set; }
 
         private Vector3 CalcEulerAngles()
         {
-            double y = Math.Atan2((2 * this.Y * this.W) - (2 * this.X * this.Z), 1 - (2 * Math.Pow(this.Y, 2)) - (2 * Math.Pow(this.Z, 2)));
-            double x = Math.Asin((2 * this.X * this.Y) + (2 * this.Z * this.W));
-            double z = Math.Atan2((2 * this.X * this.W) - (2 * this.Y * this.Z), 1 - (2 * Math.Pow(this.X, 2)) - (2 * Math.Pow(this.Z, 2)));
-            return new Vector3((float)x, (float)y, (float)z);
+            return new RotationMatrix(this.W, this.X, this.Y, this.Z).EulerAngles;
+        }
+
+        /// <summary>
+        /// See http://www.ee.ucr.edu/~farell/AidedNavigation/D_App_Quaternions/Rot2Quat.pdf
+        /// </summary>
+        /// <param name="rm">The rotation matrix</param>
+        private void Diagonal1Solution(RotationMatrix rm)
+        {
+            this.W = (float)(0.5 * Math.Sqrt(1 + rm[0, 0] + rm[1, 1] + rm[2, 2]));
+            this.X = (rm[2, 1] - rm[1, 2]) / (4 * this.W);
+            this.Y = (rm[0, 2] - rm[2, 0]) / (4 * this.W);
+            this.Z = (rm[1, 0] - rm[0, 1]) / (4 * this.W);
+        }
+
+        /// <summary>
+        /// See http://www.ee.ucr.edu/~farell/AidedNavigation/D_App_Quaternions/Rot2Quat.pdf
+        /// </summary>
+        /// <param name="rm">The rotation matrix</param>
+        private void Diagonal2Solution(RotationMatrix rm)
+        {
+            this.X = (float)(0.5 * Math.Sqrt((1 + rm[0, 0]) - rm[1, 1] - rm[2, 2]));
+            this.W = (rm[2, 1] - rm[1, 2]) / (4 * this.X);
+            this.Y = (rm[0, 1] + rm[1, 0]) / (4 * this.X);
+            this.Z = (rm[0, 2] + rm[2, 0]) / (4 * this.X);
+        }
+
+        /// <summary>
+        /// See http://www.ee.ucr.edu/~farell/AidedNavigation/D_App_Quaternions/Rot2Quat.pdf
+        /// </summary>
+        /// <param name="rm">The rotation matrix</param>
+        private void Diagonal3Solution(RotationMatrix rm)
+        {
+            this.Y = (float)(0.5 * Math.Sqrt(((1 - rm[0, 0]) + rm[1, 1]) - rm[2, 2]));
+            this.W = (rm[0, 2] - rm[2, 0]) / (4 * this.Y);
+            this.X = (rm[0, 1] + rm[1, 0]) / (4 * this.Y);
+            this.Z = (rm[1, 2] + rm[2, 1]) / (4 * this.Y);
+        }
+
+        /// <summary>
+        /// See http://www.ee.ucr.edu/~farell/AidedNavigation/D_App_Quaternions/Rot2Quat.pdf
+        /// </summary>
+        /// <param name="rm">The rotation matrix</param>
+        private void Diagonal4Solution(RotationMatrix rm)
+        {
+            this.Z = (float)(0.5 * Math.Sqrt((1 - rm[0, 0] - rm[1, 1]) + rm[2, 2]));
+            this.W = (rm[1, 0] - rm[0, 1]) / (4 * this.Z);
+            this.X = (rm[0, 2] + rm[2, 0]) / (4 * this.Z);
+            this.Y = (rm[1, 2] + rm[2, 1]) / (4 * this.Z);
         }
     }
 }

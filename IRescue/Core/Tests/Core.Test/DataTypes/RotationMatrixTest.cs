@@ -68,6 +68,26 @@ namespace Core.Test.DataTypes
         }
 
         /// <summary>
+        /// Test that a simple rotation returns the desired output vector.
+        /// </summary>
+        [Test]
+        public void SimpleRotationTest2()
+        {
+            RotationMatrix expected = new RotationMatrix(45, 90, 30);
+            Quaternion q = new Quaternion(expected);
+            RotationMatrix actual = new RotationMatrix(q.W, q.X, q.Y, q.Z);
+            Assert.AreEqual(expected[0, 0], actual[0, 0], 0.0001);
+            Assert.AreEqual(expected[1, 0], actual[1, 0], 0.0001);
+            Assert.AreEqual(expected[2, 0], actual[2, 0], 0.0001);
+            Assert.AreEqual(expected[0, 1], actual[0, 1], 0.0001);
+            Assert.AreEqual(expected[1, 1], actual[1, 1], 0.0001);
+            Assert.AreEqual(expected[2, 1], actual[2, 1], 0.0001);
+            Assert.AreEqual(expected[0, 2], actual[0, 2], 0.0001);
+            Assert.AreEqual(expected[1, 2], actual[1, 2], 0.0001);
+            Assert.AreEqual(expected[2, 2], actual[2, 2], 0.0001);
+        }
+
+        /// <summary>
         /// Assert that two vectors are equal.
         /// </summary>
         /// <param name="expected">The expected result.</param>

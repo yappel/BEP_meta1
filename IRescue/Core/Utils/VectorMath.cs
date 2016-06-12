@@ -6,7 +6,6 @@ namespace IRescue.Core.Utils
 {
     using System;
 
-    using IRescue.Core.Datatypes;
     using IRescue.Core.DataTypes;
 
     using MathNet.Numerics;
@@ -126,13 +125,13 @@ namespace IRescue.Core.Utils
         }
 
         /// <summary>
-        /// Normalizes a 3 dimensional direction vector so that the sum of the euler angles in minimal.
+        /// Normalizes xyz Tait-Bryan angles.
         /// </summary>
-        /// <param name="data">The 3 dimensional vector.</param>
-        /// <returns>Vector pointing to the same direction with minimal absolute sum of angles</returns>
+        /// <param name="data">The xyz Tait-Bryan angles</param>
+        /// <returns>The same or equivalent Tait-Bryan angles.</returns>
         public static Vector3 Normalize(Vector3 data)
         {
-            return new Quaternion((float)Trig.DegreeToRadian(data.X), (float)Trig.DegreeToRadian(data.Y), (float)Trig.DegreeToRadian(data.Z)).EulerAnglesDegree;
+            return new Quaternion(new RotationMatrix(data.X, data.Y, data.Z)).EulerAnglesDegree;
         }
     }
 }
