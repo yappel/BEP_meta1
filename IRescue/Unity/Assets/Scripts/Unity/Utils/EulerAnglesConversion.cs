@@ -13,6 +13,7 @@ namespace Assets.Scripts.Unity.Utils
 
     using UnityEngine;
 
+    using Quaternion = UnityEngine.Quaternion;
     using Vector3 = UnityEngine.Vector3;
 
     /// <summary>
@@ -42,12 +43,9 @@ namespace Assets.Scripts.Unity.Utils
         /// <returns>The XYZ angles in degrees</returns>
         public static Vector3 ZXYtoXYZ(Vector3 zxyAngles)
         {
-            Vector3 axis;
-            float angle;
-            Quaternion.Euler(zxyAngles).ToAngleAxis(out angle, out axis);
+            Quaternion q = Quaternion.Euler(zxyAngles);
             RotationMatrix rm = new RotationMatrix(
-                new IRescue.Core.DataTypes.Vector3(axis.x, axis.y, axis.z),
-                angle);
+                q.w, q.x, q.y, q.z);
             return IRescueVec3ToUnityVec3(rm.EulerAngles);
         }
 

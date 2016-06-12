@@ -43,11 +43,6 @@ namespace IRescue.Core.DataTypes
         {
         }
 
-        public RotationMatrix(Vector3 axis, float angle)
-            : base(3, 3, CreateMatrixVector(axis, angle))
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RotationMatrix"/> class.
         /// Create a 3x3 rotation matrix from a quaternion.

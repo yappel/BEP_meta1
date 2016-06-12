@@ -5,10 +5,14 @@
 using Assets.Scripts.Unity;
 using Assets.Scripts.Unity.Utils;
 
+using IRescue.Core.DataTypes;
+
 using MathNet.Numerics;
 
 using NUnit.Framework;
-using UnityEngine;
+
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 public class EulerAnglesConversionTests
 {
@@ -23,12 +27,13 @@ public class EulerAnglesConversionTests
         Vector3 actual = EulerAnglesConversion.ZXYtoXYZ(zxyd);
         Assert.AreEqual(xyzd.ToString(), actual.ToString());
 
-        xyzd = new Vector3(-90, 90, 90);
+        xyzd = new Vector3(90, 90, -90);
         zxyd = new Vector3(0, -90, 180);
         actual = EulerAnglesConversion.ZXYtoXYZ(zxyd);
+
         Assert.AreEqual(xyzd.ToString(), actual.ToString());
 
-        xyzd = new Vector3(180, 180, 180);
+        xyzd = new Vector3(0, 0, 0);
         zxyd = new Vector3(0, 0, 0);
         actual = EulerAnglesConversion.ZXYtoXYZ(zxyd);
         Assert.AreEqual(xyzd.ToString(), actual.ToString());

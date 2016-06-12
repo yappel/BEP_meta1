@@ -113,7 +113,7 @@ namespace IRescue.UserLocalisation.Sensors.Marker
                     this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
 
                     RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
-                    Vector3 orientation = new Vector3((float)RadianToDegree(Math.Atan2(rotationUserToWorld[2, 1], rotationUserToWorld[2, 2])), (float)RadianToDegree(Math.Atan2(-1 * rotationUserToWorld[2, 0], Math.Sqrt(Math.Pow(rotationUserToWorld[2, 1], 2) + Math.Pow(rotationUserToWorld[2, 2], 2)))), (float)RadianToDegree(Math.Atan2(rotationUserToWorld[1, 0], rotationUserToWorld[0, 0])));
+                    Vector3 orientation = rotationUserToWorld.EulerAngles;
                     this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
 
                     this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
