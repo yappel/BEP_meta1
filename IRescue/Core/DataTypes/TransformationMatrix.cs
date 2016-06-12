@@ -83,6 +83,21 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
+        /// Creates a 4x4 transformation matrix which corresponds to a rotation followed by a translation.
+        /// Sets w to default value 1.
+        /// </summary>
+        /// <param name="xt">X axis translation.</param>
+        /// <param name="yt">Y axis translation.</param>
+        /// <param name="zt">Z axis translation.</param>
+        /// <param name="rm">The rotationmatrix defining the rotation to use.</param>
+        public TransformationMatrix(float xt, float yt, float zt, RotationMatrix rm)
+            : base(4, 4, CreateMatrixArray(xt, yt, zt, 0))
+        {
+            this.SetSubMatrix(0, 0, rm);
+        }
+
+        /// <summary>
         /// Returns the rotation matrix that is in the transformation matrix.
         /// </summary>
         /// <returns>The 3x3 rotation matrix which is in the transformation matrix.</returns>
@@ -91,6 +106,26 @@ namespace IRescue.Core.DataTypes
             RotationMatrix res = new RotationMatrix();
             this.SubMatrix(0, 3, 0, 3).CopyTo(res);
             return res;
+        }
+
+        /// <summary>
+        /// Create an array from the specified translation and w value.
+        /// Sets all rotation values to 0.
+        /// </summary>
+        /// <param name="xt">X axis translation.</param>
+        /// <param name="yt">Y axis translation.</param>
+        /// <param name="zt">Z axis translation.</param>
+        /// <param name="w">W value.</param>
+        /// <returns>Array which can be used in constructor of <see cref="DenseMatrix"/>.</returns>
+        private static float[] CreateMatrixArray(float xt, float yt, float zt, float w)
+        {
+            return new[]
+                       {
+                           0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           0, 0, 0, 0,
+                           xt, yt, zt, w
+                       };
         }
 
         /// <summary>
