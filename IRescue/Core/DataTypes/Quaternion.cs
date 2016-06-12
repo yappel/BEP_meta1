@@ -1,11 +1,9 @@
 ﻿// <copyright file="Quaternion.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.Core.Datatypes
+namespace IRescue.Core.DataTypes
 {
     using System;
-
-    using IRescue.Core.DataTypes;
 
     using MathNet.Numerics;
 
