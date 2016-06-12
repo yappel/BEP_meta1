@@ -3,6 +3,11 @@
 // </copyright>
 namespace IRescue.Core.DataTypes
 {
+    using System;
+
+    using IRescue.Core.Utils;
+
+    using MathNet.Numerics;
     using MathNet.Numerics.LinearAlgebra.Single;
 
     using static MathNet.Numerics.Trig;
@@ -37,6 +42,19 @@ namespace IRescue.Core.DataTypes
         {
         }
 
+        public RotationMatrix(Vector3 axis, float angle)
+            : base(3, 3, CreateMatrixVector(axis, angle))
+        {
+        }
+
+        /// <summary>
+        /// Gets the XYZ Tait-bryan angles of this rotationmatrix.
+        /// </summary>
+        public Vector3 EulerAngles => new Vector3(
+            (float)RadianToDegree(Math.Atan2(this[2, 1], this[2, 2])),
+            (float)RadianToDegree(Math.Atan2(-1 * this[2, 0], Math.Sqrt(Math.Pow(this[2, 1], 2) + Math.Pow(this[2, 2], 2)))),
+            (float)RadianToDegree(Math.Atan2(this[1, 0], this[0, 0])));
+
         /// <summary>
         /// Create an array of the rotation matrix from specified rotations around the 3 axes.
         /// </summary>
@@ -56,6 +74,35 @@ namespace IRescue.Core.DataTypes
                     (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))),  (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c))
                 };
             return rot;
+        }
+
+        private static float[] CreateMatrixVector(Vector3 axis, float angle)
+        {
+            ////http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/index.htm
+            double x = axis.X;
+            double y = axis.Y;
+            double z = axis.Z;
+            float anglerad = (float)Trig.DegreeToRadian(angle);
+            double c = Cos(anglerad);
+            double s = Sin(anglerad);
+            double t = 1 - c;
+            float[] rot =
+                {
+                (float)((t * x * x) + c), (float)((t * x * y) + (z * s)), (float)((t * x * z) - (y * s)),
+                (float)((t * x * y) - (z * s)), (float)((t * y * y) + c), (float)((t * y * z) + (x * s)),
+                (float)((t * x * z) + (y * s)), (float)((t * y * z) - (x * s)), (float)((t * z * z) + c)
+                };
+
+            return rot;
+        }
+
+        private static Vector3 CrossProduct(Vector3 a, Vector3 b)
+        {
+            Vector3 c = new Vector3();
+            c.X = (a.Y * b.Z) - (a.Z * b.Y);
+            c.Y = (a.Z * b.X) - (a.X * b.Z);
+            c.Z = (a.X * b.Y) - (a.Y * b.X);
+            return c;
         }
     }
 }
