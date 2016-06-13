@@ -14,6 +14,9 @@ using NUnit.Framework;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
+/// <summary>
+/// Tests for converting euler angles.
+/// </summary>
 public class EulerAnglesConversionTests
 {
     /// <summary>
@@ -37,7 +40,6 @@ public class EulerAnglesConversionTests
         zxyd = new Vector3(0, 0, 0);
         actual = EulerAnglesConversion.ZXYtoXYZ(zxyd);
         Assert.AreEqual(xyzd.ToString(), actual.ToString());
-
     }
 
     [Test]
@@ -54,20 +56,5 @@ public class EulerAnglesConversionTests
         xyzd = new Vector3(-90, 90, 90);
         zxyd = new Vector3(0, -90, 180);
         Assert.AreEqual(Quaternion.Euler(zxyd).eulerAngles.ToString(), EulerAnglesConversion.XYZtoQuaternion(xyzd).eulerAngles.ToString());
-    }
-
-    [Test]
-    public void TestTest()
-    {
-        Quaternion expected = Quaternion.Euler(30, 40, 50);
-        Quaternion q1 = Quaternion.Euler(30, 0, 0);
-        Quaternion q2 = Quaternion.Euler(0, 40, 0);
-        Quaternion q3 = Quaternion.Euler(0, 0, 50);
-        Assert.AreEqual(expected.eulerAngles.ToString(), (q2 * q1 * q3).eulerAngles.ToString());
-    }
-
-    private void AreEqual(Quaternion q1, Quaternion q2)
-    {
-        Assert.AreEqual(q1.eulerAngles, q2.eulerAngles);
     }
 }

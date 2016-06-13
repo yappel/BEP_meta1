@@ -4,6 +4,8 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
+    using Assets.Scripts.Unity.Utils;
+
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
@@ -60,7 +62,7 @@ namespace Assets.Scripts.Unity.SensorControllers
             if (this.ImuInitialized())
             {
                 UnityEngine.Vector3 unity_acc = IMULocalizer.Instance.accelerometerValues;
-                UnityEngine.Vector3 unity_ori = IMULocalizer.Instance.localizerOrientation;
+                UnityEngine.Vector3 unity_ori = EulerAnglesConversion.ZXYtoXYZ(IMULocalizer.Instance.localizerOrientation);
                 Vector3 acc = new Vector3(unity_acc.x * (float)(9.81 / 8192), unity_acc.y * (float)(9.81 / 8192), unity_acc.z * (float)(9.81 / 8192));
                 Vector3 ori = new Vector3(unity_ori.x, unity_ori.y, unity_ori.z);
                 this.imuSource.AddMeasurements(IRescue.Core.Utils.StopwatchSingleton.Time, acc, ori);

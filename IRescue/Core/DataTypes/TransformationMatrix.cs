@@ -1,10 +1,12 @@
 ﻿// <copyright file="TransformationMatrix.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.Core.DataTypes
 {
+    using System.Linq;
+
     using MathNet.Numerics.LinearAlgebra.Single;
+
     using static MathNet.Numerics.Trig;
 
     /// <summary>
@@ -98,6 +100,16 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Gets the orientation relative to 0,0,0 in xyz Tait-Bryan angles (degrees) calculated from this matrix.
+        /// </summary>
+        public Vector3 Orientation => this.GetRotation().EulerAngles;
+
+        /// <summary>
+        /// Gets the position relative to 0,0,0 calculated from this matrix.
+        /// </summary>
+        public Vector3 Position => new Vector3(this.Multiply(new Vector4(0, 0, 0, 1)).Take(3).ToArray());
+
+        /// <summary>
         /// Returns the rotation matrix that is in the transformation matrix.
         /// </summary>
         /// <returns>The 3x3 rotation matrix which is in the transformation matrix.</returns>
@@ -107,16 +119,6 @@ namespace IRescue.Core.DataTypes
             this.SubMatrix(0, 3, 0, 3).CopyTo(res);
             return res;
         }
-
-        /// <summary>
-        /// Gets the orientation relative to 0,0,0 in xyz Tait-Bryan angles (degrees) calculated from this matrix.
-        /// </summary>
-        public Vector3 Orientation => this.GetRotation().EulerAngles;
-
-        /// <summary>
-        /// Gets the position relative to 0,0,0 calculated from this matrix.
-        /// </summary>
-        public Vector3 Position => new Vector3(this.Multiply(new Vector4(0, 0, 0, 1)).ToArray());
 
         /// <summary>
         /// Create an array from the specified translation and w value.
@@ -155,12 +157,12 @@ namespace IRescue.Core.DataTypes
             double b = DegreeToRadian(yr);
             double a = DegreeToRadian(zr);
             float[] rot =
-            {
-                (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)), 0,
-                (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)), 0,
-                (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c)), 0,
-                xt, yt, zt, w
-            };
+                {
+                    (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)), 0,
+                    (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)), 0,
+                    (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c)), 0,
+                    xt, yt, zt, w
+                };
             return rot;
         }
     }

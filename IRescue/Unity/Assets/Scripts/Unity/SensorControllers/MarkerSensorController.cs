@@ -16,6 +16,8 @@ using MathNet.Numerics.LinearAlgebra;
 
 using Meta;
 using UnityEngine;
+using UnityEngine.UI;
+
 using Vector3 = IRescue.Core.DataTypes.Vector3;
 
 /// <summary>
@@ -60,7 +62,7 @@ public class MarkerSensorController : AbstractSensorController
     {
         this.markerSensor = new MarkerSensor(new MarkerLocations(Path), new Normal(this.orientationStd), new Normal(this.positionStd));
         this.markerDetector = MarkerDetector.Instance;
-        this.markerTransform = new GameObject().transform;
+        this.markerTransform = new GameObject("UsedToCreateTransform").transform;
     }
 
     /// <summary>
@@ -68,6 +70,12 @@ public class MarkerSensorController : AbstractSensorController
     /// </summary>
     /// <returns>the IPositionSource</returns>
     public override IPositionSource GetPositionSource()
+    {
+        return this.markerSensor;
+    }
+
+
+    public override IOrientationSource GetOrientationSource()
     {
         return this.markerSensor;
     }
@@ -96,12 +104,14 @@ public class MarkerSensorController : AbstractSensorController
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
             int markerId = visibleMarkers[i];
-            UnityEngine.Vector3 MetaOrientation = EulerAnglesConversion.ZXYtoXYZ(IMULocalizer.Instance.localizerOrientation);
+            UnityEngine.Vector3 metaOrientation = EulerAnglesConversion.ZXYtoXYZ(IMULocalizer.Instance.localizerOrientation);
             this.markerDetector.SetMarkerTransform(markerId, ref this.markerTransform);
+
             ////Remove meta sdk added rotation for horizontal markers
             this.markerTransform.Rotate(UnityEngine.Vector3.right, 90f);
+
             UnityEngine.Vector3 xyzAngles = EulerAnglesConversion.ZXYtoXYZ(this.markerTransform.eulerAngles);
-            TransformationMatrix Tcm = new TransformationMatrix(
+            TransformationMatrix tcm = new TransformationMatrix(
                 this.markerTransform.position.x,
                 this.markerTransform.position.y,
                 this.markerTransform.position.z,
@@ -109,24 +119,17 @@ public class MarkerSensorController : AbstractSensorController
                 xyzAngles.y,
                 xyzAngles.z);
 
-            // TODO optimize?
-            TransformationMatrix Tcu = new TransformationMatrix(0, 0, 0, MetaOrientation.x, MetaOrientation.y + 180, MetaOrientation.z);
-            TransformationMatrix Tum = new TransformationMatrix { [3, 3] = 1 };
-            Tcu.Inverse().Multiply(Tcm, Tum);
+            TransformationMatrix tum = new TransformationMatrix();
+            tum[3, 3] = 1;
 
-            visibleMarkerTransforms.Add(markerId, Tum);
+            // Remove the imu orientation that the meta sdk added.
+            TransformationMatrix Tcu = new TransformationMatrix(0, 0, 0, metaOrientation.x, metaOrientation.y, metaOrientation.z);
+            Tcu.Inverse().Multiply(tcm, tum);
 
+            // Rotate with 180 degrees in y to get transformation to the front of the marker instead of to the back.
+            tum.Multiply(new TransformationMatrix(0, 0, 0, 0, 180, 0), tum);
 
-            //IRescue.Core.DataTypes.Vector4 relativeMarkerPosition = new IRescue.Core.DataTypes.Vector4 { [3] = 1 };
-            //Tum.Multiply(relativeMarkerPosition, relativeMarkerPosition);
-            //// TODO fix to create Vector3 by copying from Vector4?
-            //Vector3 position = new Vector3(relativeMarkerPosition.X, relativeMarkerPosition.Y, relativeMarkerPosition.Z);
-
-            //Vector3 rotation = new Vector3(
-            //    this.markerTransform.eulerAngles.x - MetaOrientation.x,
-            //    180 + this.markerTransform.eulerAngles.y - MetaOrientation.y,
-            //    this.markerTransform.eulerAngles.z - MetaOrientation.z);
-            //visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
+            visibleMarkerTransforms.Add(markerId, tum);
         }
 
         return visibleMarkerTransforms;
