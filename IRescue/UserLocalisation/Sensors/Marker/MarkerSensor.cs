@@ -91,39 +91,70 @@ namespace IRescue.UserLocalisation.Sensors.Marker
         /// Update the locations derived from Markers.
         /// </summary>
         /// <param name="timeStamp">Time stamp at which the measurements were taken.</param>
-        /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees) of the visible Markers.</param>
+        /// <param name="visibleMarkerIds">Dictionary of the ids and transforms ((x,y,z), (pitch, yaw, rotation) in degrees,
+        /// transforming the user to the marker) of the visible Markers.</param>
         public void UpdateLocations(long timeStamp, Dictionary<int, Pose> visibleMarkerIds)
         {
             foreach (KeyValuePair<int, Pose> pair in visibleMarkerIds)
             {
                 try
                 {
-                    Pose markerWorldPose = this.markerLocations.GetMarker(pair.Key);
                     Pose markerUserPose = pair.Value;
-
                     TransformationMatrix transformationUserToMarker = new TransformationMatrix(markerUserPose.Position, markerUserPose.Orientation);
-                    TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
-                    TransformationMatrix transformationUserToWorld = new TransformationMatrix();
-                    transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
-                    Vector4 position = new Vector4(0, 0, 0, 1);
-                    transformationUserToWorld.Multiply(position, position);
-
-                    // TODO Could be faster => add method in Vector4 to create a Vector3 from it
-                    Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-                    this.positions[this.pointer] = new Measurement<Vector3>(pos, timeStamp, this.posDistType);
-
-                    RotationMatrix rotationUserToWorld = transformationUserToWorld.GetRotation();
-                    Vector3 orientation = rotationUserToWorld.EulerAngles;
-                    this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timeStamp, this.oriDistType);
-
-                    this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
-                    this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
+                    TransformationMatrix transformationUserToWorld = this.CalculateTransformationUserToWorld(pair.Key, transformationUserToMarker);
+                    this.AddDataToStorage(transformationUserToWorld.Position, transformationUserToWorld.Orientation, timeStamp);
                 }
                 catch (UnallocatedMarkerException e)
                 {
                     Console.Error.WriteLine("ERROR: {0}", e.Message);
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds position and orientation measurements to the data buffer.
+        /// </summary>
+        /// <param name="position">The position measurement in meters.</param>
+        /// <param name="orientation">The orientation measurement in xyz Tait-Bryan angles (degrees).</param>
+        /// <param name="timestamp">The time stamp of the measurements.</param>
+        private void AddDataToStorage(Vector3 position, Vector3 orientation, long timestamp)
+        {
+            this.positions[this.pointer] = new Measurement<Vector3>(position, timestamp, this.posDistType);
+            this.orientations[this.pointer] = new Measurement<Vector3>(orientation, timestamp, this.oriDistType);
+            this.pointer = this.pointer >= this.bufferLength - 1 ? 0 : this.pointer + 1;
+            this.Measurements = this.Measurements < this.bufferLength ? this.Measurements + 1 : this.bufferLength;
+        }
+
+        public void UpdateLocations(long timeStamp, Dictionary<int, TransformationMatrix> visibleMarkerIds)
+        {
+            foreach (KeyValuePair<int, TransformationMatrix> valuePair in visibleMarkerIds)
+            {
+                try
+                {
+                    TransformationMatrix transformationUserToMarker = valuePair.Value;
+                    TransformationMatrix transformationUserToWorld = this.CalculateTransformationUserToWorld(valuePair.Key, transformationUserToMarker);
+                    this.AddDataToStorage(transformationUserToWorld.Position, transformationUserToWorld.Orientation, timeStamp);
+                }
+                catch (UnallocatedMarkerException e)
+                {
+                    Console.Error.WriteLine("ERROR: {0}", e.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculates the tranformation matrix transforming values in the user axis to the world axis.
+        /// </summary>
+        /// <param name="markerid">The markerid of the given realive transformation.</param>
+        /// <param name="transformationUserToMarker">The transformation from the user axis to the axis of the marker with specified id.</param>
+        /// <returns>The transformation from the user axis to the world axis.</returns>
+        private TransformationMatrix CalculateTransformationUserToWorld(int markerid, TransformationMatrix transformationUserToMarker)
+        {
+            Pose markerWorldPose = this.markerLocations.GetMarker(markerid);
+            TransformationMatrix transformationWorldToMarker = new TransformationMatrix(markerWorldPose.Position, markerWorldPose.Orientation);
+            TransformationMatrix transformationUserToWorld = new TransformationMatrix();
+            transformationWorldToMarker.Multiply(transformationUserToMarker.Inverse(), transformationUserToWorld);
+            return transformationUserToWorld;
         }
 
         /// <summary>

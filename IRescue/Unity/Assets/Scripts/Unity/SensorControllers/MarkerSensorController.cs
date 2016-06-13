@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.Unity.SensorControllers;
+using Assets.Scripts.Unity.Utils;
+
 using IRescue.Core.DataTypes;
 using IRescue.Core.Distributions;
 using IRescue.UserLocalisation.Sensors;
@@ -86,48 +88,45 @@ public class MarkerSensorController : AbstractSensorController
     ///   Get all the transforms of the visible markers.
     /// </summary>
     /// <returns>Hash table with the marker id as the key and an IRVectorTransform as the value.</returns>
-    private Dictionary<int, Pose> GetVisibleMarkers()
+    private Dictionary<int, TransformationMatrix> GetVisibleMarkers()
     {
         List<int> visibleMarkers = this.markerDetector.updatedMarkerTransforms;
-        Dictionary<int, Pose> visibleMarkerTransforms = new Dictionary<int, Pose>();
+        Dictionary<int, TransformationMatrix> visibleMarkerTransforms = new Dictionary<int, TransformationMatrix>();
 
         for (int i = 0; i < visibleMarkers.Count; i++)
         {
             int markerId = visibleMarkers[i];
-            UnityEngine.Vector3 MetaOrientation = IMULocalizer.Instance.localizerOrientation;
+            UnityEngine.Vector3 MetaOrientation = EulerAnglesConversion.ZXYtoXYZ(IMULocalizer.Instance.localizerOrientation);
             this.markerDetector.SetMarkerTransform(markerId, ref this.markerTransform);
+            ////Remove meta sdk added rotation for horizontal markers
             this.markerTransform.Rotate(UnityEngine.Vector3.right, 90f);
+            UnityEngine.Vector3 xyzAngles = EulerAnglesConversion.ZXYtoXYZ(this.markerTransform.eulerAngles);
+            TransformationMatrix Tcm = new TransformationMatrix(
+                this.markerTransform.position.x,
+                this.markerTransform.position.y,
+                this.markerTransform.position.z,
+                xyzAngles.x,
+                xyzAngles.y,
+                xyzAngles.z);
 
-            // TODO optimize? okay lets optimize
-            TransformationMatrix Tcm = new TransformationMatrix(this.markerTransform.position.x, this.markerTransform.position.y, this.markerTransform.position.z, this.markerTransform.eulerAngles.x, this.markerTransform.eulerAngles.y, this.markerTransform.eulerAngles.z);
-            TransformationMatrix Tcu = new TransformationMatrix();
-            TransformationMatrix Tcux = new TransformationMatrix(0, 0, 0, MetaOrientation.x, 0, 0);
-            TransformationMatrix Tcuy = new TransformationMatrix(0, 0, 0, 0, MetaOrientation.y, 0);
-            TransformationMatrix Tcuz = new TransformationMatrix(0, 0, 0, 0, 0, MetaOrientation.z);
-            Tcuy.Multiply(Tcux).Multiply(Tcuz, Tcu);
-
-            TransformationMatrix Tum = new TransformationMatrix();
-            Tum[3, 3] = 1;
+            // TODO optimize?
+            TransformationMatrix Tcu = new TransformationMatrix(0, 0, 0, MetaOrientation.x, MetaOrientation.y + 180, MetaOrientation.z);
+            TransformationMatrix Tum = new TransformationMatrix { [3, 3] = 1 };
             Tcu.Inverse().Multiply(Tcm, Tum);
 
-            IRescue.Core.DataTypes.Vector4 relativeMarkerPosition = new IRescue.Core.DataTypes.Vector4();
-            relativeMarkerPosition[3] = 1;
-            Tum.Multiply(relativeMarkerPosition, relativeMarkerPosition);
-            // TODO fix to create Vector3 by copying from Vector4?
-            Vector3 position = new Vector3(relativeMarkerPosition.X, relativeMarkerPosition.Y, relativeMarkerPosition.Z);
-            Vector3 rotation = new Vector3(
-                this.markerTransform.eulerAngles.x - MetaOrientation.x,
-                this.markerTransform.eulerAngles.y - MetaOrientation.y,
-                this.markerTransform.eulerAngles.z - MetaOrientation.z);
+            visibleMarkerTransforms.Add(markerId, Tum);
 
-            RotationMatrix xyzRotation = new RotationMatrix();
-            RotationMatrix xr = new RotationMatrix(rotation.X, 0, 0);
-            RotationMatrix yr = new RotationMatrix(0, rotation.Y, 0);
-            RotationMatrix zr = new RotationMatrix(0, 0, rotation.Z);
 
-            yr.Multiply(xr).Multiply(zr).Multiply(new RotationMatrix(0, 180, 0), xyzRotation);
-            rotation = new Vector3((float)MathNet.Numerics.Trig.RadianToDegree(Math.Atan2(xyzRotation[2, 1], xyzRotation[2, 2])), (float)MathNet.Numerics.Trig.RadianToDegree(Math.Atan2(-1 * xyzRotation[2, 0], Math.Sqrt(Math.Pow(xyzRotation[2, 1], 2) + Math.Pow(xyzRotation[2, 2], 2)))), (float)MathNet.Numerics.Trig.RadianToDegree(Math.Atan2(xyzRotation[1, 0], xyzRotation[0, 0])));
-            visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
+            //IRescue.Core.DataTypes.Vector4 relativeMarkerPosition = new IRescue.Core.DataTypes.Vector4 { [3] = 1 };
+            //Tum.Multiply(relativeMarkerPosition, relativeMarkerPosition);
+            //// TODO fix to create Vector3 by copying from Vector4?
+            //Vector3 position = new Vector3(relativeMarkerPosition.X, relativeMarkerPosition.Y, relativeMarkerPosition.Z);
+
+            //Vector3 rotation = new Vector3(
+            //    this.markerTransform.eulerAngles.x - MetaOrientation.x,
+            //    180 + this.markerTransform.eulerAngles.y - MetaOrientation.y,
+            //    this.markerTransform.eulerAngles.z - MetaOrientation.z);
+            //visibleMarkerTransforms.Add(markerId, new Pose(position, rotation));
         }
 
         return visibleMarkerTransforms;

@@ -109,6 +109,16 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Gets the orientation relative to 0,0,0 in xyz Tait-Bryan angles (degrees) calculated from this matrix.
+        /// </summary>
+        public Vector3 Orientation => this.GetRotation().EulerAngles;
+
+        /// <summary>
+        /// Gets the position relative to 0,0,0 calculated from this matrix.
+        /// </summary>
+        public Vector3 Position => new Vector3(this.Multiply(new Vector4(0, 0, 0, 1)).ToArray());
+
+        /// <summary>
         /// Create an array from the specified translation and w value.
         /// Sets all rotation values to 0.
         /// </summary>
