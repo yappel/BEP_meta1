@@ -14,18 +14,17 @@ namespace Assets.Scripts.Unity
         /// <summary>
         /// Initializes the ground plane
         /// </summary>
-        /// <param name="x">width of the ground plane in meters</param>
-        /// <param name="z">depth of the ground plane in meter</param>
-        public void Init(float x, float z)
+        /// <param name="fieldSize">aspects of the game field</param>
+        public void Init(IRescue.Core.DataTypes.FieldSize fieldSize)
         {
             bool debug = false;
             this.gameObject.name = "GroundPlane";
-            this.gameObject.transform.localScale = new Vector3(x / 10f, 1, z / 10f);
-            this.gameObject.transform.position = new Vector3(x / 2, -1.0f, z / 2);
+            this.gameObject.transform.position = new Vector3((fieldSize.Xmax + fieldSize.Xmin) / 2, 0, (fieldSize.Zmax + fieldSize.Zmin) / 2);
+            this.gameObject.transform.localScale = new Vector3((fieldSize.Xmax - fieldSize.Xmin) / 10f, 1, (fieldSize.Zmax - fieldSize.Zmin) / 10f);
             if (debug)
             {
                 this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
-                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(x, z);
+                this.gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(fieldSize.Xmax - fieldSize.Xmin, fieldSize.Zmax - fieldSize.Zmin);
             }
             else
             {

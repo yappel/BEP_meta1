@@ -65,10 +65,10 @@ namespace Assets.Scripts.Unity
         private void InitPlanes()
         {
             GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            groundPlane.AddComponent<GroundPlane>().Init(this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
+            groundPlane.AddComponent<GroundPlane>().Init(this.fieldSize);
             groundPlane.transform.parent = this.transform;
             WaterLevelController waterPlane = this.gameObject.AddComponent<WaterLevelController>();
-            waterPlane.Init(this.transform, this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
+            waterPlane.Init(this.transform, this.fieldSize);
         }
     }
 }

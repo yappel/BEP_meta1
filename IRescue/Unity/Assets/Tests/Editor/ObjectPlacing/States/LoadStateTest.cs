@@ -96,7 +96,7 @@ public class LoadStateTest
     public void OnLoadButtonFalseTest()
     {
         GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        groundPlane.AddComponent<GroundPlane>().Init(0, 0);
+        groundPlane.AddComponent<GroundPlane>().Init(new IRescue.Core.DataTypes.FieldSize());
         long now = StopwatchSingleton.Time;
         while (StopwatchSingleton.Time - now < 1500)
         {
