@@ -49,7 +49,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext(this);
+            this.stateContext = new StateContext();
         }
 
         /// <summary>

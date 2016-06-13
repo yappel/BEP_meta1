@@ -35,7 +35,7 @@ public class LoadStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.loadState = new LoadState(this.stateContext);
         this.stateContext.SetState(this.loadState);
     }
