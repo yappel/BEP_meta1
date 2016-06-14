@@ -21,7 +21,7 @@ namespace waterleveltracking {
 		stripeProperties.SetStripePixelStart(markerProperties.GetCenter().y + (int)(markerProperties.GetDistanceToStripes() * markerProperties.GetMeterToPixelFactor()));
 		Crop(frame, markerProperties.GetCorners().bottomLeft.x, markerProperties.GetCorners().bottomRight.x, stripeProperties.GetStripePixelStart(), imageBottom);
 		Blur(frame);
-		Segment(frame, stripeProperties.GetStripePixelHeight());
+		Segment(frame);
 		return StripeCount(frame, stripeProperties);
 	}
 
@@ -51,8 +51,7 @@ namespace waterleveltracking {
 	/// Perform a smoothing on the image using a Gaussian blur.
 	/// </summary>
 	/// <param name="frame">The captured frame of the video feed</param>
-	/// <param name="stripePixelSize">The amount of pixels that were expected for a stripe</param>
-	void WaterLevelTracker::Segment(Mat &frame, int stripePixelSize) {
+	void WaterLevelTracker::Segment(Mat &frame) {
 		cv::threshold(frame, frame, 150, 255, 0);
 		for (int row = 0; row < frame.rows; row++) {
 			int count = 0;

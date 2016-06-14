@@ -52,8 +52,7 @@ namespace waterleveltracking {
 		/// Perform a smoothing on the image using a Gaussian blur.
 		/// </summary>
 		/// <param name="frame">The captured frame of the video feed</param>
-		/// <param name="stripePixelSize">The amount of pixels that were expected for a stripe</param>
-		static void Segment(Mat &frame, int stripePixelSize);
+		static void Segment(Mat &frame);
 
 		/// <summary>
 		/// Rotates the image and calculates the new pixel coordinates of the corners
