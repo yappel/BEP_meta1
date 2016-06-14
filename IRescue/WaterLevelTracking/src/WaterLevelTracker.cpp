@@ -127,6 +127,7 @@ namespace waterleveltracking {
 				previousStripeEnd = i;
 				count++;
 			} else if (previousStripeEnd + previousStripeHeight < frame.rows) {
+				count++;
 				break;
 			} else {
 				return NULL;
