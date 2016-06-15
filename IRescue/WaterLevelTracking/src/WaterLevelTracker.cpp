@@ -59,7 +59,7 @@ namespace waterleveltracking {
 				count += frame.at<uchar>(row, col);
 			}
 
-			frame.at<uchar>(row, 0) = (count / 255) >= ((frame.cols) * 0.4) ? 255 : 0;
+			frame.at<uchar>(row, 0) = (count / 255) >= ((frame.cols) * 0.45) ? 255 : 0;
 		}
 	}
 
@@ -122,7 +122,7 @@ namespace waterleveltracking {
 			}
 
 			// If the current iterated stripe is almost of equal size of the previous, it is accepted
-			if (abs(previousStripeHeight - currentStripeHeight) < previousStripeHeight * 0.2) {
+			if (abs(previousStripeHeight - currentStripeHeight) < previousStripeHeight * 0.3) {
 				previousStripeHeight = currentStripeHeight;
 				previousStripeEnd = i;
 				count++;
