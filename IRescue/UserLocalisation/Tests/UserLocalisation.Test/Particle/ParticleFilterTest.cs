@@ -10,6 +10,7 @@ namespace UserLocalisation.Test.Particle
     using System.Text;
 
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Utils;
     using IRescue.UserLocalisation.Feedback;
     using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
@@ -48,7 +49,7 @@ namespace UserLocalisation.Test.Particle
                 {
                     string[] unparsed = line.Split(',');
                     oridata.Add(new Measurement<Vector3>(
-                        new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2])),
+                        VectorMath.Normalize(new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2]))),
                         0,
                         new Normal(0.1)));
                     line = sr.ReadLine();

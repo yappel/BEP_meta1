@@ -8,6 +8,7 @@ namespace Assets.Scripts.Unity
     using IRescue.Core.Utils;
     using IRescue.UserLocalisation;
     using UnityEngine;
+    using Quaternion = UnityEngine.Quaternion;
 
     /// <summary>
     /// This component initializes the other components for the world box game object
