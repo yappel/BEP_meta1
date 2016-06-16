@@ -75,7 +75,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Method when a point event has occurred to place a building (ground plane). A single finger fully extended.
         /// </summary>
         /// <param name="position">The position pointed towards</param>
-        public virtual void OnPoint(Vector3 position)
+        /// <param name="handType">The hand that is pointing</param>
+        public virtual void OnPoint(Vector3 position, HandType handType)
         {
         }
 
@@ -83,7 +84,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Method when a point event has occurred towards a building. A single finger fully extended.
         /// </summary>
         /// <param name="gameObject">The gameObject pointed at</param>
-        public virtual void OnPoint(GameObject gameObject)
+        /// <param name="handType">The hand that is pointing</param>
+        public virtual void OnPoint(GameObject gameObject, HandType handType)
         {
         }
 

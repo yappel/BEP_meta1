@@ -5,6 +5,7 @@
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using IRescue.Core.Utils;
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -91,7 +92,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Sets the state to an object placement state after pointing for 3 second.
         /// </summary>
         /// <param name="position">Position of the building to be placed</param>
-        public override void OnPoint(Vector3 position)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(Vector3 position, HandType handType)
         {
             this.hasPointed = true;
             long time = StopwatchSingleton.Time;
@@ -102,7 +104,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
             else if (time - this.pointTime > TimeToPoint)
             {
-                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding));
+                Debug.Log(handType);
+                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding, handType));
             }
         }
 
@@ -110,7 +113,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Sets the state to modify an object after 3 seconds.
         /// </summary>
         /// <param name="gameObject">Object pointed at</param>
-        public override void OnPoint(GameObject gameObject)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(GameObject gameObject, HandType handType)
         {
             this.hasPointed = true;
             long time = StopwatchSingleton.Time;

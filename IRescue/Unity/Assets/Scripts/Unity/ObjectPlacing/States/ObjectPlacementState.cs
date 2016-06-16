@@ -25,11 +25,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private const float PreferredInitSize = 0.5f;
 
         /// <summary>
-        ///  The time that will be kept to not immediately place buildings.
-        /// </summary>
-        private long hoverTime;
-
-        /// <summary>
         /// True if a building is being moved, else false
         /// </summary>
         private bool translateModification;
@@ -70,13 +65,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private bool hasPointed = false;
 
         /// <summary>
+        /// The hand that pointed when entering the placement state
+        /// </summary>
+        private HandType handType;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class. The object will be scaled to 1 meter big.
         /// </summary>
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
         /// <param name="gameObjectPath">Path to the wanted object to place</param>
-        public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath) 
-            : this(stateContext, location, CreateObject(gameObjectPath))
+        /// <param name="handType">The hand that is pointing</param>
+        public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath, HandType handType) 
+            : this(stateContext, location, CreateObject(gameObjectPath), handType)
         {
         }
 
@@ -86,8 +87,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="stateContext">State context</param>
         /// <param name="location">First indicated position of the placement</param>
         /// <param name="gameObject">The game object that has to be placed or moved</param>
-        public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject) : base(stateContext)
+        /// <param name="handType">The hand that is pointing</param>
+        public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject, HandType handType) : base(stateContext)
         {
+            this.handType = handType;
             this.translateModification = gameObject.GetComponent<BuildingPlane>() != null;
             if (this.translateModification)
             {
@@ -96,8 +99,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
             }
-
-            this.hoverTime = StopwatchSingleton.Time;
+            
             this.gameObject = gameObject;
             this.InitButton("BackButton", () => this.OnBackButton());
             this.gameObject.transform.localPosition = location;
@@ -109,28 +111,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Shows the position of the to be placed object and places it after having hovered for 3 seconds.
         /// </summary>
         /// <param name="position">position of the to be placed building</param>
-        public override void OnPoint(Vector3 position)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(Vector3 position, HandType handType)
         {
-            long time = StopwatchSingleton.Time;
-            this.hasPointed = true;
-            if ((position - this.gameObject.transform.localPosition).magnitude > (position.magnitude / 20f))
+            if (this.handType == handType)
             {
-                this.ChangeOutlineRender(Color.yellow);
-                this.hoverTime = time;
-            }
-            else
-            {
+                this.hasPointed = true;
                 this.ChangeOutlineRender(Color.green);
-            }
-
-            this.gameObject.transform.localPosition = position;
-            if (time - this.hoverTime > TimeToPlace + 250)
-            {
-                this.hoverTime = time;
-            }
-            else if (time - this.hoverTime > TimeToPlace)
-            {
-                this.PlaceBuilding();
+                this.gameObject.transform.localPosition = position;
             }
         }
 
@@ -138,10 +126,25 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// If colliding with an other object, the indicator turns red and you cannot place a building.
         /// </summary>
         /// <param name="gameObject">the game object that was pointed at</param>
-        public override void OnPoint(GameObject gameObject)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(GameObject gameObject, HandType handType)
         {
-            this.hoverTime = StopwatchSingleton.Time;
-            this.ChangeOutlineRender(Color.red);
+            if (this.handType == handType)
+            {
+                this.ChangeOutlineRender(Color.red);
+            }
+        }
+
+        /// <summary>
+        /// Place the building when grabbing
+        /// </summary>
+        /// <param name="hand">The hand that performed the grab</param>
+        public override void OnGrab(HandType hand)
+        {
+            if (this.hasPointed && (hand == HandType.LEFT || hand == HandType.RIGHT))
+            {
+                this.PlaceBuilding();
+            }
         }
 
         /// <summary>
@@ -149,11 +152,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void RunLateUpdate()
         {
-            if (!this.hasPointed)
-            {
-                this.ChangeOutlineRender(Color.red);
-            }
-
             this.hasPointed = false;
         }
 

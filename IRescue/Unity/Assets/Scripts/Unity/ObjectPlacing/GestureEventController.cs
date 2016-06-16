@@ -59,10 +59,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             this.MonoStereo();
             this.stateContext.CurrentState.RunUpdate();
+            this.PointEvent();
             this.GrabEvent();
             this.OpenEvent();
             this.PinchEvent();
-            this.PointEvent();
         }
 
         /// <summary>
@@ -170,17 +170,21 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
+            Vector3 camera = new Vector3(0, 0, 0);
+            HandType handType = HandType.UNKNOWN;
 
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.right.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(camera, Hands.right.pointer.localPosition - camera), Mathf.Infinity), out gameObject);
+                handType = HandType.RIGHT;
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.left.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(camera, Hands.left.pointer.localPosition - camera), Mathf.Infinity), out gameObject);
+                handType = HandType.LEFT;
             }
 
-            this.PointEvent(gameObject, point);
+            this.PointEvent(gameObject, point, handType);
         }
 
         /// <summary>
@@ -188,17 +192,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         /// <param name="gameObject">The game object of the collision</param>
         /// <param name="point">The location of the collision</param>
-        private void PointEvent(GameObject gameObject, Vector3 point)
+        /// <param name="handType">The hand that is pointing</param>
+        private void PointEvent(GameObject gameObject, Vector3 point, HandType handType)
         {
             if (gameObject != null && gameObject.GetComponent<WaterLevelController>() == null)
             {
                 if (gameObject.GetComponentInParent<BuildingPlane>() == null)
                 {
-                    this.stateContext.CurrentState.OnPoint(gameObject.transform.InverseTransformPoint(point));
+                    this.stateContext.CurrentState.OnPoint(gameObject.transform.InverseTransformPoint(point), handType);
                 }
                 else
                 {
-                    this.stateContext.CurrentState.OnPoint(gameObject.GetComponentInParent<BuildingPlane>().gameObject);
+                    this.stateContext.CurrentState.OnPoint(gameObject.GetComponentInParent<BuildingPlane>().gameObject, handType);
                 }
             }
         }

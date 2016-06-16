@@ -151,7 +151,7 @@ public class NeutralStateTest
     [Test]
     public void OnPointFalseTest()
     {
-        this.neutralState.OnPoint(new Vector3(0, 0, 0));
+        this.neutralState.OnPoint(new Vector3(0, 0, 0), HandType.LEFT);
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
 
@@ -161,7 +161,7 @@ public class NeutralStateTest
     [Test]
     public void OnPointFalseTest2()
     {
-        this.neutralState.OnPoint(new GameObject());
+        this.neutralState.OnPoint(new GameObject(), HandType.LEFT);
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
 
@@ -176,7 +176,7 @@ public class NeutralStateTest
         {
         }
 
-        this.neutralState.OnPoint(new GameObject());
+        this.neutralState.OnPoint(new GameObject(), HandType.LEFT);
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
 
@@ -191,7 +191,7 @@ public class NeutralStateTest
         {
         }
 
-        this.neutralState.OnPoint(new GameObject());
+        this.neutralState.OnPoint(new GameObject(), HandType.LEFT);
         Assert.True(this.stateContext.CurrentState is NeutralState);
     }
 }

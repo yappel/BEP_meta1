@@ -98,7 +98,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         {
             if (this.CanSwitchState())
             {
-                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, this.gameObject));
+                // TODO right hand type
+                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, this.gameObject, HandType.LEFT));
             }
         }
 
@@ -125,7 +126,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             newBuilding.transform.localRotation = this.gameObject.transform.localRotation;
             UnityEngine.Object.Destroy(newBuilding.GetComponent<MetaBody>());
             this.ChangeOutlineRender(this.defaultShader);
-            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding));
+
+            // TODO handtype
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding, HandType.LEFT));
         }
 
         /// <summary>
