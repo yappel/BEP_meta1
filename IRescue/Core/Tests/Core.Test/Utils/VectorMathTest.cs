@@ -118,7 +118,6 @@ namespace Core.Test.Utils
             Assert.AreEqual(0, vector.Z, 0.0001f);
         }
 
-
         /// <summary>
         /// Test a simple 45 degree angle conversion to direction vector.
         /// </summary>
@@ -198,5 +197,34 @@ namespace Core.Test.Utils
             Assert.AreEqual(180, angle);
         }
 
+        /// <summary>
+        /// Test normalizing a few orientation vectors.
+        /// </summary>
+        [Test]
+        public void TestNormalize3dVector()
+        {
+            Vector3 vector1 = new Vector3(180, 180, 180);
+            Vector3 vector2 = new Vector3(0, 0, 0);
+            vector1 = VectorMath.Normalize(vector1);
+            vector2 = VectorMath.Normalize(vector2);
+            this.AreEqual(vector2, vector1);
+            vector1 = new Vector3(180, 0, 180);
+            vector2 = new Vector3(0, 180, 0);
+            vector1 = VectorMath.Normalize(vector1);
+            vector2 = VectorMath.Normalize(vector2);
+            this.AreEqual(vector2, vector1);
+            vector1 = new Vector3(2, 18, -78);
+            vector2 = new Vector3(2, 18, -78);
+            vector1 = VectorMath.Normalize(vector1);
+            vector2 = VectorMath.Normalize(vector2);
+            this.AreEqual(vector2, vector1);
+        }
+
+        private void AreEqual(Vector3 v1, Vector3 v2)
+        {
+            Assert.AreEqual(v1.X, v2.X, 10E-05);
+            Assert.AreEqual(v1.Y, v2.Y, 10E-05);
+            Assert.AreEqual(v1.Z, v2.Z, 10E-05);
+        }
     }
 }

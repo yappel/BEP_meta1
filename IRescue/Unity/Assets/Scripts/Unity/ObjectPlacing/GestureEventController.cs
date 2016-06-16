@@ -49,7 +49,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         /// </summary>
         public void Init()
         {
-            this.stateContext = new StateContext(this);
+            this.stateContext = new StateContext();
         }
 
         /// <summary>
@@ -170,14 +170,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             Vector3 point = new Vector3();
             GameObject gameObject = null;
-            Vector3 cameraPosition = this.gameObject.transform.position;
+
             if (this.IsValid(Hands.right, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.right.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.right.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
             }
             else if (this.IsValid(Hands.left, MetaGesture.POINT))
             {
-                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(cameraPosition, Hands.left.pointer.position - cameraPosition), Mathf.Infinity), out gameObject);
+                point = this.GetClosestPoint(Physics.RaycastAll(new Ray(Camera.main.transform.position, Hands.left.pointer.localPosition - Camera.main.transform.position), Mathf.Infinity), out gameObject);
             }
 
             this.PointEvent(gameObject, point);
@@ -194,7 +194,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
             {
                 if (gameObject.GetComponentInParent<BuildingPlane>() == null)
                 {
-                    this.stateContext.CurrentState.OnPoint(point);
+                    this.stateContext.CurrentState.OnPoint(gameObject.transform.InverseTransformPoint(point));
                 }
                 else
                 {

@@ -123,5 +123,15 @@ namespace IRescue.Core.Utils
             SetLength(res, length);
             return res;
         }
+
+        /// <summary>
+        /// Normalizes xyz Tait-Bryan angles.
+        /// </summary>
+        /// <param name="data">The xyz Tait-Bryan angles</param>
+        /// <returns>The same or equivalent Tait-Bryan angles.</returns>
+        public static Vector3 Normalize(Vector3 data)
+        {
+            return new Quaternion(new RotationMatrix(data.X, data.Y, data.Z)).EulerAnglesDegree;
+        }
     }
 }

@@ -8,19 +8,20 @@ namespace Assets.Scripts.Unity
     using System.Collections.Generic;
     using System.Linq;
     using Enums;
+    using IRescue.Core.DataTypes;
     using IRescue.UserLocalisation;
     using ObjectPlacing;
     using SensorControllers;
     using SourceCouplers;
-    using UnityEngine;
-
+    using UnityEngine;  
+    
     /// <summary>
     ///  This script initialized the entire setup. This is the only script that should be added to a GameObject in the Unity editor.
     /// </summary>
     public class InitScript : MonoBehaviour
     {
         /// <summary>
-        /// Enum type of the filter that is going to be used
+        /// Type of the filter that is going to be used
         /// </summary>
         private Filters usedFilter = Filters.Particle;
 
@@ -38,12 +39,12 @@ namespace Assets.Scripts.Unity
             GameObject.FindObjectOfType<Meta.MetaKeyboard>().gameObject.AddComponent<Meta.MetaBody>().hud = true;
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
-            this.InitPlanes(200, 200);
             this.AddControllers();
-            AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter);
+            FieldSize fieldSize = new FieldSize() { Xmax = 15, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 20, Zmin = 0 };
+            AbstractLocalizerCoupler coupler = LocalizerFactory.Get(this.usedFilter, fieldSize);
             this.InitControllers(coupler);
-            this.InitUser(coupler.GetLocalizer());
             this.InitMarker();
+            this.InitWorldBox(coupler.GetLocalizer(), fieldSize);
             Meta.MetaUI.Instance.enableGrid = false;
         }
 
@@ -88,33 +89,23 @@ namespace Assets.Scripts.Unity
         }
 
         /// <summary>
-        ///  Initialize the <see cref="UserController"/> and a localizer to the user (Camera).
-        /// </summary>
-        /// <param name="localizer">The Localizer filter</param>
-        private void InitUser(IUserLocalizer localizer)
-        {
-            gameObject.AddComponent<UserController>().Init(localizer);
-        }
-
-        /// <summary>
         /// Create a cube with marker target behavior so that markers are tracked
         /// </summary>
         private void InitMarker()
         {
-            GameObject cube = new GameObject();
+            GameObject cube = new GameObject("MarkerMetaBody");
             cube.AddComponent<Meta.MetaBody>().markerTarget = true;
         }
 
         /// <summary>
         /// Create the ground and water plane
         /// </summary>
-        /// <param name="width">width of the plane, or x</param>
-        /// <param name="depth">depth of the plane, or z</param>
-        private void InitPlanes(float width, float depth)
+        /// <param name="localizer">Localizer filter used for position tracking</param>
+        /// <param name="fieldSize">Size of the field</param>
+        private void InitWorldBox(IUserLocalizer localizer, FieldSize fieldSize)
         {
-            GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            groundPlane.AddComponent<GroundPlane>().Init(width, depth);
-            this.gameObject.AddComponent<WaterLevelController>().Init(width, depth);
+            GameObject worldBox = new GameObject("WorldBox");
+            worldBox.AddComponent<WorldBox>().Init(localizer, fieldSize);
         }
     }
 }
