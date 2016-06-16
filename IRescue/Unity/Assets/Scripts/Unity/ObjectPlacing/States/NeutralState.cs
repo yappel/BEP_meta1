@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
 
@@ -13,6 +12,21 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     /// </summary>
     public class NeutralState : AbstractState
     {
+        /// <summary>
+        /// Red outline shade
+        /// </summary>
+        private Shader greenOutline = Shader.Find("Outlined/Diffuse_G");
+
+        /// <summary>
+        /// The default shading, no outline
+        /// </summary>
+        private Shader defaultShader = Shader.Find("Standard");
+        
+        /// <summary>
+        /// The render components that can be adjusted for the outline
+        /// </summary>
+        private MeshRenderer[] colorRenders;
+
         /// <summary>
         /// Counter to count cycles
         /// </summary>
@@ -40,6 +54,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnRunButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new RunningState(this.StateContext));
@@ -51,6 +66,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnSaveButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.StateContext.SaveFilePath != null)
             {
                 new SaveState(this.StateContext, true);
@@ -66,6 +82,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnLoadButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new LoadState(this.StateContext));
@@ -89,6 +106,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="handType">The hand that is pointing</param>
         public override void OnPoint(Vector3 position, HandType handType)
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
                 this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding, handType));
@@ -102,10 +120,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="handType">The hand that is pointing</param>
         public override void OnPoint(GameObject gameObject, HandType handType)
         {
+            this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
+            this.SelectBuilding(this.colorRenders);
             if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
+        }
+
+        /// <summary>
+        /// Return all objects to normal color
+        /// </summary>
+        public override void RunUpdate()
+        {
+            this.DeselectBuilding(this.colorRenders);
         }
 
         /// <summary>
@@ -119,8 +147,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             this.counter++;
-
-            // TODO set the shader here
         }
 
         /// <summary>
@@ -128,10 +154,43 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnToggleButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new ObjectSelectState(this.StateContext));
             }
+        }
+        
+        /// <summary>
+        /// Change the outline color of the object pointed at
+        /// </summary>
+        /// <param name="colorRenders">Mesh renderers of the children</param>
+        private void SelectBuilding(MeshRenderer[] colorRenders)
+        {
+            for (int i = 0; i < colorRenders.Length; i++)
+            {
+                colorRenders[i].material.shader = this.greenOutline;
+                colorRenders[i].material.SetColor("_OutlineColor", Color.cyan);
+            }
+        }
+
+        /// <summary>
+        /// Set the default to the selected object
+        /// </summary>
+        /// <param name="colorRenders">Mesh renderers of the children</param>
+        private void DeselectBuilding(MeshRenderer[] colorRenders)
+        {
+            if (colorRenders == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < colorRenders.Length; i++)
+            {
+                colorRenders[i].material.shader = this.defaultShader;
+            }
+
+            this.colorRenders = null;
         }
     }
 }
