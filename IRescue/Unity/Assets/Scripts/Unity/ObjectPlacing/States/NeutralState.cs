@@ -124,6 +124,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.SelectBuilding(this.colorRenders);
             if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
+                this.DeselectBuilding(this.colorRenders);
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
         }
