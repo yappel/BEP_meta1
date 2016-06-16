@@ -346,6 +346,36 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
+        /// Test that updating the visible markers with a transformation matrix 
+        /// </summary>
+        [Test]
+        public void UpdateLocationWithTransformationMatrixTest()
+        {
+            Dictionary<int, TransformationMatrix> dic = new Dictionary<int, TransformationMatrix>();
+            this.mlocmoq.AddMarker(5, new Pose(new Vector3(2, 1, 3), new Vector3(0, 180, 0)));
+            dic.Add(5, new TransformationMatrix(1, 0, 1, 0, 180, 0));
+            this.sensor.UpdateLocations(0, dic);
+            Vector3 vec = this.sensor.GetLastPosition().Data;
+            Vector3 ori = this.sensor.GetLastOrientation().Data;
+            this.AssertVectorAreEqual(new Vector3(1, 1, 2), vec, 0.0001);
+            this.AssertVectorAreEqual(new Vector3(), ori, 0.0001);
+        }
+
+        /// <summary>
+        /// Test if the loop continues when an exception will be thrown.
+        /// </summary>
+        [Test]
+        public void TestUpdateUnknownMarkerTransformation()
+        {
+            Dictionary<int, TransformationMatrix> dic = new Dictionary<int, TransformationMatrix>();
+            dic.Add(1, new TransformationMatrix(1, 2, 3, 0, 180, 0));
+            TransformationMatrix transform = new TransformationMatrix(2, 1, 3, 0, 90, 0);
+            dic.Add(-1337, transform);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            Assert.AreEqual(13, this.sensor.GetLastPosition().Data.X, this.epsilon);
+        }
+
+        /// <summary>
         /// Test the output for a measurement and an expected output for the
         /// <see cref="CombinedPositionAndOrientationInOutTest"/> test case.
         /// </summary>
