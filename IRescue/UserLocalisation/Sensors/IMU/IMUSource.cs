@@ -587,19 +587,19 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="measurements">The measurements for a source.</param>
         /// <param name="distType">The distribution type of the source.</param>
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
-        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, IDistribution distType)
+        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, Normal[] distType)
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
             for (int i = 0; i < this.measurementSize; i++)
             {
-                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType);
+                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType[i]);
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
+                if (diff == mindiff && diff <= range)
                 {
                     res.Add(measurement);
                 }
-                else if (diff < mindiff)
+                else if (diff < mindiff && diff <= range)
                 {
                     res.Clear();
                     mindiff = diff;
