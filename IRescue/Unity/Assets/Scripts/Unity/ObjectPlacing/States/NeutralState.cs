@@ -14,29 +14,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class NeutralState : AbstractState
     {
         /// <summary>
-        /// The time you need to point before placing a building
+        /// Counter to count cycles
         /// </summary>
-        private const int TimeToPoint = 3000;
+        private int counter = 0;
 
         /// <summary>
-        /// The time that is being pointed.
+        /// Boolean if the user was grabbing during this cycle
         /// </summary>
-        private long pointTime;
-
-        /// <summary>
-        /// The time that is being pointed towards a building
-        /// </summary>
-        private long pointObjectTime;
-
-        /// <summary>
-        /// Boolean if the user was pointing this iteration.
-        /// </summary>
-        private bool hasPointed = false;
-
-        /// <summary>
-        /// Amount of cycles not pointed
-        /// </summary>
-        private int notPointCount = 0;
+        private HandType currentGrabPointer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
@@ -48,7 +33,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.InitButton("SaveButton", () => this.OnSaveButton());
             this.InitButton("LoadButton", () => this.OnLoadButton());
             this.InitButton("RunButton", () => this.OnRunButton());
-            this.pointTime = StopwatchSingleton.Time;
         }
 
         /// <summary>
@@ -89,22 +73,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Go to the object placing state or the modify state
+        /// </summary>
+        /// <param name="hand">hand that performed the gesture</param>
+        public override void OnGrab(HandType hand)
+        {
+            this.counter = 0;
+            this.currentGrabPointer = hand;
+        }
+
+        /// <summary>
         /// Sets the state to an object placement state after pointing for 3 second.
         /// </summary>
         /// <param name="position">Position of the building to be placed</param>
         /// <param name="handType">The hand that is pointing</param>
         public override void OnPoint(Vector3 position, HandType handType)
         {
-            this.hasPointed = true;
-            long time = StopwatchSingleton.Time;
-            this.pointObjectTime = 0;
-            if (time - this.pointTime > TimeToPoint + 250)
+            if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
-                this.pointTime = time;
-            }
-            else if (time - this.pointTime > TimeToPoint)
-            {
-                Debug.Log(handType);
                 this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding, handType));
             }
         }
@@ -116,14 +102,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="handType">The hand that is pointing</param>
         public override void OnPoint(GameObject gameObject, HandType handType)
         {
-            this.hasPointed = true;
-            long time = StopwatchSingleton.Time;
-            this.pointTime = 0;
-            if (time - this.pointObjectTime > TimeToPoint + 250)
-            {
-                this.pointObjectTime = time;
-            } 
-            else if (time - this.pointObjectTime > TimeToPoint)
+            if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
@@ -134,22 +113,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void RunLateUpdate()
         {
-            if (!this.hasPointed)
+            if (this.counter > 0)
             {
-                this.notPointCount++;
-            }
-            else
-            {
-                this.notPointCount = 0;
+                this.currentGrabPointer = HandType.UNKNOWN;
             }
 
-            if (this.notPointCount > 30)
-            {
-                this.pointTime = 0;
-                this.pointObjectTime = 0;
-            }
+            this.counter++;
 
-            this.hasPointed = false;
+            // TODO set the shader here
         }
 
         /// <summary>

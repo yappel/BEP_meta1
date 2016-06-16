@@ -141,7 +141,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="hand">The hand that performed the grab</param>
         public override void OnGrab(HandType hand)
         {
-            if (this.hasPointed && (hand == HandType.LEFT || hand == HandType.RIGHT))
+            if (this.CanSwitchState() && this.hasPointed && (hand == HandType.LEFT || hand == HandType.RIGHT))
             {
                 this.PlaceBuilding();
             }
