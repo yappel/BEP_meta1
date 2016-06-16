@@ -346,7 +346,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 std = (float)Math.Sqrt(std + Math.Pow(((Normal)vel[vel.Count - 1].DistributionType).Stddev, 2));
                 return new Measurement<Vector3>(displacement, vel[vel.Count - 1].TimeStamp, new Normal(std));
             }
-            //// TODO fix std and time
+
             return new Measurement<Vector3>(displacement, endTimeStamp, new Normal(double.MaxValue));
         }
 
