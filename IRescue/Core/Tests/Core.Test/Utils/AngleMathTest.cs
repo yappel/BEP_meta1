@@ -58,5 +58,11 @@ namespace Core.Test.Utils
         {
             Assert.Throws<ArgumentException>(() => AngleMath.WeightedAverage(new[] { 1f }, new[] { 2f, 2f }));
         }
+
+        [Test]
+        public void WeightedAverageNaNTest()
+        {
+            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] { 0 }, new float[] { 0 }));
+        }
     }
 }
