@@ -39,7 +39,7 @@ public class ModifyRotateStateTest
         this.gameObject = new GameObject();
         this.gameObject.AddComponent<MetaBody>();
         this.gameObject.AddComponent<BuildingPlane>();
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.modifyRotateState = new ModifyRotateState(this.stateContext, this.gameObject);
         this.stateContext.SetState(this.modifyRotateState);
     }

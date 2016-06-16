@@ -38,7 +38,7 @@ public class ModifyScaleStateTest
         this.gameObject = new GameObject();
         this.gameObject.AddComponent<MetaBody>();
         this.gameObject.AddComponent<BuildingPlane>();
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.modifyscaleState = new ModifyScaleState(this.stateContext, this.gameObject);
         this.stateContext.SetState(this.modifyscaleState);
     }

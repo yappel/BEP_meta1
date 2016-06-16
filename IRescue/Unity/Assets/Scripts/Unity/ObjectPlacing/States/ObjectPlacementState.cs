@@ -78,7 +78,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath) 
             : this(stateContext, location, CreateObject(gameObjectPath))
         {
-            this.gameObject.transform.localRotation = Quaternion.identity;
         }
 
         /// <summary>
@@ -186,8 +185,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private static GameObject CreateObject(string gameObjectPath)
         {
             GameObject newObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(gameObjectPath));
-            SetScale(newObject);
             newObject.gameObject.transform.parent = GameObject.Find("GroundPlane").transform;
+            SetScale(newObject);
+            newObject.transform.localRotation = Quaternion.identity;
             return newObject;
         }
 
@@ -205,8 +205,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
+            Vector3 localFactor = gameObject.transform.parent.localScale;
             float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x);
-            gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);
+            gameObject.transform.localScale = new Vector3(boundScale / localFactor.x, boundScale / localFactor.y, boundScale / localFactor.z);
         }
 
         /// <summary>

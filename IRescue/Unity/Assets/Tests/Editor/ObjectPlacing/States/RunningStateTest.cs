@@ -27,7 +27,7 @@ public class RunningStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.runningState = new RunningState(this.stateContext);
         this.stateContext.SetState(this.runningState);
     }
