@@ -75,19 +75,19 @@ namespace IRescue.Core.Utils
                 throw new ArgumentException("Length of vector is not 2 or all values are 0");
             }
 
-            if (Math.Abs(vector[0]) < float.Epsilon)
-            {
-                return vector[1] < 0 ? 270f : 90f;
-            }
+            //if (Math.Abs(vector[0]) < float.Epsilon)
+            //{
+            //    return vector[1] < 0 ? 270f : 90f;
+            //}
 
-            if (Math.Abs(vector[1]) < float.Epsilon)
-            {
-                return vector[0] < 0 ? 180f : 0f;
-            }
+            //if (Math.Abs(vector[1]) < float.Epsilon)
+            //{
+            //    return vector[0] < 0 ? 180f : 0f;
+            //}
 
-            float angletoadd = (vector[0] < 0) ? 180 : (vector[1] < 0) ? 360 : 0;
+            //float angletoadd = (vector[0] < 0) ? 180 : (vector[1] < 0) ? 360 : 0;
 
-            return (float)(Trig.RadianToDegree(Math.Atan2(vector[1], vector[0])) + angletoadd);
+            return (float)Trig.RadianToDegree(Math.Atan2(vector[1], vector[0]));
         }
 
         /// <summary>
