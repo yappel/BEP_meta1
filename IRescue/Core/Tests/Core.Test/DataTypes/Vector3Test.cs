@@ -76,5 +76,17 @@ namespace Core.Test.DataTypes
             vector.Z = 122;
             Assert.AreEqual(122, vector.Z);
         }
+
+        /// <summary>
+        /// Test that the empty constructor creates a vector with all zero values.
+        /// </summary>
+        [Test]
+        public void EmptyConstructorTest()
+        {
+            Vector3 vec = new Vector3();
+            Assert.AreEqual(0, vec.X);
+            Assert.AreEqual(0, vec.Y);
+            Assert.AreEqual(0, vec.Z);
+        }
     }
 }
