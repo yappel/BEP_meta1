@@ -58,6 +58,19 @@ namespace UserLocalisation.Test.Sensors.IMU
         private Vector3 zeroOrientation;
 
         /// <summary>
+        /// Setup the source to test and the default _values.
+        /// </summary>
+        [SetUp]
+        public void SetUp()
+        {
+            this.accDistType = new Mock<Normal>(1);
+            this.oriDistType = new Mock<Normal>(1);
+            this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, this.bufferSize, new Vector3(new float[] { 0, 0, 0 }));
+            this.zeroOrientation = new Vector3(0, 0, 0);
+            this.standardAcceleration = new Vector3(1, 2, 3);
+        }
+
+        /// <summary>
         /// Test that get accelerations returns the correct measurements.
         /// </summary>
         [Test]
@@ -156,6 +169,31 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(this.standardAcceleration.Y, res.Data.Y);
             Assert.AreEqual(this.standardAcceleration.Z, res.Data.Z);
             Assert.AreEqual(0, res.TimeStamp);
+        }
+
+        /// <summary>
+        /// Test that get acceleration at a time stamp with no measurement returns null.
+        /// </summary>
+        [Test]
+        public void GetAccelerationTimeStampNoData()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetAcceleration(1);
+            Assert.AreEqual(null, res);
+        }
+
+        /// <summary>
+        /// Test that adding multiple measurements still returns the correct measurement for
+        /// get acceleration at a time stamp.
+        /// </summary>
+        [Test]
+        public void GetAccelerationTimeStampMultiple()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(1, new Vector3(3, 2, 1), this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetAcceleration(1);
+            this.AssertVectorAreEqual(new Vector3(3, 2, 1), res.Data);
+            Assert.AreEqual(1, res.TimeStamp);
         }
 
         /// <summary>
@@ -311,6 +349,19 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(12, res.Z, 0.0001);
         }
 
+
+        /// <summary>
+        /// Test that get displacement with no measurements returns null and a very low change
+        /// of being a correct measurement.
+        /// </summary>
+        [Test]
+        public void GetDisplacementNoMeasurementsTest()
+        {
+            Measurement<Vector3> res = this.source.GetDisplacement(0, 1);
+            this.AssertVectorAreEqual(new Vector3(0, 0, 0), res.Data);
+            Assert.AreEqual(double.MaxValue, ((Normal) res.DistributionType).Stddev);
+        }
+
         /// <summary>
         /// Test that when more measurements are added than the buffer limit it still returns
         /// the correct results for get last acceleration.
@@ -346,6 +397,16 @@ namespace UserLocalisation.Test.Sensors.IMU
             Measurement<Vector3> res = this.source.GetLastAcceleration();
             Assert.AreEqual(1, res.TimeStamp);
             this.AssertVectorAreEqual(acc, res.Data);
+        }
+
+        /// <summary>
+        /// Test that get last acceleration returns null when there are no measurements added.
+        /// </summary>
+        [Test]
+        public void GetLastAccelerationNoMeasurementTest()
+        {
+            Measurement<Vector3> res = this.source.GetLastAcceleration();
+            Assert.AreEqual(null, res);
         }
 
         /// <summary>
@@ -403,6 +464,16 @@ namespace UserLocalisation.Test.Sensors.IMU
             Measurement<Vector3> res = this.source.GetLastVelocity();
             this.AssertVectorAreEqual(new Vector3(2, 2, 2), res.Data);
             Assert.AreEqual(4000, res.TimeStamp);
+        }
+
+        /// <summary>
+        /// Test that get last orientation returns null when there are no measurements added.
+        /// </summary>
+        [Test]
+        public void GetLastOrientationNoMeasurementTest()
+        {
+            Measurement<Vector3> res = this.source.GetLastOrientation();
+            Assert.AreEqual(null, res);
         }
 
         /// <summary>
@@ -485,6 +556,31 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that get orientation at a time stamp with no measurement returns null.
+        /// </summary>
+        [Test]
+        public void GetOrientationTimeStampNoData()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetOrientation(1);
+            Assert.AreEqual(null, res);
+        }
+
+        /// <summary>
+        /// Test that adding multiple measurements still returns the correct measurement for
+        /// get orientation at a time stamp.
+        /// </summary>
+        [Test]
+        public void GetOrientationTimeStampMultiple()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(1, this.standardAcceleration, new Vector3(3, 2, 1));
+            Measurement<Vector3> res = this.source.GetOrientation(1);
+            this.AssertVectorAreEqual(new Vector3(3, 2, 1), res.Data);
+            Assert.AreEqual(1, res.TimeStamp);
+        }
+
+        /// <summary>
         /// Test that the velocities over a period are correctly computed.
         /// </summary>
         [Test]
@@ -520,6 +616,17 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that get velocity at a time stamp with no measurement returns null.
+        /// </summary>
+        [Test]
+        public void GetVelocityTimeStampNoData()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            Measurement<Vector3> res = this.source.GetVelocity(1);
+            Assert.AreEqual(null, res);
+        }
+
+        /// <summary>
         /// Test that a negative buffer size defaults to the default value.
         /// </summary>
         [Test]
@@ -527,19 +634,6 @@ namespace UserLocalisation.Test.Sensors.IMU
         {
             this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, -1);
             Assert.AreEqual(this.classDefaultBufferSize, this.source.GetMeasurementBufferSize());
-        }
-
-        /// <summary>
-        /// Setup the source to test and the default _values.
-        /// </summary>
-        [SetUp]
-        public void SetUp()
-        {
-            this.accDistType = new Mock<Normal>(1);
-            this.oriDistType = new Mock<Normal>(1);
-            this.source = new IMUSource(this.accDistType.Object, this.oriDistType.Object, this.bufferSize, new Vector3(new float[] { 0, 0, 0 }));
-            this.zeroOrientation = new Vector3(0, 0, 0);
-            this.standardAcceleration = new Vector3(1, 2, 3);
         }
 
         /// <summary>

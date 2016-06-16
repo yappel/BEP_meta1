@@ -328,7 +328,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             Vector3 displacement = new Vector3(0, 0, 0);
             Vector3 temp = new Vector3(0, 0, 0);
             float std = 0;
-            if (vel.Count > 0)
+            if (vel.Count > 1)
             {
                 for (int i = 0; i < vel.Count - 1; i++)
                 {
@@ -346,7 +346,6 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 std = (float)Math.Sqrt(std + Math.Pow(((Normal)vel[vel.Count - 1].DistributionType).Stddev, 2));
                 return new Measurement<Vector3>(displacement, vel[vel.Count - 1].TimeStamp, new Normal(std));
             }
-
             //// TODO fix std and time
             return new Measurement<Vector3>(displacement, endTimeStamp, new Normal(double.MaxValue));
         }
