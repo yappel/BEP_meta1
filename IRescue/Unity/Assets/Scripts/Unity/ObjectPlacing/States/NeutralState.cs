@@ -33,6 +33,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private bool hasPointed = false;
 
         /// <summary>
+        /// Amount of cycles not pointed
+        /// </summary>
+        private int notPointCount = 0;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
@@ -126,6 +131,15 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void RunLateUpdate()
         {
             if (!this.hasPointed)
+            {
+                this.notPointCount++;
+            }
+            else
+            {
+                this.notPointCount = 0;
+            }
+
+            if (this.notPointCount > 30)
             {
                 this.pointTime = 0;
                 this.pointObjectTime = 0;
