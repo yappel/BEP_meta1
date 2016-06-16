@@ -20,7 +20,7 @@ namespace Assets.Scripts.Unity
             bool debug = false;
             this.gameObject.name = "GroundPlane";
             this.gameObject.transform.position = new Vector3((fieldSize.Xmax + fieldSize.Xmin) / 2, 0, (fieldSize.Zmax + fieldSize.Zmin) / 2);
-            this.gameObject.transform.localScale = new Vector3((fieldSize.Xmax - fieldSize.Xmin) / 10f, 1, (fieldSize.Zmax - fieldSize.Zmin) / 10f);
+            this.gameObject.transform.localScale = new Vector3((fieldSize.Xmax - fieldSize.Xmin) / 10f, 0, (fieldSize.Zmax - fieldSize.Zmin) / 10f);
             if (debug)
             {
                 this.gameObject.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/grid");
