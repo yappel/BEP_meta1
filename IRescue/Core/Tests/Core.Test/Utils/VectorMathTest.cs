@@ -133,7 +133,9 @@ namespace Core.Test.Utils
         public void TestVectorToAngle()
         {
             Vector v = new DenseVector(new float[] { -0.9987534f, -0.03564889f });
-            Assert.AreEqual(180, VectorMath.Vector2ToAngle(v));
+            Assert.AreEqual(-177.95571f, VectorMath.Vector2ToAngle(v), 0.0001);
+            v = new DenseVector(new float[] { 0, 1 });
+            Assert.AreEqual(90, VectorMath.Vector2ToAngle(v));
         }
 
         private void AreEqual(Vector3 v1, Vector3 v2)
