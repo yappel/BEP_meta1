@@ -62,6 +62,10 @@ namespace Assets.Scripts.Unity
             this.waterPlane.GetComponent<MeshRenderer>().material.shader = Shader.Find("Masked/Mask");
             this.waterPlane.GetComponent<MeshRenderer>().material.renderQueue = 2990;
             this.measurements = new float[BufferSize];
+            for (int i = 0; i < BufferSize; i++)
+            {
+                this.measurements[i] = -1;
+            }
         }
 
         /// <summary>
@@ -72,13 +76,13 @@ namespace Assets.Scripts.Unity
             if (StopwatchSingleton.Time - this.previousCalculation > IntervalTime)
             {
                 this.previousCalculation = StopwatchSingleton.Time;
+
                 // TODO for each visible marker
                 //      double waterLevel = WaterLevelTracker::CalculateWaterLevel(input);
                 //      if (waterLevel > 0) {
                 //          this.measurements[pointer % BufferSize] = waterLevel;
                 //          this.pointer++;
                 //      }
-
                 this.SetWaterPositionY();
             }
         }
