@@ -23,7 +23,7 @@ namespace IRescue.Core.Utils
         /// <returns>The average angle between 0 and 360 degrees</returns>
         public static float Average(float[] angles)
         {
-            return WeightedAverage(angles, Enumerable.Repeat(1f, angles.Length).ToArray());
+            return WeightedAverage(angles, Enumerable.Repeat(1f / angles.Length, angles.Length).ToArray());
         }
 
         /// <summary>
