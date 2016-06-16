@@ -28,6 +28,8 @@ namespace Core.Test.Utils
         [Test]
         public void TimerStartedTest()
         {
+            long t = StopwatchSingleton.Time;
+            System.Threading.Thread.Sleep(100);
             Assert.AreNotEqual(0, StopwatchSingleton.Time);
         }
     }
