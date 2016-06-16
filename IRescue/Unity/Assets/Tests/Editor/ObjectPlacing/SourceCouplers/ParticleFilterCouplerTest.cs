@@ -3,6 +3,7 @@
 // </copyright>
 
 using Assets.Scripts.Unity.SensorControllers;
+using IRescue.Core.DataTypes;
 using IRescue.UserLocalisation.Particle;
 using NUnit.Framework;
 
@@ -22,7 +23,8 @@ public class ParticleFilterCouplerTest
     [SetUp]
     public void Setup()
     {
-        this.coupler = new ParticleFilterCoupler();
+        FieldSize fieldSize = new FieldSize() { Xmax = 4, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+        this.coupler = new ParticleFilterCoupler(fieldSize);
     }
 
     /// <summary>

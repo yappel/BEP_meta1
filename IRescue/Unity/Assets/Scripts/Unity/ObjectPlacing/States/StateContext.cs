@@ -19,8 +19,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>
-        /// <param name="controller">The event controller which keeps track of valid events</param>
-        public StateContext(GestureEventController controller)
+        public StateContext()
         {
             this.CurrentState = new NeutralState(this);
             this.SwapObject(DefaultObjectPath);

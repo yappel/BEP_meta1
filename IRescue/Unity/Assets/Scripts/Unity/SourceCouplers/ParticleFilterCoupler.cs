@@ -28,9 +28,9 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleFilterCoupler"/> class
     /// </summary>
-    public ParticleFilterCoupler()
+    /// <param name="fieldSize">The preferred game field size</param>
+    public ParticleFilterCoupler(FieldSize fieldSize)
     {
-        FieldSize fieldSize = new FieldSize() { Xmax = 5, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 5, Zmin = 0 };
         int particleamount = 300;
         IParticleGenerator prtclgen = new RandomParticleGenerator(new ContinuousUniform());
         INoiseGenerator noisegen = new RandomNoiseGenerator(new ContinuousUniform());

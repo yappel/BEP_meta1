@@ -31,7 +31,7 @@ public class NeutralStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.neutralState = new NeutralState(this.stateContext);
         this.stateContext.SetState(this.neutralState);
     }

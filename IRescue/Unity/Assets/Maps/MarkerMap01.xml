@@ -16,12 +16,12 @@
     <id>1</id>
     <position>
       <x>0</x>
-      <y>0</y>
-      <z>0</z>
+      <y>1.6</y>
+      <z>4</z>
     </position>
     <rotation>
       <x>0</x>
-      <y>0</y>
+      <y>180</y>
       <z>0</z>
     </rotation>
   </marker>
