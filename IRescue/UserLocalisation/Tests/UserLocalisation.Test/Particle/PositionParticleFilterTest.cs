@@ -135,9 +135,6 @@ namespace UserLocalisation.Test.Particle
                 diffz.Add(res.Z - 1);
             }
 
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionX2.dat", diffx.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionY2.dat", diffy.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "PositionZ2.dat", diffz.Select(d => d.ToString()).ToArray());
             Assert.True(diffx.Max() < 5 * this.posnoise.Maximum);
             Assert.True(diffx.Min() > 5 * this.posnoise.Minimum);
             Assert.True(diffy.Max() < 5 * this.posnoise.Maximum);

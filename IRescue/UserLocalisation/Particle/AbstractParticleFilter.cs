@@ -5,9 +5,7 @@ namespace IRescue.UserLocalisation.Particle
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Text;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
@@ -46,14 +44,14 @@ namespace IRescue.UserLocalisation.Particle
         private readonly IResampler resampler;
 
         /// <summary>
-        /// If the filter received a measurement at least once.
-        /// </summary>
-        private bool measurementReceived;
-
-        /// <summary>
         /// The algorithm used to smooth the results of the filter.
         /// </summary>
         private readonly ISmoother smoother;
+
+        /// <summary>
+        /// If the filter received a measurement at least once.
+        /// </summary>
+        private bool measurementReceived;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractParticleFilter"/> class.

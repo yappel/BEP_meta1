@@ -3,10 +3,13 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
@@ -118,12 +121,12 @@ namespace IRescue.UserLocalisation.Particle
         /// <inheritdoc/>
         protected override Vector3 ProcessResults()
         {
-            Vector3 result = base.ProcessResults();
-            this.previousResult = result;
-            this.iex.AddData(this.CurrentTimeStamp, result.X);
-            this.iey.AddData(this.CurrentTimeStamp, result.Y);
-            this.iez.AddData(this.CurrentTimeStamp, result.Z);
-            return result;
+            Vector3 res = base.ProcessResults();
+            this.previousResult = res;
+            this.iex.AddData(this.CurrentTimeStamp, res.X);
+            this.iey.AddData(this.CurrentTimeStamp, res.Y);
+            this.iez.AddData(this.CurrentTimeStamp, res.Z);
+            return res;
         }
 
         /// <inheritdoc/>

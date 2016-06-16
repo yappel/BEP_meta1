@@ -59,6 +59,9 @@ namespace Core.Test.Utils
             Assert.Throws<ArgumentException>(() => AngleMath.WeightedAverage(new[] { 1f }, new[] { 2f, 2f }));
         }
 
+        /// <summary>
+        /// Test getting an average angle of 180.
+        /// </summary>
         [Test]
         public void TestAverageAround180()
         {
