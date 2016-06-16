@@ -5,6 +5,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
@@ -347,7 +349,6 @@ namespace IRescue.UserLocalisation.Sensors.IMU
                 return new Measurement<Vector3>(displacement, vel[vel.Count - 1].TimeStamp, new Normal(std));
             }
 
-            //// TODO fix std and time
             return new Measurement<Vector3>(displacement, endTimeStamp, new Normal(double.MaxValue));
         }
 
@@ -431,8 +432,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
         {
-            ////TODO fix dist type
-            return this.GetSourceClosestTo(timeStamp, range, this.orientations, this.oriDistType);
+            return this.GetSourceClosestTo(timeStamp, range, this.orientations, Enumerable.Repeat(this.oriDistType, this.orientations.Length).ToArray());
         }
 
         /// <summary>
@@ -508,8 +508,13 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetVelocityClosestTo(long timeStamp, long range)
         {
-            ////TODO fix dist type.
-            return this.GetSourceClosestTo(timeStamp, range, this.velocity, this.accDistType);
+            Normal[] dists = new Normal[this.velocityStd.Length];
+            for (int i = 0; i < this.velocityStd.Length; i++)
+            {
+                dists[i] = new Normal(this.velocityStd[i]);
+            }
+
+            return this.GetSourceClosestTo(timeStamp, range, this.velocity, dists);
         }
 
         /// <inheritdoc/>
