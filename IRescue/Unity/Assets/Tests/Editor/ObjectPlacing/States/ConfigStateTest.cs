@@ -27,7 +27,7 @@ public class ConfigStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.configState = new ConfigState(this.stateContext);
         this.stateContext.SetState(this.configState);
     }

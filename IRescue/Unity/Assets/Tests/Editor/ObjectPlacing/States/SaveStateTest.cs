@@ -34,7 +34,7 @@ public class SaveStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.saveState = new SaveState(this.stateContext);
         this.stateContext.SetState(this.saveState);
     }

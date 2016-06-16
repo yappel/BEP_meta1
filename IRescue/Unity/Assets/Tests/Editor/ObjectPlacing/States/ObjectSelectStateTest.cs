@@ -30,7 +30,7 @@ public class ObjectSelectStateTest
     [SetUp]
     public void Setup()
     {
-        this.stateContext = new StateContext(null);
+        this.stateContext = new StateContext();
         this.objectSelectState = new ObjectSelectState(this.stateContext);
         this.stateContext.SetState(this.objectSelectState);
     }

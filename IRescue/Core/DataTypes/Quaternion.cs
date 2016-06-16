@@ -45,18 +45,12 @@ namespace IRescue.Core.DataTypes
             }
 
             this.EulerAnglesDegree = this.CalcEulerAngles();
-            this.EulerAnglesRadian = new Vector3(this.EulerAnglesDegree.Map(f => (float)Trig.DegreeToRadian(f)).ToArray());
         }
 
         /// <summary>
         /// Gets this quaternion converted to Tait-Bryan angles in degrees.
         /// </summary>
         public Vector3 EulerAnglesDegree { get; private set; }
-
-        /// <summary>
-        /// Gets this quaternion converted to Tait-Bryan angles in radian.
-        /// </summary>
-        public Vector3 EulerAnglesRadian { get; }
 
         /// <summary>
         /// Gets the w coordinate.

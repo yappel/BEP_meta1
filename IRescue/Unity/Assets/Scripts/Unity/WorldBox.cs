@@ -4,16 +4,10 @@
 
 namespace Assets.Scripts.Unity
 {
-    using System;
-
-    using Assets.Scripts.Unity.Utils;
-
     using IRescue.Core.DataTypes;
     using IRescue.Core.Utils;
     using IRescue.UserLocalisation;
     using UnityEngine;
-    using UnityEngine.UI;
-
     using Quaternion = UnityEngine.Quaternion;
 
     /// <summary>
@@ -59,10 +53,9 @@ namespace Assets.Scripts.Unity
                 Pose pose = this.localizer.CalculatePose(StopwatchSingleton.Time);
                 UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
                 UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
-                Quaternion rotation = Quaternion.Inverse(EulerAnglesConversion.XYZtoQuaternion(rot));
+                Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
                 this.transform.position = -1 * (rotation * pos);
-                this.transform.rotation = new Quaternion();
-                this.transform.Rotate(rotation.eulerAngles);
+                this.transform.rotation = rotation;
                 this.metaFrame.rotation = new Quaternion();
             }
         }
@@ -73,10 +66,10 @@ namespace Assets.Scripts.Unity
         private void InitPlanes()
         {
             GameObject groundPlane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            groundPlane.AddComponent<GroundPlane>().Init(this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
+            groundPlane.AddComponent<GroundPlane>().Init(this.fieldSize);
             groundPlane.transform.parent = this.transform;
             WaterLevelController waterPlane = this.gameObject.AddComponent<WaterLevelController>();
-            waterPlane.Init(this.transform, this.fieldSize.Xmax - this.fieldSize.Xmin, this.fieldSize.Zmax - this.fieldSize.Zmin);
+            waterPlane.Init(this.transform, this.fieldSize);
         }
     }
 }
