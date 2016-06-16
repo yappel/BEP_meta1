@@ -98,6 +98,18 @@ namespace Core.Test.DataTypes
         }
 
         /// <summary>
+        /// Test that a simple translation and rotationmatrix return the correct transformation matrix.
+        /// </summary>
+        [Test]
+        public void TransformationMatrixFromRotationMatrixTest()
+        {
+            this.transformation = new TransformationMatrix(1, 2, 3, new RotationMatrix(0, 90, 0));
+            Vector4 res = new Vector4(1, 1, 1, 1);
+            this.transformation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector4(2, 3, 2, 1), res);
+        }
+
+        /// <summary>
         /// Test that extracting the rotation matrix returns a correct rotation matrix.
         /// </summary>
         [Test]
@@ -107,6 +119,32 @@ namespace Core.Test.DataTypes
             RotationMatrix rot = this.transformation.GetRotation();
             RotationMatrix expected = new RotationMatrix(45, 90, 30);
             Assert.AreEqual(expected, rot);
+        }
+
+        /// <summary>
+        /// Test that the orientation field returns the correct orientation.
+        /// </summary>
+        [Test]
+        public void TransformationMatrixOrientationTest()
+        {
+            this.transformation = new TransformationMatrix(1, 1, 1, 45, 90, 180);
+            Vector3 res = this.transformation.Orientation;
+            Assert.AreEqual(45, res.X, 0.0001);
+            Assert.AreEqual(90, res.Y, 0.0001);
+            Assert.AreEqual(180, res.Z, 0.0001);
+        }
+
+        /// <summary>
+        /// Test that the position field returns the correct position.
+        /// </summary>
+        [Test]
+        public void TransformationMatrixPositionTest()
+        {
+            this.transformation = new TransformationMatrix(1, 2, 3, 0, 0, 0);
+            Vector3 res = this.transformation.Position;
+            Assert.AreEqual(1, res.X, 0.0001);
+            Assert.AreEqual(2, res.Y, 0.0001);
+            Assert.AreEqual(3, res.Z, 0.0001);
         }
 
         /// <summary>
