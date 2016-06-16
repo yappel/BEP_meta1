@@ -4,12 +4,20 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
+    using System;
+    using System.IO;
+
     using Assets.Scripts.Unity.Utils;
 
+    using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
+
+    using UnityEngine;
+    using UnityEngine.UI;
+
     using Vector3 = IRescue.Core.DataTypes.Vector3;
 
     /// <summary>
@@ -25,7 +33,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// <summary>
         ///   The standard deviation of the acceleration
         /// </summary>
-        private float accelerationStd = 2.0f;
+        private float accelerationStd = 0.05f;
 
         /// <summary>
         ///   The standard deviation of the orientation
@@ -42,7 +50,7 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// </summary>
         public override void Init()
         {
-            this.imuSource = new IMUSource(new Normal(this.accelerationStd), new Normal(this.orientationStd), this.bufferSize);
+            this.imuSource = new IMUSource(new Normal(this.accelerationStd), new Normal(this.orientationStd), this.bufferSize, new Vector3(-0.3213f, -9.81f + 0.0435f, -0.1763f));
         }
 
         /// <summary>
