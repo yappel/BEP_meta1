@@ -5,7 +5,9 @@ namespace IRescue.UserLocalisation.Particle
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Text;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
@@ -42,6 +44,11 @@ namespace IRescue.UserLocalisation.Particle
         /// The algorithm used to resample the particles.
         /// </summary>
         private readonly IResampler resampler;
+
+        /// <summary>
+        /// If the filter received a measurement at least once.
+        /// </summary>
+        private bool measurementReceived;
 
         /// <summary>
         /// The algorithm used to smooth the results of the filter.
@@ -121,6 +128,7 @@ namespace IRescue.UserLocalisation.Particle
             this.PreviousTimeStamp = this.CurrentTimeStamp;
             this.CurrentTimeStamp = timeStamp;
             this.RetrieveMeasurements();
+            this.measurementReceived = this.measurementReceived || (this.Measurements.Count > 0);
 
             this.Resample();
             this.Predict();
@@ -155,7 +163,6 @@ namespace IRescue.UserLocalisation.Particle
             float resultY = this.ProcessResult(this.ParticleControllerY);
             float resultZ = this.ProcessResult(this.ParticleControllerZ);
             Vector3 res = this.smoother.GetSmoothedResult(new Vector3(resultX, resultY, resultZ), this.CurrentTimeStamp, this.averageCalculator);
-
             return res;
         }
 
@@ -200,12 +207,16 @@ namespace IRescue.UserLocalisation.Particle
         {
             if (Math.Abs(cont.Weights.Sum()) < float.Epsilon)
             {
-                this.noiseGenerator.GenerateNoise(0.01f, cont);
+                this.noiseGenerator.GenerateNoise(0.005f, cont);
                 cont.SetWeights(1f / cont.Count);
+            }
+            else if (this.Measurements.Count == 0)
+            {
+                cont.SetWeights(1f / cont.Count);
+                return this.measurementReceived ? this.GetWeightedAverage(cont) : 0;
             }
 
             float result = this.GetWeightedAverage(cont);
-
             return result;
         }
 
