@@ -95,34 +95,5 @@ namespace IRescue.Core.DataTypes
                 };
             return rot;
         }
-
-        private static float[] CreateMatrixVector(Vector3 axis, float angle)
-        {
-            ////http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/index.htm
-            double x = axis.X;
-            double y = axis.Y;
-            double z = axis.Z;
-            float anglerad = (float)Trig.DegreeToRadian(angle);
-            double c = Cos(anglerad);
-            double s = Sin(anglerad);
-            double t = 1 - c;
-            float[] rot =
-                {
-                (float)((t * x * x) + c), (float)((t * x * y) + (z * s)), (float)((t * x * z) - (y * s)),
-                (float)((t * x * y) - (z * s)), (float)((t * y * y) + c), (float)((t * y * z) + (x * s)),
-                (float)((t * x * z) + (y * s)), (float)((t * y * z) - (x * s)), (float)((t * z * z) + c)
-                };
-
-            return rot;
-        }
-
-        private static Vector3 CrossProduct(Vector3 a, Vector3 b)
-        {
-            Vector3 c = new Vector3();
-            c.X = (a.Y * b.Z) - (a.Z * b.Y);
-            c.Y = (a.Z * b.X) - (a.X * b.Z);
-            c.Z = (a.X * b.Y) - (a.Y * b.X);
-            return c;
-        }
     }
 }
