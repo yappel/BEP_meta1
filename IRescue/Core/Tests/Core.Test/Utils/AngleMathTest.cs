@@ -65,7 +65,7 @@ namespace Core.Test.Utils
         [Test]
         public void WeightedAverageNaNTest()
         {
-            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] {0}, new float[] {0}));
+            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] { 0 }, new float[] { 0 }));
         }
 
         /// <summary>
