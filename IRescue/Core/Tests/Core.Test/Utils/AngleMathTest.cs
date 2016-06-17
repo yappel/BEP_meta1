@@ -59,6 +59,9 @@ namespace Core.Test.Utils
             Assert.Throws<ArgumentException>(() => AngleMath.WeightedAverage(new[] { 1f }, new[] { 2f, 2f }));
         }
 
+        /// <summary>
+        /// Test getting the weighted average of a list where that is not possible.
+        /// </summary>
         [Test]
         public void WeightedAverageNaNTest()
         {
