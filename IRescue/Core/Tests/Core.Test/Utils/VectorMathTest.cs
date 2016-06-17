@@ -164,14 +164,14 @@ namespace Core.Test.Utils
         }
 
         /// <summary>
-        /// Test that a vector [ 0 -1 ] returns an angle of 270 degrees.
+        /// Test that a vector [ 0 -1 ] returns an angle of -90 degrees.
         /// </summary>
         [Test]
-        public void Vector2Angle270DegreeVectorTest()
+        public void Vector2AngleNegative90DegreeVectorTest()
         {
             Vector<float> vec = new DenseVector(new float[] { 0, -1 });
             float angle = VectorMath.Vector2ToAngle(vec);
-            Assert.AreEqual(270, angle);
+            Assert.AreEqual(-90, angle);
         }
 
         /// <summary>
