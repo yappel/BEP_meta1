@@ -45,10 +45,10 @@ namespace Core.Test.DataTypes
         }
 
         /// <summary>
-        /// Test that a simple rotation returns the desired output vector.
+        /// Test if creating a matrix from a quaternion results in the same matrix as creating from euler angles.
         /// </summary>
         [Test]
-        public void SimpleRotationTest2()
+        public void CreatinMatrixFromQuaterion()
         {
             RotationMatrix expected = new RotationMatrix(45, 90, 30);
             Quaternion q = new Quaternion(expected);
