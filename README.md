@@ -26,10 +26,23 @@ The three projects require dependencies of eachother as follows: (x->y means x i
 * UserLocalisation -> UserLocalisation.Test
 * UserLocalisation -> Unity
 
-## 2.1 Build Order
+## 2.1 External Dependencies
+The external third party dependencies for the projects. Between brackets the projects are mentioned which depend on these dependencies.
+
+### 2.1.1 
+* MathNet.Numerics v3.11.1 (Core, UserLocalisation, Unity)
+* TaskParallelLibrary v1.0.2856.0, MathNet.Numerics dependency for .NET 3.5 target framework (Core, UserLocalisation, Unity)
+* Meta SDK v1.3.4.308 (Unity)
+
+### 2.1.2 Testing Dependencies
+* NUnit v3.2.1 (Core.Test, UserLocalisation.Test)
+* NUnit3TestAdapter v3.0.10, for running NUnit tests in Visual Studio (Core.Test, UserLocalisation.Test)
+* Moq v4.2.1510.2205 (UserLocalisation.Test)
+
+## 2.2 Build Order
 The different projects have the following build order:
 1. Core
 2. Core.Test
 3. UserLocalisation
 4. UserLocalisation.Test
-Note that the Unity project is not in the order, because the engine build the code itself.
+Note that the Unity project is not in the order, because the engine builds the code itself.
