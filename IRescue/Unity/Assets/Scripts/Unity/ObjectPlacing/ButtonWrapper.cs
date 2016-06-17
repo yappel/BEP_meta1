@@ -28,7 +28,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         private ButtonWrapper()
         {
             wrapper = new GameObject("Buttons");
-            wrapper.AddComponent<MetaBody>().hud = true;
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             get
             {
-                if (buttonWrapper == null)
+                if (buttonWrapper == null || wrapper == null)
                 {
                     buttonWrapper = new ButtonWrapper();
                 }

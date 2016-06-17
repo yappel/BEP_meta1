@@ -28,13 +28,58 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private long pointObjectTime;
 
         /// <summary>
+        /// Boolean if the user was pointing this iteration.
+        /// </summary>
+        private bool hasPointed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
         /// </summary>
         /// <param name="stateContext">The class that keeps track of the current active state</param>
         public NeutralState(StateContext stateContext) : base(stateContext)
         {
             this.InitButton("ToggleButton", () => this.OnToggleButton());
+            this.InitButton("SaveButton", () => this.OnSaveButton());
+            this.InitButton("LoadButton", () => this.OnLoadButton());
+            this.InitButton("RunButton", () => this.OnRunButton());
             this.pointTime = StopwatchSingleton.Time;
+        }
+
+        /// <summary>
+        /// Set the running state as active
+        /// </summary>
+        public void OnRunButton()
+        {
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new RunningState(this.StateContext));
+            }
+        }
+
+        /// <summary>
+        /// Go to the save state
+        /// </summary>
+        public void OnSaveButton()
+        {
+            if (this.StateContext.SaveFilePath != null)
+            {
+                new SaveState(this.StateContext, true);
+            }
+            else if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new SaveState(this.StateContext));
+            }
+        }
+
+        /// <summary>
+        /// Go to the load state
+        /// </summary>
+        public void OnLoadButton()
+        {
+            if (this.CanSwitchState())
+            {
+                this.StateContext.SetState(new LoadState(this.StateContext));
+            }
         }
 
         /// <summary>
@@ -43,6 +88,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="position">Position of the building to be placed</param>
         public override void OnPoint(Vector3 position)
         {
+            this.hasPointed = true;
             long time = StopwatchSingleton.Time;
             this.pointObjectTime = 0;
             if (time - this.pointTime > TimeToPoint + 250)
@@ -61,6 +107,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="gameObject">Object pointed at</param>
         public override void OnPoint(GameObject gameObject)
         {
+            this.hasPointed = true;
             long time = StopwatchSingleton.Time;
             this.pointTime = 0;
             if (time - this.pointObjectTime > TimeToPoint + 250)
@@ -71,6 +118,20 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
+        }
+
+        /// <summary>
+        /// If the user was not pointing, reset the timers
+        /// </summary>
+        public override void RunLateUpdate()
+        {
+            if (!this.hasPointed)
+            {
+                this.pointTime = 0;
+                this.pointObjectTime = 0;
+            }
+
+            this.hasPointed = false;
         }
 
         /// <summary>

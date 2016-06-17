@@ -110,7 +110,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.SetRectTransform(
                 content.GetComponent<RectTransform>(),
                 new Vector3(-frameWidth, 135 - ((entryHeight + (2 * padding)) * (1 + Mathf.Floor(objects.Length / columnSize)))),
-                new Vector2((entryWidth + (2 * padding)) * columnSize, (entryHeight + (2 * padding)) * (1 + Mathf.Floor(objects.Length / columnSize))));
+                new Vector2((entryWidth + (2 * padding)) * columnSize, (entryHeight + (2 * padding)) * (1 + Mathf.Floor((objects.Length - 1) / columnSize))));
             float deductY = content.GetComponent<RectTransform>().sizeDelta.y;
             GameObject scrollViewEntry = content.transform.GetChild(0).gameObject;
             for (int i = 0; i < objects.Length; i++)
@@ -160,7 +160,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 (entryWidth / 2) - ((Mathf.Floor((i / columnSize) + 1) * entryHeight) + (2 * padding) - deductY));
             entry.transform.GetComponentInChildren<Text>().text = name;
             entry.AddComponent<Selector>().Init(this);
-            if (name == "DefaultObject")
+            if ((ObjectPath + "/" + name).Equals(this.StateContext.SelectedBuilding))
             {
                 entry.GetComponent<Selector>().OnPointerDown(null);
             }

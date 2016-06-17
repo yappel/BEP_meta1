@@ -19,12 +19,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Initializes a new instance of the <see cref="StateContext"/> class.
         /// </summary>
-        /// <param name="controller">The event controller which keeps track of valid events</param>
-        public StateContext(GestureEventController controller)
+        public StateContext()
         {
             this.CurrentState = new NeutralState(this);
             this.SwapObject(DefaultObjectPath);
         }
+
+        /// <summary>
+        /// Gets or sets the path to the save file if something is loaded. Is null otherwise
+        /// </summary>
+        public string SaveFilePath { get; set; }
 
         /// <summary>
         /// Gets the time of the last state switch

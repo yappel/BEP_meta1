@@ -17,7 +17,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <summary>
         /// Time in milliseconds required to point steadily to place the building
         /// </summary>
-        private const int TimeToPlace = 3000;
+        private const int TimeToPlace = 2000;
 
         /// <summary>
         /// The preferred size of a created building in meters
@@ -65,6 +65,11 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private Shader defaultShader = Shader.Find("Standard");
 
         /// <summary>
+        /// Boolean if the user has pointed at the current iteration
+        /// </summary>
+        private bool hasPointed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ObjectPlacementState"/> class. The object will be scaled to 1 meter big.
         /// </summary>
         /// <param name="stateContext">State context</param>
@@ -73,7 +78,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public ObjectPlacementState(StateContext stateContext, Vector3 location, string gameObjectPath) 
             : this(stateContext, location, CreateObject(gameObjectPath))
         {
-            this.gameObject.transform.localRotation = Quaternion.identity;
         }
 
         /// <summary>
@@ -88,7 +92,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             if (this.translateModification)
             {
                 this.InitTextPane("InfoText", "Move");
-                this.previousPosition = gameObject.transform.position;
+                this.previousPosition = gameObject.transform.localPosition;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
             }
@@ -96,7 +100,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.hoverTime = StopwatchSingleton.Time;
             this.gameObject = gameObject;
             this.InitButton("BackButton", () => this.OnBackButton());
-            this.gameObject.transform.position = location;
+            this.gameObject.transform.localPosition = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
         }
@@ -108,7 +112,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(Vector3 position)
         {
             long time = StopwatchSingleton.Time;
-            if ((position - this.gameObject.transform.position).magnitude > (position.magnitude / 30f))
+            this.hasPointed = true;
+            if ((position - this.gameObject.transform.localPosition).magnitude > (position.magnitude / 20f))
             {
                 this.ChangeOutlineRender(Color.yellow);
                 this.hoverTime = time;
@@ -118,7 +123,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
                 this.ChangeOutlineRender(Color.green);
             }
 
-            this.gameObject.transform.position = position;
+            this.gameObject.transform.localPosition = position;
             if (time - this.hoverTime > TimeToPlace + 250)
             {
                 this.hoverTime = time;
@@ -140,6 +145,19 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Set the outline red if the user is not pointing.
+        /// </summary>
+        public override void RunLateUpdate()
+        {
+            if (!this.hasPointed)
+            {
+                this.ChangeOutlineRender(Color.red);
+            }
+
+            this.hasPointed = false;
+        }
+
+        /// <summary>
         /// Go back to the neutral or modify state based on the state that called it.
         /// </summary>
         public void OnBackButton()
@@ -148,7 +166,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             {
                 if (this.translateModification)
                 {
-                    this.gameObject.transform.position = this.previousPosition;
+                    this.gameObject.transform.localPosition = this.previousPosition;
                     this.PlaceBuilding();
                 }
                 else
@@ -167,8 +185,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private static GameObject CreateObject(string gameObjectPath)
         {
             GameObject newObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(gameObjectPath));
-            SetScale(newObject);
             newObject.gameObject.transform.parent = GameObject.Find("GroundPlane").transform;
+            SetScale(newObject);
+            newObject.transform.localRotation = Quaternion.identity;
             return newObject;
         }
 
@@ -186,8 +205,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             }
 
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
+            Vector3 localFactor = gameObject.transform.parent.localScale;
             float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x);
-            gameObject.transform.localScale = new Vector3(boundScale, boundScale, boundScale);
+            gameObject.transform.localScale = new Vector3(boundScale / localFactor.x, boundScale / localFactor.y, boundScale / localFactor.z);
         }
 
         /// <summary>

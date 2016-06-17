@@ -2,7 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace Core.Test
+namespace Core.Test.DataTypes
 {
     using System;
     using IRescue.Core.DataTypes;
@@ -41,16 +41,7 @@ namespace Core.Test
         [Test]
         public void TestConstructorException()
         {
-            try
-            {
-                Vector3 vector = new Vector3(new float[] { 1, 2, 3, 4 });
-            }
-            catch (ArgumentException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.That(() => new Vector3(new float[] { 1, 2, 3, 4 }), Throws.TypeOf<ArgumentException>());
         }
 
         /// <summary>
@@ -84,6 +75,18 @@ namespace Core.Test
             Vector3 vector = new Vector3(1, 2, 3);
             vector.Z = 122;
             Assert.AreEqual(122, vector.Z);
+        }
+
+        /// <summary>
+        /// Test that the empty constructor creates a vector with all zero values.
+        /// </summary>
+        [Test]
+        public void EmptyConstructorTest()
+        {
+            Vector3 vec = new Vector3();
+            Assert.AreEqual(0, vec.X);
+            Assert.AreEqual(0, vec.Y);
+            Assert.AreEqual(0, vec.Z);
         }
     }
 }

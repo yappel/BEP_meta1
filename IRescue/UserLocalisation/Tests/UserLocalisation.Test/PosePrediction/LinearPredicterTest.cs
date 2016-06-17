@@ -2,12 +2,14 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.PosePrediction
 {
     using System;
-    using Core.DataTypes;
+
+    using IRescue.Core.DataTypes;
+    using IRescue.UserLocalisation.PosePrediction;
+
     using NUnit.Framework;
-    using PosePrediction;
 
     /// <summary>
     /// TODO TODO

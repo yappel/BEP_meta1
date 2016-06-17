@@ -26,6 +26,14 @@ namespace IRescue.UserLocalisation.Sensors
         Measurement<Vector3> GetOrientation(long timeStamp);
 
         /// <summary>
+        /// Gets all the measurements closets to a given time stamp and within a given range of that time stamp.
+        /// </summary>
+        /// <param name="timeStamp">The time stamp in milliseconds of the desired measurements.</param>
+        /// <param name="range">The amount of milliseconds that the actual returned may differ from the desired time stamp.</param>
+        /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
+        List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range);
+
+        /// <summary>
         /// Get the orientations starting from the specified start time stamp up to and including the end time stamp.
         /// </summary>
         /// <param name="startTimeStamp">The start time stamp to include measurements from in milliseconds.</param>

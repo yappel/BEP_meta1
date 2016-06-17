@@ -1,253 +1,219 @@
 ﻿// <copyright file="ParticleFilterTest.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-namespace IRescue.UserLocalisation.Particle
+namespace UserLocalisation.Test.Particle
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Text;
 
     using IRescue.Core.DataTypes;
-    using IRescue.Core.Distributions;
+    using IRescue.Core.Utils;
+    using IRescue.UserLocalisation.Feedback;
+    using IRescue.UserLocalisation.Particle;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
     using IRescue.UserLocalisation.Particle.Algos.Resamplers;
-    using IRescue.UserLocalisation.PosePrediction;
+    using IRescue.UserLocalisation.Particle.Algos.Smoothers;
     using IRescue.UserLocalisation.Sensors;
 
-    using MathNet.Numerics.LinearAlgebra;
-    using MathNet.Numerics.LinearAlgebra.Single;
+    using MathNet.Numerics.Distributions;
 
     using Moq;
 
     using NUnit.Framework;
+
+    using Normal = IRescue.Core.Distributions.Normal;
 
     /// <summary>
     ///     Test for the particles
     /// </summary>
     public class ParticleFilterTest
     {
-        /// <summary>
-        ///     Default probability distribution.
-        /// </summary>
-        private Mock<IDistribution> dist;
+        private bool writetofile;
 
         /// <summary>
-        ///     Size of the field
+        /// Test if data generated with the Meta1 is resulting in the right results.
         /// </summary>
-        private FieldSize fieldsize;
-
-        /// <summary>
-        ///     Filter to use in tests.
-        /// </summary>
-        private ParticleFilter filter;
-
-        /// <summary>
-        ///     Noise generator mock
-        /// </summary>
-        private Mock<INoiseGenerator> noisegen;
-
-        /// <summary>
-        ///     Particle list
-        /// </summary>
-        private float[] particles;
-
-        /// <summary>
-        ///     Pose predictor mock
-        /// </summary>
-        private Mock<IPosePredictor> posepredictor;
-
-        /// <summary>
-        ///     Particle generator mock
-        /// </summary>
-        private Mock<IParticleGenerator> ptclgen;
-
-        /// <summary>
-        ///     Resample mock
-        /// </summary>
-        private Mock<IResampler> resampler;
-
-        /// <summary>
-        ///     Initialization method
-        /// </summary>
-        [SetUp]
-        public void Init()
+        [Test]
+        public void TestRealMarkerSensorData()
         {
-            this.dist = new Mock<IDistribution>();
-            this.ptclgen = new Mock<IParticleGenerator>();
-            this.noisegen = new Mock<INoiseGenerator>();
-            this.posepredictor = new Mock<IPosePredictor>();
-            this.resampler = new Mock<IResampler>();
-            this.fieldsize = new FieldSize { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
-            var particleamount = 30;
-
-            float[] particles = new float[particleamount * 6];
-            for (int i = 0; i < particleamount * 6; i++)
+            List<Measurement<Vector3>> oridata = new List<Measurement<Vector3>>();
+            List<Measurement<Vector3>> posdata = new List<Measurement<Vector3>>();
+            using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerOriData_Expected_9_10_3.dat"))
             {
-                particles[i] = 1;
-                this.particles = particles;
+                string line = sr.ReadLine();
+                while (line != null)
+                {
+                    string[] unparsed = line.Split(',');
+                    oridata.Add(new Measurement<Vector3>(
+                        VectorMath.Normalize(new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2]))),
+                        0,
+                        new Normal(0.1)));
+                    line = sr.ReadLine();
+                }
             }
 
-            float[] particles2 = new float[particleamount * 1];
-            for (int i = 0; i < particleamount; i++)
+            using (StreamReader sr = new StreamReader(TestContext.CurrentContext.TestDirectory + @"\RealMarkerPosData_Expected_060_150_1.dat"))
             {
-                particles2[i] = 1;
+                string line = sr.ReadLine();
+                while (line != null)
+                {
+                    string[] unparsed = line.Split(',');
+                    posdata.Add(new Measurement<Vector3>(
+                        new Vector3(float.Parse(unparsed[0]), float.Parse(unparsed[1]), float.Parse(unparsed[2])),
+                        0,
+                        new Normal(0.01)));
+                    line = sr.ReadLine();
+                }
             }
 
-            this.particles = particles;
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
 
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 6)).Returns(particles);
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), 1)).Returns(particles2);
-            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
+            int poscount = 0;
+            Mock<IPositionSource> possource = new Mock<IPositionSource>();
+            possource.Setup(foo => foo.GetPositionsClosestTo(It.IsAny<long>(), It.IsAny<long>())).
+                Returns(() => new List<Measurement<Vector3>> { posdata[poscount] }).
+                Callback(() => poscount++);
+            filter.AddPositionSource(possource.Object);
 
-            this.filter = new ParticleFilter(this.fieldsize, particleamount, 0.005f, 0.0f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
+            int oricount = 0;
+            Mock<IOrientationSource> orisource = new Mock<IOrientationSource>();
+            orisource.Setup(foo => foo.GetOrientationClosestTo(It.IsAny<long>(), It.IsAny<long>())).
+                Returns(() => new List<Measurement<Vector3>> { oridata[oricount] }).
+                Callback(() => oricount++);
+            filter.AddOrientationSource(orisource.Object);
 
-            Mock<IPositionSource> possourcemock = new Mock<IPositionSource>();
-            List<Measurement<Vector3>> returnlist = new List<Measurement<Vector3>> { new Measurement<Vector3>(new Vector3(2.5f, 1.8f, 2.5f), 0, this.dist.Object) };
-            possourcemock.Setup(foo => foo.GetPositions(It.IsAny<long>(), It.IsAny<long>())).Returns(returnlist);
-            Mock<IOrientationSource> orisourcemock = new Mock<IOrientationSource>();
-            List<Measurement<Vector3>> returnlist2 = new List<Measurement<Vector3>> { new Measurement<Vector3>(new Vector3(40f, 40f, 40f), 0, this.dist.Object) };
-            orisourcemock.Setup(foo => foo.GetOrientations(It.IsAny<long>(), It.IsAny<long>())).Returns(returnlist2);
-            Mock<IDisplacementSource> dissourcemock = new Mock<IDisplacementSource>();
-            dissourcemock.Setup(foo => foo.GetDisplacement(It.IsAny<long>(), It.IsAny<long>())).Returns(new Measurement<Vector3>(new Vector3(1f, 1f, 1f), 0, this.dist.Object));
-            this.filter.AddPositionSource(possourcemock.Object);
-            this.filter.AddOrientationSource(orisourcemock.Object);
-            this.filter.AddDisplacementSource(dissourcemock.Object);
-        }
-
-        /// <summary>
-        ///     Test if the amount of Particles is correct through the different steps.
-        /// </summary>
-        [Test]
-        public void ParticleFilterUnits()
-        {
-            Assert.AreEqual(30, this.filter.Particles.RowCount);
-            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
-            this.filter.RetrieveMeasurements(1);
-            Assert.AreEqual(30, this.filter.Particles.RowCount);
-            List<IDistribution> dists = new List<IDistribution>();
-            for (int i = 0; i < this.filter.Measurementspos.RowCount; i++)
+            this.writetofile = false;
+            StringBuilder res = new StringBuilder();
+            List<Pose> results = new List<Pose>();
+            long i = 0;
+            while ((poscount < posdata.Count / 10) && (oricount < oridata.Count / 10))
             {
-                dists.Add(this.dist.Object);
+                Pose pose = filter.CalculatePose(i);
+                if (this.writetofile)
+                {
+                    res.AppendFormat($"{pose.Position.X},{pose.Position.Y},{pose.Position.Z},{pose.Orientation.X},{pose.Orientation.Y},{pose.Orientation.Z}" + Environment.NewLine);
+                }
+
+                i += 33;
+                results.Add(pose);
             }
 
-            this.filter.AddWeights(20, this.filter.Particles, 0, 2, this.filter.Measurementspos, dists, this.filter.Weights);
-            Assert.AreEqual(30, this.filter.Particles.RowCount);
-            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
-            this.filter.NormalizeWeightsAll(this.filter.Weights);
-            Assert.AreEqual(30, this.filter.Particles.RowCount);
-            Assert.AreEqual(6, this.filter.Particles.ColumnCount);
-        }
-
-        /// <summary>
-        /// Test if displacement measurements are added correctly.
-        /// </summary>
-        [Test]
-        public void TestDisplacementMeasurements()
-        {
-            Pose prev = this.filter.CalculatePose(1);
-            this.filter.CalculatePose(3);
-            Vector<float> expected = prev.Position.Add(1f);
-            bool containsMeas = false;
-            foreach (Vector<float> meas in this.filter.Measurementspos.EnumerateRows())
+            if (this.writetofile)
             {
-                containsMeas = containsMeas || meas.Equals(expected);
+                File.WriteAllText(TestContext.CurrentContext.TestDirectory + @"\RealMarkerResults.dat", res.ToString());
             }
 
-            Assert.IsTrue(containsMeas);
+            int startindex = 30;
+            Pose[] resultarray = new Pose[results.Count - startindex];
+            results.CopyTo(startindex, resultarray, 0, resultarray.Length);
+
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.X).Average(), resultarray.Select(p => p.Position.X).Average(), 0.1);
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Y).Average(), resultarray.Select(p => p.Position.Y).Average(), 0.1);
+            Assert.AreEqual(posdata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Z).Average(), resultarray.Select(p => p.Position.Z).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.X).Average(), resultarray.Select(p => p.Orientation.X).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Y).Average(), resultarray.Select(p => p.Orientation.Y).Average(), 0.1);
+            Assert.AreEqual(oridata.GetRange(startindex, resultarray.Length).Select(m => m.Data.Z).Average(), resultarray.Select(p => p.Orientation.Z).Average(), 0.1);
         }
 
         /// <summary>
-        ///     Test if normalizing the Weights in a matrix works correctly
+        /// Test if adding displacement sources works.
         /// </summary>
         [Test]
-        public void TestNormalizeWeights()
+        public void TestAddingDisplacementSource()
         {
-            Matrix<float> weights = new DenseMatrix(2, 2, new float[] { 1, 1, 1, 1 });
-            this.filter.NormalizeWeightsAll(weights);
-            Assert.AreEqual(0.5, weights[0, 0]);
-            Assert.AreEqual(0.5, weights[0, 1]);
-            Assert.AreEqual(0.5, weights[1, 0]);
-            Assert.AreEqual(0.5, weights[1, 1]);
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+
+            Mock<IDisplacementSource> sourcemock = new Mock<IDisplacementSource>();
+            sourcemock.SetReturnsDefault<Measurement<Vector3>>(new Measurement<Vector3>(new Vector3(), 0, new Normal(0.1)));
+            sourcemock.Setup(foo => foo.GetDisplacement(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new Measurement<Vector3>(new Vector3(), 0, new Normal(0.1)));
+            filter.AddDisplacementSource(sourcemock.Object);
+
+            filter.CalculatePose(1);
+            filter.CalculatePose(2);
+            sourcemock.Verify(foo => foo.GetDisplacement(1, 2));
         }
 
         /// <summary>
-        ///     Test if the filter doesn't crash.
+        /// Test that filter can run without sources.
         /// </summary>
         [Test]
-        public void TestParticleFilterRun()
+        public void TestNoCrashWhenNoData()
         {
-            this.filter.Particles[0, 0] = this.fieldsize.Xmax + 1000;
-            this.filter.Particles[1, 0] = this.fieldsize.Xmin - 1000;
-            this.filter.CalculatePose(0);
-            float[] parts = this.filter.Particles.Column(0).ToArray();
-            Assert.IsTrue(parts.Max() <= this.fieldsize.Xmax);
-            Assert.IsTrue(parts.Min() >= this.fieldsize.Xmin);
-        }
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
 
-        /// <summary>
-        ///     Test if the filter doesn't crash when there are no sources.
-        /// </summary>
-        [Test]
-        public void TestParticleFilterRunWithoutSources()
-        {
-            ParticleFilter filterr = new ParticleFilter(this.fieldsize, 30, 0.001, 0.01f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
-            this.ptclgen.Setup(foo => foo.Generate(It.IsAny<int>(), It.IsAny<int>())).Returns(this.particles);
-            this.posepredictor.SetReturnsDefault(new float[] { 0, 0, 0, 0, 0, 0 });
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10; i++)
             {
-                filterr.CalculatePose(i);
+                filter.CalculatePose(i);
             }
 
             Assert.Pass();
         }
 
         /// <summary>
-        ///     Test if Particles get the right weight
+        /// Test if added feedback receivers receive feedback.
         /// </summary>
         [Test]
-        public void TestParticleWeighting()
+        public void TestAddingFeedbackReceivers()
         {
-            int lpcount = 1;
-            Matrix<float> localparts = new DenseMatrix(lpcount, 3, new[] { 0.5f, 0.5f, 0.5f });
-            Matrix<float> localweigh = new DenseMatrix(lpcount, 3, new float[] { 1, 1, 1 });
-            Matrix<float> localmeas = new DenseMatrix(lpcount, 3, new[] { 1, 1, 1f });
-            List<IDistribution> dists = new List<IDistribution>();
-            for (int i = 0; i < lpcount; i++)
-            {
-                dists.Add(new Normal(0.1));
-            }
-
-            this.filter.AddWeights(0.01, localparts, 0, 2, localmeas, dists, localweigh);
-            Assert.AreEqual(0.0797f, localweigh[0, 0], 0.0001);
-
-            ////normcdf(1.01,1,0.1)-normcdf(0.99,1,0.1) = 0.0797
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+            Mock<IOrientationFeedbackReceiver> orifeed = new Mock<IOrientationFeedbackReceiver>();
+            filter.RegisterReceiver(orifeed.Object);
+            Mock<IPositionFeedbackReceiver> posfeed = new Mock<IPositionFeedbackReceiver>();
+            filter.RegisterReceiver(posfeed.Object);
+            filter.CalculatePose(10);
+            orifeed.Verify(f => f.NotifyOrientationFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Once);
+            posfeed.Verify(f => f.NotifyPositionFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Once);
         }
 
         /// <summary>
-        ///     Test if the weighted average gets calculated correctly.
+        /// Test if unregistered feedback receivers do not receive feedback.
         /// </summary>
         [Test]
-        public void TestWeightedAverage()
+        public void TestRemovingFeedbackReceivers()
         {
-            Matrix<float> ptcls = new DenseMatrix(2, 2, new float[] { 1, 4, 2, 4 });
-            Matrix<float> wgts = new DenseMatrix(2, 2, new[] { 2 / 3f, 1 / 3f, 0.5f, 0.5f });
-            float[] res = this.filter.WeightedAverage(ptcls, wgts);
-            float[] expected = { 2, 3 };
-            Assert.AreEqual(expected, res);
-        }
-
-        /// <summary>
-        /// Test if exception is thrown when NaN measurement value is given.
-        /// </summary>
-        [Test]
-        public void TestNaNMeasurment()
-        {
-            ParticleFilter pfilter = new ParticleFilter(this.fieldsize, 30, 0.001, 0.1f, this.ptclgen.Object, this.posepredictor.Object, this.noisegen.Object, this.resampler.Object);
-            Mock<IOrientationSource> sourcemock = new Mock<IOrientationSource>();
-            sourcemock.Setup(foo => foo.GetOrientations(It.IsAny<long>(), It.IsAny<long>())).Returns(new List<Measurement<Vector3>>() { new Measurement<Vector3>(new Vector3(float.NaN, float.NaN, float.NaN), 1, this.dist.Object) });
-            pfilter.AddOrientationSource(sourcemock.Object);
-            Assert.Throws<ArithmeticException>(() => pfilter.CalculatePose(1));
+            FieldSize fieldsize = new FieldSize { Xmin = 0, Xmax = 4, Ymax = 2, Ymin = 0, Zmax = 4, Zmin = 0 };
+            IParticleGenerator particleGenerator = new RandomParticleGenerator(new ContinuousUniform());
+            IResampler resampler = new MultinomialResampler();
+            INoiseGenerator noiseGenerator = new RandomNoiseGenerator(new ContinuousUniform());
+            ISmoother smoother = new MovingAverageSmoother(200);
+            ParticleFilter filter = new ParticleFilter(250, 0.1f, fieldsize, particleGenerator, resampler, noiseGenerator, smoother);
+            Mock<IOrientationFeedbackReceiver> orifeed = new Mock<IOrientationFeedbackReceiver>();
+            filter.RegisterReceiver(orifeed.Object);
+            filter.RegisterReceiver(orifeed.Object);
+            filter.UnregisterReceiver(orifeed.Object);
+            filter.UnregisterReceiver(orifeed.Object);
+            Mock<IPositionFeedbackReceiver> posfeed = new Mock<IPositionFeedbackReceiver>();
+            filter.RegisterReceiver(posfeed.Object);
+            filter.RegisterReceiver(posfeed.Object);
+            filter.UnregisterReceiver(posfeed.Object);
+            filter.UnregisterReceiver(posfeed.Object);
+            filter.CalculatePose(10);
+            posfeed.Verify(f => f.NotifyPositionFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Never);
+            orifeed.Verify(f => f.NotifyOrientationFeedback(It.IsAny<FeedbackData<Vector3>>()), Times.Never);
         }
     }
 }

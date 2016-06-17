@@ -1,10 +1,12 @@
 ﻿// <copyright file="RandomParticleGenerator.cs" company="Delft University of Technology">
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
-
 namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
 {
-    using MathNet.Numerics.Random;
+    using System;
+    using System.Linq;
+
+    using MathNet.Numerics.Distributions;
 
     /// <summary>
     /// A Particles generator that generates Particles using a random number generator
@@ -12,37 +14,33 @@ namespace IRescue.UserLocalisation.Particle.Algos.ParticleGenerators
     public class RandomParticleGenerator : IParticleGenerator
     {
         /// <summary>
-        /// The random number generator to generate the Particles with
+        /// The random number generator that generates a number between 0.0 and 1.0.
         /// </summary>
-        private RandomSource rng;
+        private IContinuousDistribution rng;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RandomParticleGenerator"/> class.
         /// </summary>
-        /// <param name="rng">The random number generator to generate the Particles with</param>
-        public RandomParticleGenerator(RandomSource rng)
+        /// <param name="rng">The random number generator that generates a number between 0.0 and 1.0.</param>
+        public RandomParticleGenerator(IContinuousDistribution rng)
         {
+            if ((Math.Abs(rng.Minimum) > float.Epsilon) || (Math.Abs(rng.Maximum - 1) > float.Epsilon))
+            {
+                throw new ArgumentException("The random number generator does not generate numbers with a range of 0 to 1");
+            }
+
             this.rng = rng;
         }
 
-        /// <summary>
-        /// Generates a new set of Particles.
-        /// </summary>
-        /// <param name="amount"> The amount of Particles to generate for every dimension</param>
-        /// <param name="dimensions">The amount of dimensions to generate Particles for</param>
-        /// <returns>A list of particle values</returns>
-        public float[] Generate(int amount, int dimensions)
+        /// <inheritdoc/>
+        public float[] Generate(int amount, float min, float max)
         {
-            float[] result = new float[amount * dimensions];
-            for (int i = 0; i < dimensions; i++)
-            {
-                for (int j = 0; j < amount; j++)
-                {
-                    result[(i * amount) + j] = (float)this.rng.NextDouble();
-                }
-            }
+            return Enumerable.Repeat(0, amount).Select(i => this.RandNum(min, max)).ToArray();
+        }
 
-            return result;
+        private float RandNum(float min, float max)
+        {
+            return (float)((this.rng.Sample() * (max - min)) + min);
         }
     }
 }

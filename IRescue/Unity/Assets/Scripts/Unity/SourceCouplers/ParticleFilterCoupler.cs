@@ -8,8 +8,11 @@ using IRescue.UserLocalisation.Particle;
 using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
 using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 using IRescue.UserLocalisation.Particle.Algos.Resamplers;
+using IRescue.UserLocalisation.Particle.Algos.Smoothers;
 using IRescue.UserLocalisation.PosePrediction;
 using IRescue.UserLocalisation.Sensors;
+
+using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Random;
 
 /// <summary>
@@ -25,22 +28,22 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleFilterCoupler"/> class
     /// </summary>
-    public ParticleFilterCoupler()
+    /// <param name="fieldSize">The preferred game field size</param>
+    public ParticleFilterCoupler(FieldSize fieldSize)
     {
-        FieldSize fieldSize = new FieldSize() { Xmax = 2, Xmin = 0, Ymax = 2, Ymin = 0, Zmax = 2, Zmin = 0 };
-        int particleamount = 30;
-        RandomParticleGenerator prtclgen = new RandomParticleGenerator(new SystemRandomSource());
-        LinearPosePredicter posePredictor = new LinearPosePredicter();
-        RandomNoiseGenerator noisegen = new RandomNoiseGenerator(new SystemRandomSource());
-        MultinomialResampler resampler = new MultinomialResampler();
-        this.localizer = new ParticleFilter(fieldSize, particleamount, 0.005f, 0.0f, prtclgen, posePredictor, noisegen, resampler);
+        int particleamount = 300;
+        IParticleGenerator prtclgen = new RandomParticleGenerator(new ContinuousUniform());
+        INoiseGenerator noisegen = new RandomNoiseGenerator(new ContinuousUniform());
+        IResampler resampler = new MultinomialResampler();
+        ISmoother smoother = new MovingAverageSmoother(1000);
+        this.localizer = new ParticleFilter(particleamount, 0.1f, fieldSize, prtclgen, resampler, noisegen, smoother);
     }
 
     /// <summary>
     /// Return the localizer filter
     /// </summary>
     /// <returns>the localizer</returns>
-    public override AbstractUserLocalizer GetLocalizer()
+    public override IUserLocalizer GetLocalizer()
     {
         return this.localizer;
     }
@@ -62,6 +65,12 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// <returns>if the source was registered</returns>
     protected override bool RegisterDisplacementReceiver(IDisplacementSource source)
     {
+        if (source != null)
+        {
+            this.localizer.AddDisplacementSource(source);
+            return true;
+        }
+
         return false;
     }
 

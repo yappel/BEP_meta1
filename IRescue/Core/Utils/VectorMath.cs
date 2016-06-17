@@ -4,7 +4,12 @@
 
 namespace IRescue.Core.Utils
 {
+    using System;
+
     using IRescue.Core.DataTypes;
+
+    using MathNet.Numerics;
+    using MathNet.Numerics.LinearAlgebra;
     using MathNet.Numerics.LinearAlgebra.Single;
 
     /// <summary>
@@ -56,6 +61,65 @@ namespace IRescue.Core.Utils
         public static void RotateVector(Vector3 vector, float xRotation, float yRotation, float zRotation, Vector3 result)
         {
             RotateVector(vector, new RotationMatrix(xRotation, yRotation, zRotation), result);
+        }
+
+        /// <summary>
+        /// Converts a 2d vector to an angle.
+        /// </summary>
+        /// <param name="vector">The 2d vector to convert</param>
+        /// <returns>The theta component of the polar coordinate of the vector</returns>
+        public static float Vector2ToAngle(Vector<float> vector)
+        {
+            if ((vector.Count != 2) || ((Math.Abs(vector[0]) < float.Epsilon) && (Math.Abs(vector[1]) < float.Epsilon)))
+            {
+                throw new ArgumentException("Length of vector is not 2 or all values are 0");
+            }
+
+            return (float)Trig.RadianToDegree(Math.Atan2(vector[1], vector[0]));
+        }
+
+        /// <summary>
+        /// Converts an angle to a 2d vector that points in the direction of the angle.
+        /// </summary>
+        /// <param name="angle">The angle in degrees</param>
+        /// <returns>A 2d vector</returns>
+        public static Vector<float> AngleToVector(float angle)
+        {
+            return new DenseVector(new[] { (float)Math.Cos(Trig.DegreeToRadian(angle)), (float)Math.Sin(Trig.DegreeToRadian(angle)) });
+        }
+
+        /// <summary>
+        /// Changes the values of the given vector so that the vector has a certain length.
+        /// </summary>
+        /// <param name="vector">The vector to change the length of.</param>
+        /// <param name="desiredLength">The desired length.</param>
+        public static void SetLength(Vector<float> vector, float desiredLength)
+        {
+            double currentLength = vector.L2Norm();
+            vector.Multiply((float)(desiredLength / currentLength), vector);
+        }
+
+        /// <summary>
+        /// Converts an angle to a 2d vector with a certain length that points in the direction of the angle.
+        /// </summary>
+        /// <param name="angle">The angle in degrees</param>
+        /// <param name="length">The desired length of the vector</param>
+        /// <returns>A 2d vector</returns>
+        public static Vector<float> AngleToVector(float angle, float length)
+        {
+            Vector<float> res = AngleToVector(angle);
+            SetLength(res, length);
+            return res;
+        }
+
+        /// <summary>
+        /// Normalizes xyz Tait-Bryan angles.
+        /// </summary>
+        /// <param name="data">The xyz Tait-Bryan angles</param>
+        /// <returns>The same or equivalent Tait-Bryan angles.</returns>
+        public static Vector3 Normalize(Vector3 data)
+        {
+            return new Quaternion(new RotationMatrix(data.X, data.Y, data.Z)).EulerAnglesDegree;
         }
     }
 }

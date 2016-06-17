@@ -6,6 +6,7 @@ namespace Assets.Scripts.Unity.SourceCouplers
 {
     using System;
     using Enums;
+    using IRescue.Core.DataTypes;
 
     /// <summary>
     ///  Factory to create a AbstractLocalizerCoupler.
@@ -16,13 +17,14 @@ namespace Assets.Scripts.Unity.SourceCouplers
         ///  Initializes the coupler
         /// </summary>
         /// <param name="localizer">Enum of the user filter name</param>
+        /// <param name="fieldSize">The preferred size of the game field</param>
         /// <returns>The localizer coupler</returns>
-        public static AbstractLocalizerCoupler Get(Filters localizer)
+        public static AbstractLocalizerCoupler Get(Filters localizer, FieldSize fieldSize)
         {
             switch (localizer)
             {
                 case Filters.Particle:
-                    return new ParticleFilterCoupler();
+                    return new ParticleFilterCoupler(fieldSize);
                 default:
                     throw new ArgumentException(string.Format("{0} is not an existing localizer filter", localizer), "filter");
             }

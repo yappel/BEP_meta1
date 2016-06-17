@@ -5,6 +5,8 @@
 namespace UserLocalisation.Test.Sensors.Marker
 {
     using System.Collections.Generic;
+    using System.Linq;
+
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors.Marker;
@@ -294,7 +296,7 @@ namespace UserLocalisation.Test.Sensors.Marker
 
         /// <summary>
         /// Test testing on several inputs to assure that the correct world position and orientation are computed
-        /// from the relative marker position and orientation. These values are more complex.
+        /// from the relative marker position and orientation. These _values are more complex.
         /// </summary>
         [Test]
         public void CombinedPositionAndOrientationInOutTest()
@@ -324,6 +326,56 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
+        /// Test getting data closest to a point.
+        /// </summary>
+        [Test]
+        public void TestGetPositionOrientationClosestTo()
+        {
+            Dictionary<int, Pose> dic = new Dictionary<int, Pose>();
+            dic.Add(1, new Pose(new Vector3(1, 2, 3), new Vector3(90, 180, 270)));
+            dic.Add(0, new Pose(new Vector3(4, 5, 6), new Vector3(90, 180, 270)));
+
+            this.sensor.UpdateLocations(0, dic);
+            this.sensor.UpdateLocations(1, dic);
+            this.sensor.UpdateLocations(2, dic);
+            Assert.AreEqual(dic.Count, this.sensor.GetPositionsClosestTo(3, 10).Count);
+            List<Measurement<Vector3>> respos = this.sensor.GetPositionsClosestTo(3, 10);
+            List<Measurement<Vector3>> resori = this.sensor.GetOrientationClosestTo(3, 10);
+            Assert.AreEqual(new[] { 2, 2 }, respos.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
+            Assert.AreEqual(new[] { 2, 2 }, resori.Select<Measurement<Vector3>, float>(m => m.TimeStamp).ToArray());
+        }
+
+        /// <summary>
+        /// Test that updating the visible markers with a transformation matrix
+        /// </summary>
+        [Test]
+        public void UpdateLocationWithTransformationMatrixTest()
+        {
+            Dictionary<int, TransformationMatrix> dic = new Dictionary<int, TransformationMatrix>();
+            this.mlocmoq.AddMarker(5, new Pose(new Vector3(2, 1, 3), new Vector3(0, 180, 0)));
+            dic.Add(5, new TransformationMatrix(1, 0, 1, 0, 180, 0));
+            this.sensor.UpdateLocations(0, dic);
+            Vector3 vec = this.sensor.GetLastPosition().Data;
+            Vector3 ori = this.sensor.GetLastOrientation().Data;
+            this.AssertVectorAreEqual(new Vector3(1, 1, 2), vec, 0.0001);
+            this.AssertVectorAreEqual(new Vector3(), ori, 0.0001);
+        }
+
+        /// <summary>
+        /// Test if the loop continues when an exception will be thrown.
+        /// </summary>
+        [Test]
+        public void TestUpdateUnknownMarkerTransformation()
+        {
+            Dictionary<int, TransformationMatrix> dic = new Dictionary<int, TransformationMatrix>();
+            dic.Add(1, new TransformationMatrix(1, 2, 3, 0, 180, 0));
+            TransformationMatrix transform = new TransformationMatrix(2, 1, 3, 0, 90, 0);
+            dic.Add(-1337, transform);
+            this.sensor.UpdateLocations(this.defaultTimeStamp, dic);
+            Assert.AreEqual(13, this.sensor.GetLastPosition().Data.X, this.epsilon);
+        }
+
+        /// <summary>
         /// Test the output for a measurement and an expected output for the
         /// <see cref="CombinedPositionAndOrientationInOutTest"/> test case.
         /// </summary>
@@ -342,7 +394,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         /// <summary>
         /// Test that rotations are equal. As rotations can be achieved by different rotations in
         /// different orders around different axes the method creates a rotation matrix for the expected
-        /// and actual values and compares the result of a multiplication with a reference vector. When
+        /// and actual _values and compares the result of a multiplication with a reference vector. When
         /// the output of the multiplication is the same the orientation is also similar.
         /// </summary>
         /// <param name="expected">The expected rotation.</param>

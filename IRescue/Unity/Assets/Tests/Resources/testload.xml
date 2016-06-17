@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<objects>
+  <object>
+    <path>Objects/DefaultObject</path>
+    <position>
+      <x>0.001307447</x>
+      <y>0</y>
+      <z>0.0147323</z>
+    </position>
+    <orientation>
+      <x>0</x>
+      <y>0</y>
+      <z>0</z>
+    </orientation>
+    <scale>
+      <x>0.0002534603</x>
+      <y>0.0002534603</y>
+      <z>0.0002534603</z>
+    </scale>
+  </object>
+  <object>
+    <path>Objects/DefaultObject</path>
+    <position>
+      <x>-0.004204732</x>
+      <y>0</y>
+      <z>0.01154258</z>
+    </position>
+    <orientation>
+      <x>0</x>
+      <y>0</y>
+      <z>0</z>
+    </orientation>
+    <scale>
+      <x>0.0002534603</x>
+      <y>0.0002534603</y>
+      <z>0.0002534603</z>
+    </scale>
+  </object>
+</objects>
