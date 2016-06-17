@@ -60,6 +60,15 @@ namespace Core.Test.Utils
         }
 
         /// <summary>
+        /// Test getting the weighted average of a list where that is not possible.
+        /// </summary>
+        [Test]
+        public void WeightedAverageNaNTest()
+        {
+            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] { 0 }, new float[] { 0 }));
+        }
+
+        /// <summary>
         /// Test getting an average angle of 180.
         /// </summary>
         [Test]

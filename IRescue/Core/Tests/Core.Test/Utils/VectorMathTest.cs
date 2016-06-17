@@ -57,6 +57,21 @@ namespace Core.Test.Utils
         }
 
         /// <summary>
+        /// Test that a given vector, rotation and a vector where the result needs to be stored in
+        /// results in the rotated vector being in the store vector.
+        /// </summary>
+        [Test]
+        public void RotateAndSetVectorTest()
+        {
+            Vector3 res = new Vector3();
+            Vector3 vec = new Vector3(0, 1, 0);
+            IRescue.Core.Utils.VectorMath.RotateVector(vec, 0, 0, 90, res);
+            Assert.AreEqual(-1, res.X, 0.01f);
+            Assert.AreEqual(0, res.Y, 0.01f);
+            Assert.AreEqual(0, res.Z, 0.01f);
+        }
+
+        /// <summary>
         /// Test changing the legnth of a vector.
         /// </summary>
         [Test]
@@ -101,6 +116,84 @@ namespace Core.Test.Utils
             Assert.AreEqual(0, vector.X, float.Epsilon);
             Assert.AreEqual(-90, vector.Y, float.Epsilon);
             Assert.AreEqual(0, vector.Z, 0.0001f);
+        }
+
+        /// <summary>
+        /// Test a simple 45 degree angle conversion to direction vector.
+        /// </summary>
+        [Test]
+        public void SimpleAngleToVectorTest()
+        {
+            Vector<float> res = VectorMath.AngleToVector(45);
+            Assert.AreEqual(res[0], 0.7071, 0.0001);
+            Assert.AreEqual(res[1], 0.7071, 0.0001);
+        }
+
+        /// <summary>
+        /// Test simple 45 degree angle conversoin to direction vector with
+        /// specified length.
+        /// </summary>
+        [Test]
+        public void AngleToVectorLengthTest()
+        {
+            Vector<float> res = VectorMath.AngleToVector(45, 2);
+            Assert.AreEqual(res[0], 1.4142, 0.0001);
+            Assert.AreEqual(res[1], 1.4142, 0.0001);
+        }
+
+        /// <summary>
+        /// Test that a direction vector returns the correct angle.
+        /// </summary>
+        [Test]
+        public void SimpleVector2AngleTest()
+        {
+            Vector<float> vec = new DenseVector(new float[] { 0.7071f, 0.7071f });
+            float angle = VectorMath.Vector2ToAngle(vec);
+            Assert.AreEqual(45, angle, 0.0001);
+        }
+
+        /// <summary>
+        /// Test that a vector [ 0 1 ] returns an angle of 90 degrees.
+        /// </summary>
+        [Test]
+        public void Vector2Angle90DegreeVectorTest()
+        {
+            Vector<float> vec = new DenseVector(new float[] { 0, 1 });
+            float angle = VectorMath.Vector2ToAngle(vec);
+            Assert.AreEqual(90, angle);
+        }
+
+        /// <summary>
+        /// Test that a vector [ 0 -1 ] returns an angle of -90 degrees.
+        /// </summary>
+        [Test]
+        public void Vector2AngleNegative90DegreeVectorTest()
+        {
+            Vector<float> vec = new DenseVector(new float[] { 0, -1 });
+            float angle = VectorMath.Vector2ToAngle(vec);
+            Assert.AreEqual(-90, angle);
+        }
+
+        /// <summary>
+        /// Test that a vector [ 1 0 ] returns an angle of 0 degrees.
+        /// </summary>
+        [Test]
+        public void Vector2AngleZeroDegreeVectorTest()
+        {
+            Vector<float> vec = new DenseVector(new float[] { 1, 0 });
+            float angle = VectorMath.Vector2ToAngle(vec);
+            Assert.AreEqual(0, angle);
+        }
+
+        /// <summary>
+        /// Test that a vector [ -1 0 ] returns an angle of 180 degrees.
+        /// </summary>
+        [Test]
+        public void Vector2Angle180DegreeVectorTest()
+        {
+            Vector<float> vec = new DenseVector(new float[] { -1, 0 });
+            float angle = VectorMath.Vector2ToAngle(vec);
+            Assert.AreEqual(180, angle);
         }
 
         /// <summary>

@@ -330,7 +330,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
             Vector3 displacement = new Vector3(0, 0, 0);
             Vector3 temp = new Vector3(0, 0, 0);
             float std = 0;
-            if (vel.Count > 0)
+            if (vel.Count > 1)
             {
                 for (int i = 0; i < vel.Count - 1; i++)
                 {
