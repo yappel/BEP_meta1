@@ -18,6 +18,9 @@ This project tests the files in the UserLocalisation project.
 ## 1.3 Unity
 Unity is the project for everything that is related to Unity or Meta 1. This includes the classes that couple the sensors to the classes in UserLocalisation and handling the game engines world.
 
+## 1.4 WaterLevelTracking
+This project contains the algorithm for water level detection. It includes files to calculate required properties and covert an image to a number representing the water level. This project does not contain tests, beacuse the algorithm was tested doing experiments.
+
 # 2 Dependencies
 The three projects require dependencies of eachother as follows: (x->y means x is a dependency for y)
 * Core -> Core.Test
@@ -33,6 +36,7 @@ The external third party dependencies for the projects. Between brackets the pro
 * MathNet.Numerics v3.11.1 (Core, UserLocalisation, Unity)
 * TaskParallelLibrary v1.0.2856.0, MathNet.Numerics dependency for .NET 3.5 target framework (Core, UserLocalisation, Unity)
 * Meta SDK v1.3.4.308 (Unity)
+* opencv-3.1.0 (WaterLevelTracking)
 
 ### 2.1.2 Testing Dependencies
 * NUnit v3.2.1 (Core.Test, UserLocalisation.Test)
@@ -45,4 +49,5 @@ The different projects have the following build order:
 2. Core.Test
 3. UserLocalisation
 4. UserLocalisation.Test
+5. WaterLevelTracking
 Note that the Unity project is not in the order, because the engine builds the code itself.
