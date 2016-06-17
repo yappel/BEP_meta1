@@ -32,7 +32,7 @@ public class MarkerSensorControllerTest
     [Test]
     public void GetOrientationSourceTest()
     {
-        Assert.IsNull(this.markerSensorController.GetOrientationSource());
+        Assert.IsNotNull(this.markerSensorController.GetOrientationSource());
     }
 
     /// <summary>

@@ -1,10 +1,10 @@
 <markers>
   <marker>
-    <id>0</id>
+    <id>4</id>
     <position>
-      <x>0</x>
-      <y>0</y>
-      <z>1</z>
+      <x>2</x>
+      <y>1.6</y>
+      <z>10</z>
     </position>
     <rotation>
       <x>0</x>
@@ -13,15 +13,15 @@
     </rotation>
   </marker>
   <marker>
-    <id>1</id>
+    <id>5</id>
     <position>
-      <x>0</x>
+      <x>1.7</x>
       <y>1.6</y>
-      <z>4</z>
+      <z>10</z>
     </position>
     <rotation>
       <x>0</x>
-      <y>180</y>
+      <y>0</y>
       <z>0</z>
     </rotation>
   </marker>
