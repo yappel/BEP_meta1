@@ -152,7 +152,6 @@ namespace Core.Test.Utils
             Assert.AreEqual(45, angle, 0.0001);
         }
 
-
         /// <summary>
         /// Test that a vector [ 0 1 ] returns an angle of 90 degrees.
         /// </summary>

@@ -349,7 +349,6 @@ namespace UserLocalisation.Test.Sensors.IMU
             Assert.AreEqual(12, res.Z, 0.0001);
         }
 
-
         /// <summary>
         /// Test that get displacement with no measurements returns null and a very low change
         /// of being a correct measurement.
@@ -359,7 +358,7 @@ namespace UserLocalisation.Test.Sensors.IMU
         {
             Measurement<Vector3> res = this.source.GetDisplacement(0, 1);
             this.AssertVectorAreEqual(new Vector3(0, 0, 0), res.Data);
-            Assert.AreEqual(double.MaxValue, ((Normal) res.DistributionType).Stddev);
+            Assert.AreEqual(double.MaxValue, ((Normal)res.DistributionType).Stddev);
         }
 
         /// <summary>
