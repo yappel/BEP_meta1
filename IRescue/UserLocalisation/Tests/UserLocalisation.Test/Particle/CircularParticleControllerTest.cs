@@ -139,7 +139,7 @@ namespace UserLocalisation.Test.Particle
             pargen.Setup(foo => foo.Generate(It.IsAny<int>(), this.minValue, this.maxValue)).Returns(values);
             CircularParticleController cont = new CircularParticleController(pargen.Object, values.Length) { Weights = weights };
 
-            Assert.AreEqual(270, cont.WeightedAverage());
+            Assert.AreEqual(-90, cont.WeightedAverage());
         }
 
         /// <summary>
