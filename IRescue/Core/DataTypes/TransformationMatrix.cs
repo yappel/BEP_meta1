@@ -94,7 +94,7 @@ namespace IRescue.Core.DataTypes
         /// <param name="zt">Z axis translation.</param>
         /// <param name="rm">The rotationmatrix defining the rotation to use.</param>
         public TransformationMatrix(float xt, float yt, float zt, RotationMatrix rm)
-            : base(4, 4, CreateMatrixArray(xt, yt, zt, 0))
+            : base(4, 4, CreateMatrixArray(xt, yt, zt, 1))
         {
             this.SetSubMatrix(0, 0, rm);
         }
