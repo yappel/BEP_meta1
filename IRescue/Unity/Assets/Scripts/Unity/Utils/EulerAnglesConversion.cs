@@ -50,6 +50,19 @@ namespace Assets.Scripts.Unity.Utils
         }
 
         /// <summary>
+        /// Converts IMU rotation from the gyroscope to XYZ Tait-Bryan angles.
+        /// </summary>
+        /// <param name="imuAngles">The rotion from the gyroscope in degrees</param>
+        /// <returns></returns>
+        public static Vector3 IMUToXYZ(Vector3 imuAngles)
+        {
+            Quaternion res = Quaternion.AngleAxis(imuAngles.x, Vector3.right);
+            res = res * Quaternion.AngleAxis(imuAngles.y, res * Vector3.up);
+            res = res * Quaternion.AngleAxis(imuAngles.z, res * Vector3.forward);
+            return ZXYtoXYZ(res.eulerAngles);
+        }
+
+        /// <summary>
         /// Converts a <see cref="IRescue.Core.DataTypes.Vector3"/> to a <see cref="UnityEngine.Vector3"/>.
         /// </summary>
         /// <param name="irescuevector">The <see cref="IRescue.Core.DataTypes.Vector3"/> to convert.</param>

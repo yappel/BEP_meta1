@@ -65,6 +65,12 @@ public class ParticleFilterCoupler : AbstractLocalizerCoupler
     /// <returns>if the source was registered</returns>
     protected override bool RegisterDisplacementReceiver(IDisplacementSource source)
     {
+        if (source != null)
+        {
+            this.localizer.AddDisplacementSource(source);
+            return true;
+        }
+
         return false;
     }
 

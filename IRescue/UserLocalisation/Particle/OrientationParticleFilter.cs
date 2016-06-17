@@ -3,10 +3,13 @@
 // </copyright>
 namespace IRescue.UserLocalisation.Particle
 {
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     using IRescue.Core.DataTypes;
+    using IRescue.Core.Distributions;
     using IRescue.Core.Utils;
     using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
     using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
@@ -69,8 +72,16 @@ namespace IRescue.UserLocalisation.Particle
                 {
                     Measurement<Vector3> measurement = rawmeasurments[index];
                     this.Measurements.Add(this.NormalizeOrientation(measurement));
+                    Measurement<Vector3> meas = this.NormalizeOrientation(measurement);
                 }
             }
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 ProcessResults()
+        {
+            Vector3 res = base.ProcessResults();
+            return res;
         }
 
         private Measurement<Vector3> NormalizeOrientation(Measurement<Vector3> measurement)

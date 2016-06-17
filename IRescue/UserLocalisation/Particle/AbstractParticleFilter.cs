@@ -49,6 +49,11 @@ namespace IRescue.UserLocalisation.Particle
         private readonly ISmoother smoother;
 
         /// <summary>
+        /// If the filter received a measurement at least once.
+        /// </summary>
+        private bool measurementReceived;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AbstractParticleFilter"/> class.
         /// </summary>
         /// <param name="resampler"><see cref="resampler"/></param>
@@ -121,6 +126,7 @@ namespace IRescue.UserLocalisation.Particle
             this.PreviousTimeStamp = this.CurrentTimeStamp;
             this.CurrentTimeStamp = timeStamp;
             this.RetrieveMeasurements();
+            this.measurementReceived = this.measurementReceived || (this.Measurements.Count > 0);
 
             this.Resample();
             this.Predict();
@@ -155,7 +161,6 @@ namespace IRescue.UserLocalisation.Particle
             float resultY = this.ProcessResult(this.ParticleControllerY);
             float resultZ = this.ProcessResult(this.ParticleControllerZ);
             Vector3 res = this.smoother.GetSmoothedResult(new Vector3(resultX, resultY, resultZ), this.CurrentTimeStamp, this.averageCalculator);
-
             return res;
         }
 
@@ -200,12 +205,16 @@ namespace IRescue.UserLocalisation.Particle
         {
             if (Math.Abs(cont.Weights.Sum()) < float.Epsilon)
             {
-                this.noiseGenerator.GenerateNoise(0.01f, cont);
+                this.noiseGenerator.GenerateNoise(0.005f, cont);
                 cont.SetWeights(1f / cont.Count);
+            }
+            else if (this.Measurements.Count == 0)
+            {
+                cont.SetWeights(1f / cont.Count);
+                return this.measurementReceived ? this.GetWeightedAverage(cont) : 0;
             }
 
             float result = this.GetWeightedAverage(cont);
-
             return result;
         }
 

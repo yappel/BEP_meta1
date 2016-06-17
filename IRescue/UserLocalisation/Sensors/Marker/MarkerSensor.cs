@@ -312,11 +312,11 @@ namespace IRescue.UserLocalisation.Sensors.Marker
             {
                 Measurement<Vector3> measurement = measurements[i];
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
+                if (diff == mindiff && diff <= range)
                 {
                     res.Add(measurement);
                 }
-                else if (diff < mindiff)
+                else if (diff < mindiff && diff <= range)
                 {
                     res.Clear();
                     mindiff = diff;
