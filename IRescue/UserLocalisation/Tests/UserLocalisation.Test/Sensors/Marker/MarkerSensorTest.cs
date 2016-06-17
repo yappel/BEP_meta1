@@ -346,7 +346,7 @@ namespace UserLocalisation.Test.Sensors.Marker
         }
 
         /// <summary>
-        /// Test that updating the visible markers with a transformation matrix 
+        /// Test that updating the visible markers with a transformation matrix
         /// </summary>
         [Test]
         public void UpdateLocationWithTransformationMatrixTest()
