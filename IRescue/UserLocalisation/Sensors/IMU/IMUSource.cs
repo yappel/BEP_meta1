@@ -5,6 +5,8 @@ namespace IRescue.UserLocalisation.Sensors.IMU
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
 
     using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
@@ -430,8 +432,7 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetOrientationClosestTo(long timeStamp, long range)
         {
-            ////TODO fix dist type
-            return this.GetSourceClosestTo(timeStamp, range, this.orientations, this.oriDistType);
+            return this.GetSourceClosestTo(timeStamp, range, this.orientations, Enumerable.Repeat(this.oriDistType, this.orientations.Length).ToArray());
         }
 
         /// <summary>
@@ -507,8 +508,13 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
         public List<Measurement<Vector3>> GetVelocityClosestTo(long timeStamp, long range)
         {
-            ////TODO fix dist type.
-            return this.GetSourceClosestTo(timeStamp, range, this.velocity, this.accDistType);
+            Normal[] dists = new Normal[this.velocityStd.Length];
+            for (int i = 0; i < this.velocityStd.Length; i++)
+            {
+                dists[i] = new Normal(this.velocityStd[i]);
+            }
+
+            return this.GetSourceClosestTo(timeStamp, range, this.velocity, dists);
         }
 
         /// <inheritdoc/>
@@ -586,19 +592,19 @@ namespace IRescue.UserLocalisation.Sensors.IMU
         /// <param name="measurements">The measurements for a source.</param>
         /// <param name="distType">The distribution type of the source.</param>
         /// <returns>A list of all measurements that have the the smallest difference in time stamp.</returns>
-        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, IDistribution distType)
+        private List<Measurement<Vector3>> GetSourceClosestTo(long timeStamp, long range, Vector3[] measurements, Normal[] distType)
         {
             List<Measurement<Vector3>> res = new List<Measurement<Vector3>>();
             long mindiff = long.MaxValue;
             for (int i = 0; i < this.measurementSize; i++)
             {
-                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType);
+                Measurement<Vector3> measurement = new Measurement<Vector3>(measurements[i], this.timeStamps[i], distType[i]);
                 long diff = Math.Abs(measurement.TimeStamp - timeStamp);
-                if (diff == mindiff)
+                if (diff == mindiff && diff <= range)
                 {
                     res.Add(measurement);
                 }
-                else if (diff < mindiff)
+                else if (diff < mindiff && diff <= range)
                 {
                     res.Clear();
                     mindiff = diff;

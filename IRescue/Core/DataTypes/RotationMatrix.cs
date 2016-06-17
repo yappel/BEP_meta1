@@ -4,6 +4,11 @@
 namespace IRescue.Core.DataTypes
 {
     using System;
+
+    using IRescue.Core.Utils;
+
+    using MathNet.Numerics;
+
     using MathNet.Numerics.LinearAlgebra.Single;
 
     using static MathNet.Numerics.Trig;

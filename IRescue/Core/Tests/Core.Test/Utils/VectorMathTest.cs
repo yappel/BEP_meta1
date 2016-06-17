@@ -219,6 +219,18 @@ namespace Core.Test.Utils
             this.AreEqual(vector2, vector1);
         }
 
+        /// <summary>
+        /// Test converting vector to angle.
+        /// </summary>
+        [Test]
+        public void TestVectorToAngle()
+        {
+            Vector v = new DenseVector(new float[] { -0.9987534f, -0.03564889f });
+            Assert.AreEqual(-177.95571f, VectorMath.Vector2ToAngle(v), 0.0001);
+            v = new DenseVector(new float[] { 0, 1 });
+            Assert.AreEqual(90, VectorMath.Vector2ToAngle(v));
+        }
+
         private void AreEqual(Vector3 v1, Vector3 v2)
         {
             Assert.AreEqual(v1.X, v2.X, 10E-05);

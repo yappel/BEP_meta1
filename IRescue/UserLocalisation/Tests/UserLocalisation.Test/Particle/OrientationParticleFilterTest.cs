@@ -27,7 +27,7 @@ namespace UserLocalisation.Test.Particle
     using Normal = IRescue.Core.Distributions.Normal;
 
     /// <summary>
-    /// TODO TODO
+    /// Tests for orientation particle filter.
     /// </summary>
     public class OrientationParticleFilterTest
     {
@@ -49,7 +49,7 @@ namespace UserLocalisation.Test.Particle
         {
             this.filter = new OrientationParticleFilter(
                 new RandomNoiseGenerator(new ContinuousUniform()),
-                0.1f,
+                0.01f,
                 new MultinomialResampler(),
                 new RandomParticleGenerator(new ContinuousUniform()),
                 200,
@@ -84,9 +84,6 @@ namespace UserLocalisation.Test.Particle
                 Console.WriteLine($"{this.OriX(ts)}, {this.Oriy(ts)},{this.Oriz(ts)}, {res.X},{res.Y},{res.Z}");
             }
 
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationX.dat", diffx.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationY.dat", diffy.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationZ.dat", diffz.Select(d => d.ToString()).ToArray());
             Assert.True(diffx.Max() < 5 * this.orinoise.Maximum);
             Assert.True(diffx.Min() > 5 * this.orinoise.Minimum);
             Assert.True(diffy.Max() < 5 * this.orinoise.Maximum);
@@ -110,14 +107,11 @@ namespace UserLocalisation.Test.Particle
             for (int ts = 1; ts < 10001; ts += 33)
             {
                 Vector3 res = this.filter.Calculate(ts);
-                diffx.Add((float)AngleMath.SmallesAngle(res.X, 0));
+                diffx.Add((float)AngleMath.SmallesAngle(res.X, 180));
                 diffy.Add((float)AngleMath.SmallesAngle(res.Y, 0));
-                diffz.Add((float)AngleMath.SmallesAngle(res.Z, 0));
+                diffz.Add((float)AngleMath.SmallesAngle(res.Z, 180));
             }
 
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationX2.dat", diffx.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationY2.dat", diffy.Select(d => d.ToString()).ToArray());
-            File.WriteAllLines(TestContext.CurrentContext.TestDirectory + "OrientationZ2.dat", diffz.Select(d => d.ToString()).ToArray());
             Assert.True(diffx.Max() < 5 * this.orinoise.Maximum);
             Assert.True(diffx.Min() > 5 * this.orinoise.Minimum);
             Assert.True(diffy.Max() < 5 * this.orinoise.Maximum);
@@ -146,9 +140,9 @@ namespace UserLocalisation.Test.Particle
                        {
                            new Measurement<Vector3>(
                                new Vector3(
+                               (float)(180 + this.orinoise.Sample()),
                                (float)(0 + this.orinoise.Sample()),
-                               (float)(0 + this.orinoise.Sample()),
-                               (float)(0 + this.orinoise.Sample())),
+                               (float)(180 + this.orinoise.Sample())),
                                ts,
                                this.oridist)
                        };
@@ -156,7 +150,7 @@ namespace UserLocalisation.Test.Particle
 
         private double OriX(long ts)
         {
-            return 30 * Math.Sin(ts / 2000d);
+            return 360 * Math.Sin(ts / 2000d);
         }
 
         private double Oriy(long ts)

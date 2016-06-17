@@ -65,7 +65,16 @@ namespace Core.Test.Utils
         [Test]
         public void WeightedAverageNaNTest()
         {
-            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] { 0 }, new float[] { 0 }));
+            Assert.AreEqual(float.NaN, AngleMath.WeightedAverage(new float[] {0}, new float[] {0}));
+        }
+
+        /// <summary>
+        /// Test getting an average angle of 180.
+        /// </summary>
+        [Test]
+        public void TestAverageAround180()
+        {
+            Assert.AreEqual(180, AngleMath.Average(new float[] { 180, 181, 182, 183, 184, 185, 179, 178, 177, 176, 175 }));
         }
     }
 }

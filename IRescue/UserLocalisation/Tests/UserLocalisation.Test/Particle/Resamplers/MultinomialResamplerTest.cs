@@ -14,7 +14,7 @@ namespace UserLocalisation.Test.Particle.Algos.Resamplers
     using NUnit.Framework;
 
     /// <summary>
-    /// TODO TODO
+    /// Tests for multinomial resapling algorithm.
     /// </summary>
     public class MultinomialResamplerTest
     {

@@ -13,7 +13,7 @@ namespace UserLocalisation.Test.Particle
     using NUnit.Framework;
 
     /// <summary>
-    /// TODO TODO
+    /// Tests for linear particle controller.
     /// </summary>
     public class LinearParticleControllerTest
     {
