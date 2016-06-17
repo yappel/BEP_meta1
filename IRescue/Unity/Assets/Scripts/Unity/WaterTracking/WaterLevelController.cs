@@ -4,8 +4,8 @@
 
 namespace Assets.Scripts.Unity
 {
-    using IRescue.Core.Utils;
     using System;
+    using IRescue.Core.Utils;
     using UnityEngine;
 
     /// <summary>

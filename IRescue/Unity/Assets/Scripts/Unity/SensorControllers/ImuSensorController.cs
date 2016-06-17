@@ -4,20 +4,11 @@
 
 namespace Assets.Scripts.Unity.SensorControllers
 {
-    using System;
-    using System.IO;
-
-    using Assets.Scripts.Unity.Utils;
-
-    using IRescue.Core.DataTypes;
     using IRescue.Core.Distributions;
     using IRescue.UserLocalisation.Sensors;
     using IRescue.UserLocalisation.Sensors.IMU;
     using Meta;
-
-    using UnityEngine;
-    using UnityEngine.UI;
-
+    using Utils;
     using Vector3 = IRescue.Core.DataTypes.Vector3;
 
     /// <summary>

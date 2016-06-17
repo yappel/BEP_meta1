@@ -9,11 +9,8 @@ using IRescue.UserLocalisation.Particle.Algos.NoiseGenerators;
 using IRescue.UserLocalisation.Particle.Algos.ParticleGenerators;
 using IRescue.UserLocalisation.Particle.Algos.Resamplers;
 using IRescue.UserLocalisation.Particle.Algos.Smoothers;
-using IRescue.UserLocalisation.PosePrediction;
 using IRescue.UserLocalisation.Sensors;
-
 using MathNet.Numerics.Distributions;
-using MathNet.Numerics.Random;
 
 /// <summary>
 ///  This class couples sources to a localizer.

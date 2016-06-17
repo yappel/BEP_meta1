@@ -6,7 +6,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
     using Meta;
     using UnityEngine;
-    using UnityEngine.UI;
 
     /// <summary>
     /// State when rotating a selected building.

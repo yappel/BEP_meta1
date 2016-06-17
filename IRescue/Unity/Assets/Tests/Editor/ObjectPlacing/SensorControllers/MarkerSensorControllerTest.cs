@@ -2,6 +2,7 @@
 // Copyright (c) Delft University of Technology. All rights reserved.
 // </copyright>
 
+using Assets.Scripts.Unity.SensorControllers;
 using NUnit.Framework;
 using UnityEngine;
 

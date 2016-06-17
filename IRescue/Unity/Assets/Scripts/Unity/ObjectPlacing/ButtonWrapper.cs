@@ -4,7 +4,6 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing
 {
-    using Meta;
     using UnityEngine;
 
     /// <summary>

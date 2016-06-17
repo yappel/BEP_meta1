@@ -7,7 +7,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     using IRescue.Core.Utils;
     using Meta;
     using UnityEngine;
-    using UnityEngine.UI;
 
     /// <summary>
     /// State when placing a building by pointing.
