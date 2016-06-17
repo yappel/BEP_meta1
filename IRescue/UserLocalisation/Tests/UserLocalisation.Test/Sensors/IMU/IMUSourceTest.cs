@@ -688,6 +688,44 @@ namespace UserLocalisation.Test.Sensors.IMU
         }
 
         /// <summary>
+        /// Test that a velocity feedback with a higher standard deviation gets ignored.
+        /// </summary>
+        [Test]
+        public void HighStdVelocityFeedbackTest()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(1000, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(2000, this.standardAcceleration, this.zeroOrientation);
+            Vector3 actual = this.source.GetLastVelocity().Data;
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>();
+            feedback.Data = new Vector3();
+            feedback.Stddev = float.MaxValue;
+            feedback.TimeStamp = 1;
+            this.source.NotifyVelocityFeedback(feedback);
+            Vector3 res = this.source.GetLastVelocity().Data;
+            this.AssertVectorAreEqual(actual, res);
+        }
+
+        /// <summary>
+        /// Test that when the time stamp of the feedback is later than the actual measurements nothing changes.
+        /// </summary>
+        [Test]
+        public void VelocityFeedbackLaterTimeStampTest()
+        {
+            this.source.AddMeasurements(0, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(1000, this.standardAcceleration, this.zeroOrientation);
+            this.source.AddMeasurements(2000, this.standardAcceleration, this.zeroOrientation);
+            Vector3 actual = this.source.GetLastVelocity().Data;
+            FeedbackData<Vector3> feedback = new FeedbackData<Vector3>();
+            feedback.Data = new Vector3();
+            feedback.Stddev = float.MaxValue;
+            feedback.TimeStamp = 3000;
+            this.source.NotifyVelocityFeedback(feedback);
+            Vector3 res = this.source.GetLastVelocity().Data;
+            this.AssertVectorAreEqual(actual, res);
+        }
+
+        /// <summary>
         /// Test that velocity standard deviation is correctly returned after combining the acceleration measurements.
         /// </summary>
         [Test]
