@@ -131,6 +131,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <returns>The created button game object</returns>
         protected GameObject InitButton(string buttonName, UnityEngine.Events.UnityAction action)
         {
+            // TODO set the renderqueue
             GameObject button = this.GetButton(UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + buttonName)));
             if (button.transform.GetComponentInChildren<Button>() != null)
             {
@@ -150,11 +151,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <returns>The created button game object</returns>
         protected GameObject InitTextPane(string textPaneName, string text)
         {
+            // TODO set the renderqueue
             GameObject button = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefabs/Buttons/" + textPaneName));
             button.GetComponentInChildren<Text>().text = text;
             this.buttons.Add(button.transform.root.gameObject);
             button.transform.root.SetParent(ButtonWrapper.Wrapper, false);
             return button;
+        }
+
+        /// <summary>
+        /// Check which hand triggered the button
+        /// </summary>
+        /// <param name="buttonLocation">Location of the button</param>
+        /// <returns>The hand that pushed the button</returns>
+        protected HandType CheckHandType(Vector3 buttonLocation)
+        {
+            // TODO copy the gameobject and get that position may work
+            // TODO proper pointer position
+            return Vector3.Distance(Meta.Hands.right.pointer.position, buttonLocation) < 0.05f ? HandType.RIGHT : HandType.LEFT;
         }
 
         /// <summary>
