@@ -40,7 +40,7 @@ namespace IRescue.Core.DataTypes
         /// <param name="zr">Z axis rotation in degrees.</param>
         /// <param name="w">W value.</param>
         public TransformationMatrix(float xt, float yt, float zt, float xr, float yr, float zr, float w)
-            : base(4, 4, CreateMatrixArray(xt, yt, zt, xr, yr, zr, w))
+            : this(xt, yt, zt, new RotationMatrix(xr, yr, zr), w)
         {
         }
 
@@ -94,7 +94,22 @@ namespace IRescue.Core.DataTypes
         /// <param name="zt">Z axis translation.</param>
         /// <param name="rm">The rotationmatrix defining the rotation to use.</param>
         public TransformationMatrix(float xt, float yt, float zt, RotationMatrix rm)
-            : base(4, 4, CreateMatrixArray(xt, yt, zt, 1))
+            : this(xt, yt, zt, rm, 1)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransformationMatrix"/> class.
+        /// Creates a 4x4 transformation matrix which corresponds to a rotation followed by a translation.
+        /// Sets w to default value 1.
+        /// </summary>
+        /// <param name="xt">X axis translation.</param>
+        /// <param name="yt">Y axis translation.</param>
+        /// <param name="zt">Z axis translation.</param>
+        /// <param name="rm">The rotationmatrix defining the rotation to use.</param>
+        /// <param name="w">The w value of the transformation matrix.</param>
+        public TransformationMatrix(float xt, float yt, float zt, RotationMatrix rm, float w)
+            : base(4, 4, CreateMatrixArray(xt, yt, zt, w))
         {
             this.SetSubMatrix(0, 0, rm);
         }
@@ -133,37 +148,11 @@ namespace IRescue.Core.DataTypes
         {
             return new[]
                        {
-                           0, 0, 0, 0,
-                           0, 0, 0, 0,
-                           0, 0, 0, 0,
+                           1, 0, 0, 0,
+                           0, 1, 0, 0,
+                           0, 0, 1, 0,
                            xt, yt, zt, w
                        };
-        }
-
-        /// <summary>
-        /// Create an array from the specified rotation, translation and w values.
-        /// </summary>
-        /// <param name="xt">X axis translation.</param>
-        /// <param name="yt">Y axis translation.</param>
-        /// <param name="zt">Z axis translation.</param>
-        /// <param name="xr">X axis rotation in degrees.</param>
-        /// <param name="yr">Y axis rotation in degrees.</param>
-        /// <param name="zr">Z axis rotation in degrees.</param>
-        /// <param name="w">W value.</param>
-        /// <returns>Array which can be used in constructor of DenseMatrix.</returns>
-        private static float[] CreateMatrixArray(float xt, float yt, float zt, float xr, float yr, float zr, float w)
-        {
-            double c = DegreeToRadian(xr);
-            double b = DegreeToRadian(yr);
-            double a = DegreeToRadian(zr);
-            float[] rot =
-                {
-                    (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)), 0,
-                    (float)((Cos(a) * Sin(b) * Sin(c)) - (Sin(a) * Cos(c))), (float)((Sin(a) * Sin(b) * Sin(c)) + (Cos(a) * Cos(c))), (float)(Cos(b) * Sin(c)), 0,
-                    (float)((Cos(a) * Sin(b) * Cos(c)) + (Sin(a) * Sin(c))), (float)((Sin(a) * Sin(b) * Cos(c)) - (Cos(a) * Sin(c))), (float)(Cos(b) * Cos(c)), 0,
-                    xt, yt, zt, w
-                };
-            return rot;
         }
     }
 }
