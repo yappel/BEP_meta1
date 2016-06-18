@@ -42,9 +42,9 @@ namespace Core.Test.DataTypes
             this.transformation = new TransformationMatrix(0, 0, 0, 45, 90, 30);
             Vector4 res = new Vector4(1, 2, 3, 1);
             this.transformation.Multiply(res, res);
-            Assert.AreEqual(3.4154, res.X, 0.0001);
-            Assert.AreEqual(1.1554, res.Y, 0.0001);
-            Assert.AreEqual(-1.0000, res.Z, 0.0001);
+            Assert.AreEqual(1.1554f, res.X, 0.0001);
+            Assert.AreEqual(3.4154f, res.Y, 0.0001);
+            Assert.AreEqual(1.0000, res.Z, 0.0001);
             Assert.AreEqual(1, res.W, 0.0001);
         }
 
@@ -57,6 +57,7 @@ namespace Core.Test.DataTypes
             this.transformation = new TransformationMatrix(1, 2, 3, 0, 90, 0);
             Vector4 res = new Vector4(1, 1, 1, 1);
             this.transformation.Multiply(res, res);
+            System.Console.WriteLine(res);
             this.AssertVectorAreEqual(new Vector4(2, 3, 2, 1), res);
         }
 

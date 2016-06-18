@@ -7,6 +7,9 @@ namespace Core.Test.DataTypes
     using System;
 
     using IRescue.Core.DataTypes;
+
+    using MathNet.Numerics.LinearAlgebra.Single;
+
     using NUnit.Framework;
 
     /// <summary>
@@ -38,10 +41,47 @@ namespace Core.Test.DataTypes
         [Test]
         public void SimpleRotationTest()
         {
-            this.rotation = new RotationMatrix(45, 90, 30);
-            Vector3 res = new Vector3(1, 2, 3);
+            this.rotation = new RotationMatrix(180, 0, 0);
+            Vector3 up = new Vector3(0, 1, 0);
+            Vector3 res = new Vector3();
+            Vector3 expected = new Vector3(0, -1, 0);
+            this.rotation.Multiply(up, res);
+            this.AssertVectorAreEqual(expected, res);
+
+            this.rotation = new RotationMatrix(0, 180, 0);
+            Vector3 down = new Vector3(0, -1, 0);
+            this.rotation.Multiply(down, res);
+            this.AssertVectorAreEqual(expected, res);
+
+            this.rotation = new RotationMatrix(0, 0, 90);
+            expected = new Vector3(0, 0, 1);
+            this.rotation.Multiply(down, res);
+            this.AssertVectorAreEqual(expected, res);
+
+            this.rotation = new RotationMatrix(180, 180, 90);
+            res = new Vector3(0, 1, 0);
             this.rotation.Multiply(res, res);
-            this.AssertVectorAreEqual(new Vector3(3.4154f, 1.1554f, -1.0000f), res);
+            this.AssertVectorAreEqual(new Vector3(0, 0, 1), res);
+
+            this.rotation = new RotationMatrix(45, 90, 30);
+            res = new Vector3(1, 2, 3);
+            this.rotation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector3(1.1554f, 3.4154f, 1), res);
+
+            this.rotation = new RotationMatrix(0, 90, 0);
+            res = new Vector3(1, 0, 1);
+            this.rotation.Multiply(res, res);
+            this.AssertVectorAreEqual(new Vector3(1, 0, -1), res);
+
+        }
+
+        [Test]
+        public void GettingEulerAnglesTest()
+        {
+            this.rotation = new RotationMatrix(53, 23, 77);
+            Assert.AreEqual(53, this.rotation.EulerAngles.X, 0.0001f);
+            Assert.AreEqual(23, this.rotation.EulerAngles.Y, 0.0001f);
+            Assert.AreEqual(77, this.rotation.EulerAngles.Z, 0.0001f);
         }
 
         /// <summary>

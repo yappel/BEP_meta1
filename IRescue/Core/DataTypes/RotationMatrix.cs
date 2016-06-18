@@ -60,9 +60,10 @@ namespace IRescue.Core.DataTypes
         /// Gets the XYZ Tait-bryan angles of this rotationmatrix.
         /// </summary>
         public Vector3 EulerAngles => new Vector3(
-            (float)RadianToDegree(Math.Atan2(this[2, 1], this[2, 2])),
-            (float)RadianToDegree(Math.Atan2(-1 * this[2, 0], Math.Sqrt(Math.Pow(this[2, 1], 2) + Math.Pow(this[2, 2], 2)))),
-            (float)RadianToDegree(Math.Atan2(this[1, 0], this[0, 0])));
+            (float)RadianToDegree(-Math.Atan2(this[1, 0], this[0, 0]))
+            , (float)RadianToDegree(-Math.Atan2(-1 * this[2, 0], Math.Sqrt(Math.Pow(this[2, 1], 2) + Math.Pow(this[2, 2], 2)))),
+            (float)RadianToDegree(-Math.Atan2(this[2, 1], this[2, 2]))
+            );
 
         private static float[] CreateMatrixVector(float q1, float q2, float q3, float q4)
         {
@@ -84,9 +85,9 @@ namespace IRescue.Core.DataTypes
         /// <returns>Array of floats which can be used by Math.NET to use for matrix.</returns>
         private static float[] CreateMatrixVector(float xRotation, float yRotation, float zRotation)
         {
-            double c = DegreeToRadian(xRotation);
+            double a = DegreeToRadian(-xRotation);
             double b = DegreeToRadian(yRotation);
-            double a = DegreeToRadian(zRotation);
+            double c = DegreeToRadian(-zRotation);
             float[] rot =
                 {
                     (float)(Cos(a) * Cos(b)), (float)(Sin(a) * Cos(b)), (float)(-1 * Sin(b)),

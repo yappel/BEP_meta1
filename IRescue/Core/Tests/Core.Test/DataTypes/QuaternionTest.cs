@@ -4,6 +4,8 @@
 
 namespace Core.Test.DataTypes
 {
+    using System;
+
     using IRescue.Core.DataTypes;
 
     using MathNet.Numerics;
@@ -36,11 +38,34 @@ namespace Core.Test.DataTypes
         {
             Vector3 euler = new Vector3(10, 20, 30);
             this.quaternion = new Quaternion(new RotationMatrix(euler.X, euler.Y, euler.Z));
-            ////Values generated with matlab rotm2quat(rotz(10) * roty(20) *rotx(30))
-            Assert.AreEqual(0.9515, this.quaternion.W, 0.001);
-            Assert.AreEqual(0.0381, this.quaternion.X, 0.001);
-            Assert.AreEqual(0.1893, this.quaternion.Y, 0.001);
-            Assert.AreEqual(0.2393, this.quaternion.Z, 0.001);
+            ////Values generated with matlab rotm2quat(rotz(-10) * roty(-20) *rotx(-30))
+            Assert.AreEqual(0.9437, this.quaternion.W, 0.001);
+            Assert.AreEqual(-0.2685, this.quaternion.X, 0.001);
+            Assert.AreEqual(-0.1449, this.quaternion.Y, 0.001);
+            Assert.AreEqual(-0.1277, this.quaternion.Z, 0.001);
+        }
+
+        [Test]
+        public void CreateTestCase3()
+        {
+            Vector3 euler = new Vector3(170, 20, 10);
+            this.quaternion = new Quaternion(new RotationMatrix(euler.X, euler.Y, euler.Z));
+            Quaternion expected = new Quaternion(0.0704f, -0.1798f, 0.0704f, -0.9786f);
+            ////Values generated with matlab rotm2quat(rotz(-170) * roty(-20) *rotx(-10))
+            AreEqual(expected, this.quaternion, 0.001f);
+        }
+
+        private static bool AreEqual(Quaternion expected, Quaternion actual, float epsilon)
+        {
+            bool equal = expected.Equals(actual, epsilon);
+            if (equal)
+            {
+                return true;
+            }
+
+            Console.WriteLine($"Expected: {expected}");
+            Console.WriteLine($"But was: {actual}");
+            return false;
         }
 
         /// <summary>
