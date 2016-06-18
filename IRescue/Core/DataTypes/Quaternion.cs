@@ -48,6 +48,23 @@ namespace IRescue.Core.DataTypes
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Quaternion"/> class.
+        /// Creates the quaternion w + xi + yj + zk.
+        /// </summary>
+        /// <param name="w">The w value of the quaternion. Sometimes called q0.</param>
+        /// <param name="x">The x value of the quaternion. Sometimes called q1.</param>
+        /// <param name="y">The y value of the quaternion. Sometimes called q2.</param>
+        /// <param name="z">The z value of the quaternion. Sometimes called q3.</param>
+        public Quaternion(float w, float x, float y, float z)
+        {
+            this.W = w;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
+            this.EulerAnglesDegree = this.CalcEulerAngles();
+        }
+
+        /// <summary>
         /// Gets this quaternion converted to Tait-Bryan angles in degrees.
         /// </summary>
         public Vector3 EulerAnglesDegree { get; private set; }
@@ -71,6 +88,58 @@ namespace IRescue.Core.DataTypes
         /// Gets the z coordinate.
         /// </summary>
         public float Z { get; private set; }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Quaternion other = (Quaternion)obj;
+            return (this.W == other.W && this.X == other.X && this.Y == other.Y && this.Z == other.Z) ||
+                   (this.W == -other.W && this.X == -other.X && this.Y == -other.Y && this.Z == -other.Z);
+        }
+
+        /// <summary>
+        /// Checks if another <see cref="Quaternion"/> is almost equal to this quaternion.
+        /// </summary>
+        /// <param name="obj">The quaternion to compare against</param>
+        /// <param name="epsilon">The maximum amount the values may differ to still be considered equal.</param>
+        /// <returns>True if the given <see cref="Quaternion"/> is equal to this quaternion.</returns>
+        public bool Equals(Quaternion obj, float epsilon)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Quaternion other = (Quaternion)obj;
+            return (Math.Abs(this.W - other.W) <= epsilon
+                && Math.Abs(this.X - other.X) <= epsilon
+                && Math.Abs(this.Y - other.Y) <= epsilon
+                && Math.Abs(this.Z - other.Z) <= epsilon) ||
+                (Math.Abs(this.W + other.W) <= epsilon
+                && Math.Abs(this.X + other.X) <= epsilon
+                && Math.Abs(this.Y + other.Y) <= epsilon
+                && Math.Abs(this.Z + other.Z) <= epsilon);
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return this.W.GetHashCode() + this.X.GetHashCode() + this.Y.GetHashCode() + this.Z.GetHashCode();
+        }
+
+        /// <summary>
+        /// Creates string representation of the the quaternion.
+        /// </summary>
+        /// <returns>"[w x y z]"</returns>
+        public override string ToString()
+        {
+            return $"[{this.W}, {this.X}, {this.Y}, {this.Z}]";
+        }
 
         private Vector3 CalcEulerAngles()
         {
