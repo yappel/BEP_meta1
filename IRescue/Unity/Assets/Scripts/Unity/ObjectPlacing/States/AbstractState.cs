@@ -75,7 +75,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Method when a point event has occurred to place a building (ground plane). A single finger fully extended.
         /// </summary>
         /// <param name="position">The position pointed towards</param>
-        public virtual void OnPoint(Vector3 position)
+        /// <param name="handType">The hand that is pointing</param>
+        public virtual void OnPoint(Vector3 position, HandType handType)
         {
         }
 
@@ -83,7 +84,8 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Method when a point event has occurred towards a building. A single finger fully extended.
         /// </summary>
         /// <param name="gameObject">The gameObject pointed at</param>
-        public virtual void OnPoint(GameObject gameObject)
+        /// <param name="handType">The hand that is pointing</param>
+        public virtual void OnPoint(GameObject gameObject, HandType handType)
         {
         }
 
@@ -153,6 +155,16 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.buttons.Add(button.transform.root.gameObject);
             button.transform.root.SetParent(ButtonWrapper.Wrapper, false);
             return button;
+        }
+
+        /// <summary>
+        /// Check which hand triggered the button
+        /// </summary>
+        /// <param name="buttonLocation">Location of the button</param>
+        /// <returns>The hand that pushed the button</returns>
+        protected HandType CheckHandType(Vector3 buttonLocation)
+        {
+            return Vector3.Distance(Meta.Hands.right.pointer.localPosition, buttonLocation) < 0.05f ? HandType.RIGHT : HandType.LEFT;
         }
 
         /// <summary>

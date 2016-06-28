@@ -4,7 +4,7 @@
 
 namespace Assets.Scripts.Unity.ObjectPlacing.States
 {
-    using IRescue.Core.Utils;
+    using Meta;
     using UnityEngine;
 
     /// <summary>
@@ -13,24 +13,29 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
     public class NeutralState : AbstractState
     {
         /// <summary>
-        /// The time you need to point before placing a building
+        /// Red outline shade
         /// </summary>
-        private const int TimeToPoint = 3000;
+        private Shader greenOutline = Shader.Find("Outlined/Diffuse_G");
 
         /// <summary>
-        /// The time that is being pointed.
+        /// The default shading, no outline
         /// </summary>
-        private long pointTime;
+        private Shader defaultShader = Shader.Find("Standard");
+        
+        /// <summary>
+        /// The render components that can be adjusted for the outline
+        /// </summary>
+        private MeshRenderer[] colorRenders;
 
         /// <summary>
-        /// The time that is being pointed towards a building
+        /// Counter to count cycles
         /// </summary>
-        private long pointObjectTime;
+        private int counter = 0;
 
         /// <summary>
-        /// Boolean if the user was pointing this iteration.
+        /// Boolean if the user was grabbing during this cycle
         /// </summary>
-        private bool hasPointed = false;
+        private HandType currentGrabPointer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeutralState"/> class.
@@ -42,7 +47,6 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.InitButton("SaveButton", () => this.OnSaveButton());
             this.InitButton("LoadButton", () => this.OnLoadButton());
             this.InitButton("RunButton", () => this.OnRunButton());
-            this.pointTime = StopwatchSingleton.Time;
         }
 
         /// <summary>
@@ -50,6 +54,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnRunButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new RunningState(this.StateContext));
@@ -61,6 +66,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnSaveButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.StateContext.SaveFilePath != null)
             {
                 new SaveState(this.StateContext, true);
@@ -76,6 +82,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnLoadButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new LoadState(this.StateContext));
@@ -83,21 +90,26 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         }
 
         /// <summary>
+        /// Go to the object placing state or the modify state
+        /// </summary>
+        /// <param name="hand">hand that performed the gesture</param>
+        public override void OnGrab(HandType hand)
+        {
+            this.counter = 0;
+            this.currentGrabPointer = hand;
+        }
+
+        /// <summary>
         /// Sets the state to an object placement state after pointing for 3 second.
         /// </summary>
         /// <param name="position">Position of the building to be placed</param>
-        public override void OnPoint(Vector3 position)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(Vector3 position, HandType handType)
         {
-            this.hasPointed = true;
-            long time = StopwatchSingleton.Time;
-            this.pointObjectTime = 0;
-            if (time - this.pointTime > TimeToPoint + 250)
+            this.DeselectBuilding(this.colorRenders);
+            if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
-                this.pointTime = time;
-            }
-            else if (time - this.pointTime > TimeToPoint)
-            {
-                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding));
+                this.StateContext.SetState(new ObjectPlacementState(this.StateContext, position, this.StateContext.SelectedBuilding, handType));
             }
         }
 
@@ -105,19 +117,24 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// Sets the state to modify an object after 3 seconds.
         /// </summary>
         /// <param name="gameObject">Object pointed at</param>
-        public override void OnPoint(GameObject gameObject)
+        /// <param name="handType">The hand that is pointing</param>
+        public override void OnPoint(GameObject gameObject, HandType handType)
         {
-            this.hasPointed = true;
-            long time = StopwatchSingleton.Time;
-            this.pointTime = 0;
-            if (time - this.pointObjectTime > TimeToPoint + 250)
+            this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
+            this.SelectBuilding(this.colorRenders);
+            if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
-                this.pointObjectTime = time;
-            } 
-            else if (time - this.pointObjectTime > TimeToPoint)
-            {
+                this.DeselectBuilding(this.colorRenders);
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
             }
+        }
+
+        /// <summary>
+        /// Return all objects to normal color
+        /// </summary>
+        public override void RunUpdate()
+        {
+            this.DeselectBuilding(this.colorRenders);
         }
 
         /// <summary>
@@ -125,13 +142,12 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public override void RunLateUpdate()
         {
-            if (!this.hasPointed)
+            if (this.counter > 0)
             {
-                this.pointTime = 0;
-                this.pointObjectTime = 0;
+                this.currentGrabPointer = HandType.UNKNOWN;
             }
 
-            this.hasPointed = false;
+            this.counter++;
         }
 
         /// <summary>
@@ -139,10 +155,43 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// </summary>
         public void OnToggleButton()
         {
+            this.DeselectBuilding(this.colorRenders);
             if (this.CanSwitchState())
             {
                 this.StateContext.SetState(new ObjectSelectState(this.StateContext));
             }
+        }
+        
+        /// <summary>
+        /// Change the outline color of the object pointed at
+        /// </summary>
+        /// <param name="colorRenders">Mesh renderers of the children</param>
+        private void SelectBuilding(MeshRenderer[] colorRenders)
+        {
+            for (int i = 0; i < colorRenders.Length; i++)
+            {
+                colorRenders[i].material.shader = this.greenOutline;
+                colorRenders[i].material.SetColor("_OutlineColor", Color.cyan);
+            }
+        }
+
+        /// <summary>
+        /// Set the default to the selected object
+        /// </summary>
+        /// <param name="colorRenders">Mesh renderers of the children</param>
+        private void DeselectBuilding(MeshRenderer[] colorRenders)
+        {
+            if (colorRenders == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < colorRenders.Length; i++)
+            {
+                colorRenders[i].material.shader = this.defaultShader;
+            }
+
+            this.colorRenders = null;
         }
     }
 }

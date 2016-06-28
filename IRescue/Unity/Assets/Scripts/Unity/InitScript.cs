@@ -35,8 +35,6 @@ namespace Assets.Scripts.Unity
         /// </summary>
         public void Start()
         {
-            // Start in 2d mode
-            GameObject.FindObjectOfType<Meta.MetaKeyboard>().gameObject.AddComponent<Meta.MetaBody>().hud = true;
             Meta.MetaCameraMode.monocular = true;
             Meta.MarkerDetector.Instance.SetMarkerSize(this.markerSize);
             this.AddControllers();
