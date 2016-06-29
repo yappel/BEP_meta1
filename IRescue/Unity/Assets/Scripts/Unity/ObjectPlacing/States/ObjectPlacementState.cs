@@ -105,6 +105,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.gameObject.transform.localPosition = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
+            this.ChangeOutlineRender(Color.green);
         }
 
         /// <summary>

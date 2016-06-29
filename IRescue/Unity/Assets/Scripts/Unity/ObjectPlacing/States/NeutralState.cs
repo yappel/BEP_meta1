@@ -121,11 +121,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         public override void OnPoint(GameObject gameObject, HandType handType)
         {
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
-            this.SelectBuilding(this.colorRenders);
             if (this.CanSwitchState() && this.currentGrabPointer != HandType.UNKNOWN && this.currentGrabPointer != handType)
             {
                 this.DeselectBuilding(this.colorRenders);
                 this.StateContext.SetState(new ModifyState(this.StateContext, gameObject));
+            }
+            else
+            {
+                this.SelectBuilding(this.colorRenders);
             }
         }
 

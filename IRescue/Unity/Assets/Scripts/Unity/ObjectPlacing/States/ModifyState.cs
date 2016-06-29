@@ -58,6 +58,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.gameObject = gameObject;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<Renderer>();
             this.ChangeOutlineRender(this.greenOutline);
+            this.ChangeOutlineRender(Color.green);
         }
 
         /// <summary>
@@ -147,6 +148,18 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             for (int i = 0; i < this.colorRenders.Length; i++)
             {
                 this.colorRenders[i].material.shader = shader;
+            }
+        }
+
+        /// <summary>
+        /// Change the outline color
+        /// </summary>
+        /// <param name="color">New outline color</param>
+        private void ChangeOutlineRender(Color color)
+        {
+            for (int i = 0; i < this.colorRenders.Length; i++)
+            {
+                this.colorRenders[i].material.SetColor("_OutlineColor", color);
             }
         }
     }
