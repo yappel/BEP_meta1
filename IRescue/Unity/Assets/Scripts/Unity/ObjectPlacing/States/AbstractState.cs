@@ -164,7 +164,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <returns>The hand that pushed the button</returns>
         protected HandType CheckHandType(Vector3 buttonLocation)
         {
-            return Vector3.Distance(Meta.Hands.right.pointer.localPosition, buttonLocation) < 0.05f ? HandType.RIGHT : HandType.LEFT;
+            return Hands.right.isValid ? HandType.RIGHT : HandType.LEFT;
         }
 
         /// <summary>
