@@ -16,6 +16,11 @@ namespace Assets.Scripts.Unity
     public class WorldBox : MonoBehaviour
     {
         /// <summary>
+        /// Last position returned by the filter
+        /// </summary>
+        private UnityEngine.Vector3 temp = UnityEngine.Vector3.zero;
+
+        /// <summary>
         /// Reference the user localizer class used in the application.
         /// </summary>
         private IUserLocalizer localizer;
@@ -54,6 +59,15 @@ namespace Assets.Scripts.Unity
                 UnityEngine.Vector3 rot = new UnityEngine.Vector3(pose.Orientation.X, pose.Orientation.Y, pose.Orientation.Z);
                 UnityEngine.Vector3 pos = new UnityEngine.Vector3(pose.Position.X, pose.Position.Y, pose.Position.Z);
                 Quaternion rotation = Quaternion.Inverse(Quaternion.Euler(rot));
+                if (Meta.MarkerDetector.Instance.updatedMarkerTransforms.Count == 0)
+                {
+                    pos = this.temp;
+                }
+                else
+                {
+                    this.temp = pos;
+                }
+
                 this.transform.position = -1 * (rotation * pos);
                 this.transform.rotation = rotation;
                 this.metaFrame.rotation = new Quaternion();

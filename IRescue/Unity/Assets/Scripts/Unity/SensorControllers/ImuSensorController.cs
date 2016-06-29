@@ -70,30 +70,12 @@ namespace Assets.Scripts.Unity.SensorControllers
         }
 
         /// <summary>
-        ///   Return the acceleration source.
-        /// </summary>
-        /// <returns>The IAccelerationSource</returns>
-        public override IAccelerationSource GetAccelerationSource()
-        {
-            return this.imuSource;
-        }
-
-        /// <summary>
         ///   Return the Displacement source.
         /// </summary>
         /// <returns>The IDisplacementSource</returns>
         public override IDisplacementSource GetDisplacementSource()
         {
-            return this.imuSource;
-        }
-
-        /// <summary>
-        ///   Return the velocity source.
-        /// </summary>
-        /// <returns>the IVelocitySource</returns>
-        public override IVelocitySource GetVelocitySource()
-        {
-            return this.imuSource;
+            return null;
         }
     }
 }
