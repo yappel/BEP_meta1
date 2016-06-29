@@ -182,10 +182,9 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private static GameObject CreateObject(string gameObjectPath)
         {
             GameObject newObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(gameObjectPath));
-            Transform groundPlane = GameObject.Find("GroundPlane").transform;
+            newObject.gameObject.transform.parent = GameObject.Find("GroundPlane").transform;
             SetScale(newObject);
-            newObject.transform.localRotation = groundPlane.rotation;
-            newObject.gameObject.transform.parent = groundPlane;
+            newObject.transform.localRotation = Quaternion.identity;
             return newObject;
         }
 
