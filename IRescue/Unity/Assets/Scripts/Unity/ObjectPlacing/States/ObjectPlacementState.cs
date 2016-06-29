@@ -104,6 +104,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             this.gameObject.transform.localPosition = location;
             this.colorRenders = gameObject.transform.GetComponentsInChildren<MeshRenderer>();
             this.ChangeOutlineRender(this.greenOutline);
+            this.ChangeOutlineRender(Color.green);
         }
 
         /// <summary>
@@ -182,9 +183,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         private static GameObject CreateObject(string gameObjectPath)
         {
             GameObject newObject = UnityEngine.Object.Instantiate(Resources.Load<GameObject>(gameObjectPath));
-            newObject.gameObject.transform.parent = GameObject.Find("GroundPlane").transform;
+            Transform groundPlane = GameObject.Find("GroundPlane").transform;
+            newObject.transform.localRotation = groundPlane.rotation;
+            newObject.transform.parent = groundPlane;
             SetScale(newObject);
-            newObject.transform.localRotation = Quaternion.identity;
             return newObject;
         }
 
