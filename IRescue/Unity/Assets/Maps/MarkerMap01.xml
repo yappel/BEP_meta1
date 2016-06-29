@@ -1,27 +1,27 @@
 <markers>
   <marker>
-    <id>4</id>
+    <id>0</id>
     <position>
-      <x>2</x>
-      <y>1.6</y>
-      <z>10</z>
+      <x>1.67</x>
+      <y>0.815</y>
+      <z>2.01</z>
     </position>
     <rotation>
       <x>0</x>
-      <y>0</y>
+      <y>270</y>
       <z>0</z>
     </rotation>
   </marker>
   <marker>
-    <id>5</id>
+    <id>2</id>
     <position>
-      <x>1.7</x>
-      <y>1.6</y>
-      <z>10</z>
+      <x>1</x>
+      <y>0.815</y>
+      <z>2.5</z>
     </position>
     <rotation>
       <x>0</x>
-      <y>0</y>
+      <y>180</y>
       <z>0</z>
     </rotation>
   </marker>
