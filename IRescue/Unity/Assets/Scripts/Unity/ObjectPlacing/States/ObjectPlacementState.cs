@@ -87,13 +87,14 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
         /// <param name="location">First indicated position of the placement</param>
         /// <param name="gameObject">The game object that has to be placed or moved</param>
         /// <param name="handType">The hand that is pointing</param>
-        public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject, HandType handType) : base(stateContext)
+        /// <param name="copy">Boolean if the action is to copy</param>
+        public ObjectPlacementState(StateContext stateContext, Vector3 location, GameObject gameObject, HandType handType, bool copy = false) : base(stateContext)
         {
             this.handType = handType;
             this.translateModification = gameObject.GetComponent<BuildingPlane>() != null;
             if (this.translateModification)
             {
-                this.InitTextPane("InfoText", "Move");
+                this.InitTextPane("InfoText", (copy ? "Copy" : "Move"));
                 this.previousPosition = gameObject.transform.localPosition;
                 UnityEngine.Object.Destroy(gameObject.GetComponent<BuildingPlane>());
                 UnityEngine.Object.Destroy(gameObject.GetComponent<MetaBody>());
@@ -205,7 +206,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
             Vector3 localFactor = gameObject.transform.parent.localScale;
-            float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x);
+            float boundScale = PreferredInitSize / Mathf.Max(Mathf.Max(bound.z, bound.x), bound.y);
             gameObject.transform.localScale = new Vector3(boundScale / localFactor.x, boundScale / localFactor.y, boundScale / localFactor.z);
         }
 

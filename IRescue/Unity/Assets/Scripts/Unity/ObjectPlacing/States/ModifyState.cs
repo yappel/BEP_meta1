@@ -136,7 +136,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             newBuilding.transform.localRotation = this.gameObject.transform.localRotation;
             UnityEngine.Object.Destroy(newBuilding.GetComponent<MetaBody>());
             this.ChangeOutlineRender(this.defaultShader);
-            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding, this.CheckHandType(this.copyButtonPosition)));
+            this.StateContext.SetState(new ObjectPlacementState(this.StateContext, this.gameObject.transform.position, newBuilding, this.CheckHandType(this.copyButtonPosition), true));
         }
 
         /// <summary>

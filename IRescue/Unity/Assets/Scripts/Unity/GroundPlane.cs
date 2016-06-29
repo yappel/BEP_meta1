@@ -17,7 +17,7 @@ namespace Assets.Scripts.Unity
         /// <param name="fieldSize">aspects of the game field</param>
         public void Init(IRescue.Core.DataTypes.FieldSize fieldSize)
         {
-            bool debug = false;
+            bool debug = true;
             this.gameObject.name = "GroundPlane";
             this.gameObject.transform.position = new Vector3((fieldSize.Xmax + fieldSize.Xmin) / 2, 0, (fieldSize.Zmax + fieldSize.Zmin) / 2);
             this.gameObject.transform.localScale = new Vector3((fieldSize.Xmax - fieldSize.Xmin) / 10f, 1, (fieldSize.Zmax - fieldSize.Zmin) / 10f);
