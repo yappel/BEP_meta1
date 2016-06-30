@@ -49,6 +49,11 @@ namespace Assets.Scripts.Unity.SensorControllers
         private float orientationStd = 0.264f;
 
         /// <summary>
+        /// Last measured marker transforms
+        /// </summary>
+        private Dictionary<int, TransformationMatrix> visibleMarkerTransforms = new Dictionary<int, TransformationMatrix>();
+
+        /// <summary>
         ///   Method called when creating a UserController.
         /// </summary>
         public override void Init()
@@ -96,7 +101,10 @@ namespace Assets.Scripts.Unity.SensorControllers
         private Dictionary<int, TransformationMatrix> GetVisibleMarkers()
         {
             List<int> visibleMarkers = this.markerDetector.updatedMarkerTransforms;
-            Dictionary<int, TransformationMatrix> visibleMarkerTransforms = new Dictionary<int, TransformationMatrix>();
+            if (visibleMarkers.Count > 0)
+            {
+                this.visibleMarkerTransforms = new Dictionary<int, TransformationMatrix>();
+            }
 
             for (int i = 0; i < visibleMarkers.Count; i++)
             {
@@ -126,10 +134,10 @@ namespace Assets.Scripts.Unity.SensorControllers
                 // Rotate with 180 degrees in y to get transformation to the front of the marker instead of to the back.
                 tum.Multiply(new TransformationMatrix(0, 0, 0, 0, 180, 0), tum);
 
-                visibleMarkerTransforms.Add(markerId, tum);
+                this.visibleMarkerTransforms.Add(markerId, tum);
             }
 
-            return visibleMarkerTransforms;
+            return this.visibleMarkerTransforms;
         }
     }
 }
