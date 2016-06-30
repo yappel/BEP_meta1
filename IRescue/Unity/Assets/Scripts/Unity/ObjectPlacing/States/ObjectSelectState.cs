@@ -151,7 +151,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
             GameObject entry, string name, float deductY, Transform parent, int i, int columnSize, int entryWidth, int entryHeight, int padding)
         {
             Transform image = entry.transform.GetChild(0);
-            image.GetComponent<Image>().sprite = this.CreateImage(name);
+            image.GetChild(1).GetComponent<Image>().sprite = this.CreateImage(name);
             entry.transform.SetParent(parent);
             entry.name = name;
             entry.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);

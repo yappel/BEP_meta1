@@ -2,13 +2,13 @@
   <marker>
     <id>0</id>
     <position>
-      <x>1.5</x>
+      <x>1</x>
       <y>0.815</y>
-      <z>0.5</z>
+      <z>1.5</z>
     </position>
     <rotation>
       <x>0</x>
-      <y>0</y>
+      <y>90</y>
       <z>0</z>
     </rotation>
   </marker>

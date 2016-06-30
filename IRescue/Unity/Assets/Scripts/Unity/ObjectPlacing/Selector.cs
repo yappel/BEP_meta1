@@ -36,10 +36,10 @@ namespace Assets.Scripts.Unity.ObjectPlacing
         {
             foreach (Transform child in this.transform.parent.transform)
             {
-                child.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.white;
+                child.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.white;
             }
             
-            this.transform.GetChild(0).GetChild(1).GetComponent<Image>().color = Color.yellow;
+            this.transform.GetChild(0).GetChild(0).GetComponent<Image>().color = Color.yellow;
             this.state.SelectObjectButtonEvent(this.name);
         }
     }

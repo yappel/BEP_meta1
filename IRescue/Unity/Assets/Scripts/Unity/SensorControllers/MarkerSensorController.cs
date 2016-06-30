@@ -73,7 +73,8 @@ namespace Assets.Scripts.Unity.SensorControllers
         /// <returns>the IPositionSource</returns>
         public override IOrientationSource GetOrientationSource()
         {
-            return this.markerSensor;
+            return null;
+            //return this.markerSensor;
         }
 
         /// <summary>

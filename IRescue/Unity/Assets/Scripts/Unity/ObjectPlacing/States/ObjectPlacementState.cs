@@ -206,7 +206,7 @@ namespace Assets.Scripts.Unity.ObjectPlacing.States
 
             Vector3 bound = new Vector3(totalBounds.size.x, totalBounds.size.y, totalBounds.size.z);
             Vector3 localFactor = gameObject.transform.parent.localScale;
-            float boundScale = PreferredInitSize / Mathf.Max(Mathf.Max(bound.z, bound.x), bound.y);
+            float boundScale = PreferredInitSize / Mathf.Max(bound.z, bound.x, bound.y);
             gameObject.transform.localScale = new Vector3(boundScale / localFactor.x, boundScale / localFactor.y, boundScale / localFactor.z);
         }
 
